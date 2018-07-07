@@ -1,0 +1,5 @@
+%table.list#player
+  = render partial: 'player', locals: { player: @player }
+
+- unless @player == @current_player
+  = render partial: 'player_buttons', locals: { player: @player }

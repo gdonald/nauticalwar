@@ -1,0 +1,120 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+<!--    <string name="base_url">http://10.0.0.33:3000</string>-->
+    <string name="base_url">https://nauticalwar.com</string>
+    <string name="app_name">Nautical War</string>
+
+    <string-array name="mode_array">
+        <item>5 Shot</item>
+        <item>4 Shot</item>
+        <item>3 Shot</item>
+        <item>2 Shot</item>
+        <item>1 Shot</item>
+    </string-array>
+    <string-array name="time_array">
+        <item>1 Day</item>
+        <item>8 Hours</item>
+        <item>1 Hour</item>
+        <item>15 Minutes</item>
+        <item>5 Minutes</item>
+    </string-array>
+    <string-array name="grid_array">
+        <item>Green</item>
+        <item>Blue</item>
+        <item>Red</item>
+    </string-array>
+    <string-array name="water_array">
+        <item>Grey</item>
+        <item>Green</item>
+        <item>Blue</item>
+        <item>Red</item>
+    </string-array>
+
+    <string name="games_count">Games (%d)</string>
+    <string name="invites_count">Invites (%d)</string>
+    <string name="player_vs_player">%s vs %s</string>
+    <string name="server_down">Server down</string>
+
+    <string name="or">- OR -</string>
+    <string name="account">Account</string>
+    <string name="locate_account">Locate Account</string>
+    <string name="locating_account">Locating Account…</string>
+    <string name="updating_players">Updating players…</string>
+    <string name="getting_players">Getting players…</string>
+    <string name="searching_players">Searching players…</string>
+    <string name="getting_games">Getting games…</string>
+    <string name="please_wait">Please wait</string>
+    <string name="signing_up">Signing Up…</string>
+    <string name="adding_friend">Adding friend…</string>
+    <string name="adding_enemy">Adding enemy…</string>
+    <string name="deleting_friend">Deleting friend…</string>
+    <string name="adding_invite">Adding invite…</string>
+    <string name="logging_in">Logging in…</string>
+    <string name="checking_account">Checking account…</string>
+    <string name="saving_layout">Saving layout…</string>
+    <string name="getting_invites">Getting invites…</string>
+    <string name="accepting_invite">Accepting invite…</string>
+    <string name="declining_invite">Declining invite…</string>
+    <string name="cancelling_invite">Cancelling invite…</string>
+    <string name="getting_friends">Getting friends…</string>
+    <string name="launching_attack">Launching attack…</string>
+    <string name="skipping_opponent">Skipping opponent…</string>
+    <string name="loading_game">Loading game…</string>
+    <string name="accept">Accept</string>
+    <string name="action">Action</string>
+    <string name="title">title</string>
+    <string name="friends">Friends</string>
+    <string name="refresh_friends">Refresh Friends</string>
+    <string name="rated">rated</string>
+    <string name="five">five</string>
+    <string name="four">four</string>
+    <string name="three">three</string>
+    <string name="two">two</string>
+    <string name="one">one</string>
+    <string name="my_fleet">My Fleet</string>
+    <string name="opponent">Opponent</string>
+    <string name="fire">Fire!</string>
+    <string name="next_game">Next Game</string>
+    <string name="skip_opponent">Skip Opponent</string>
+    <string name="players">Players</string>
+    <string name="games">Games</string>
+    <string name="no_games_found">No games found</string>
+    <string name="refresh">Refresh</string>
+    <string name="new_game">New Game</string>
+    <string name="logout">Logout</string>
+    <string name="options">Options</string>
+    <string name="invites">Invites</string>
+    <string name="play">Play!</string>
+    <string name="missing">missing</string>
+    <string name="no_invites_found">No invites found</string>
+    <string name="rotate">Rotate</string>
+    <string name="select_a_ship_to_position_it">Select a ship to position it</string>
+    <string name="login">Login</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="remember_login">   Remember Login</string>
+    <string name="player">Player</string>
+    <string name="delete_friend">Delete Friend</string>
+    <string name="add_friend">Add Friend</string>
+    <string name="name">Name</string>
+    <string name="stats">Stats:</string>
+    <string name="game_mode"> Game Mode</string>
+    <string name="time_turn"> Time/Turn</string>
+    <string name="rated_game">  Rated Game</string>
+    <string name="submit_invite">Submit Invite</string>
+    <string name="red_dot">Red Dot</string>
+    <string name="search">Search</string>
+    <string name="sort">Sort</string>
+    <string name="arrow_up">Arrow Up</string>
+    <string name="arrow_down">Arrow Down</string>
+    <string name="logo">Logo</string>
+    <string name="signup">Signup</string>
+    <string name="complete_signup">Complete Signup</string>
+    <string name="crosshair">Crosshair</string>
+    <string name="add_enemy">Block</string>
+    <string name="reset">Reset</string>
+    <string name="confirm">Confirm Password</string>
+    <string name="reset_password">Reset Password</string>
+    <string name="resetting_password">Resetting Password</string>
+
+</resources>

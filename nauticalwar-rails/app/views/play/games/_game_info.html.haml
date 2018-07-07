@@ -1,0 +1,55 @@
+%table.game-info
+  - if action_name != 'layout'
+    %tr
+      %td
+        %table
+          %tr
+            %td.nowrap
+              = "Fleet: "
+              - if action_name == 'show'
+                %span.player
+                  = link_to @current_player.name, play_player_path(@current_player)
+              - else
+                %span.player
+                  = link_to @game.opponent(@current_player).name, play_player_path(@game.opponent(@current_player))
+            %td.fill &nbsp;
+            %td.game-icons.nowrap
+              - if @game.rated?
+                = image_tag asset_path('play/rated.png')
+              = image_tag asset_path("play/#{shots_per_turn_name(@game)}.png")
+
+    = render partial: 'winner'
+
+  %tr
+    %td
+      %table
+        %tr
+        - if action_name == 'opponent'
+          %td
+            %button.btn.btn-light{ type: :submit, id: :my_fleet }
+              My Fleet
+          %td
+            %button.btn.btn-danger{  type: :submit, id: :attack, style: 'display:none' }
+              Fire!
+          %td.fill &nbsp;
+
+        - elsif action_name == 'show'
+          %td
+            %button.btn.btn-secondary{ type: :submit, id: :opponent_fleet }
+              Opponent Fleet
+          %td.fill &nbsp;
+
+        - elsif action_name == 'layout'
+          %td
+            %button.btn.btn-light{ type: :submit, id: :rotate }
+              Rotate Ship
+          %td
+            %button.btn.btn-light{ type: :submit, id: :save }
+              Save Layout
+          %td.fill &nbsp;
+
+  - if @current_player.hints?
+    = render partial: 'hints'
+
+  %tr.fill
+    %td &nbsp;

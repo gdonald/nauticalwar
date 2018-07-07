@@ -1,0 +1,5 @@
+<% if @result.is_a?(Invite) %>
+window.location.href = '/play/invites';
+<% elsif @result.is_a?(Game) %>
+window.location.href = '/play/games/' + <%= @result.id %> + '/layout';
+<% end %>

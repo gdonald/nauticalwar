@@ -1,0 +1,27 @@
+%tr{ data: 'player', id: player.id }
+  %td.rank= image_tag "play/#{player.rank}.png", class: 'rank'
+  %td.info
+    = render partial: 'last', locals: { player: player }
+
+    - if @current_player == player
+      %span.player-name-guest
+        = player.name
+        = '(You)'
+    - else
+      - if player.bot?
+        %span.player-name.bot
+          = player.name
+          = '(Bot)'
+      - else
+        %span.player-name
+          = player.name
+
+    .stats-info
+      %span.player-rank= rank_name(player.rank)
+      %br/
+      %b Rating:
+      %span.rating= player.rating
+      %b &nbsp;&nbsp;Wins:
+      %span.wins= player.wins
+      %b &nbsp;&nbsp;Losses:
+      %span.losses= player.losses

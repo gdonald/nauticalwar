@@ -1,0 +1,8 @@
+
+%table.list#ranks
+  - @ranks.each do |rank|
+    %tr{ data: 'rank', id: rank }
+      %td.rank= image_tag "play/#{rank}.png", class: 'rank'
+      %td.info.player-rank
+        (#{rank.upcase})
+        = rank_name(rank)

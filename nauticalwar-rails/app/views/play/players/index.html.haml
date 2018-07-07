@@ -1,0 +1,31 @@
+%table.search
+  %tr
+    %td.search-field
+      = text_field_tag :q, '', placeholder: 'Search', data: 'player-name'
+
+= render partial: 'players'
+
+:javascript
+  $(function() {
+    setupPlayerTrOnClicks();
+
+    const player_name = $("input[data='player-name']");
+    if(player_name.val() !== '') { doPlayerNameSearch(player_name.val()); }
+    $(player_name).on('keyup', function() {
+      showWait();
+      doPlayerNameSearch($(this).val());
+    });
+  });
+
+  function doPlayerNameSearch(q) {
+    $.ajax({ method: 'get', url: '/play/players/search?q=' + q });
+  }
+
+  function setupPlayerTrOnClicks() {
+    $("tr[data=player]").each( function () {
+      $(this).on('click', function() {
+        showWait();
+        window.location.href = '/play/players/' + this.id;
+      });
+    });
+  }

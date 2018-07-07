@@ -1,0 +1,39 @@
+apply plugin: 'com.android.application'
+apply plugin: 'com.google.gms.google-services'
+apply plugin: 'com.google.firebase.crashlytics'
+
+android {
+    compileSdkVersion 33
+    defaultConfig {
+        applicationId "com.example.nauticalwar"
+        minSdkVersion 33
+        targetSdkVersion 33
+        signingConfig signingConfigs.config
+        versionCode 9
+        versionName "1.0.9"
+    }
+    buildTypes {
+        debug {
+            minifyEnabled false
+            debuggable true
+        }
+        release {
+            minifyEnabled true
+            debuggable false
+        }
+    }
+    useLibrary('org.apache.http.legacy')
+    productFlavors {
+    }
+    compileOptions {
+        sourceCompatibility = 1.8
+        targetCompatibility = 1.8
+    }
+    namespace 'com.nauticalwar.nw'
+}
+
+dependencies {
+    implementation 'com.google.android.gms:play-services-auth:20.6.0'
+    implementation 'com.google.firebase:firebase-crashlytics:18.4.0'
+    implementation 'com.google.firebase:firebase-analytics:21.3.0'
+}

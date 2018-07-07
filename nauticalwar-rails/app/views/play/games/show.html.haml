@@ -1,0 +1,146 @@
+
+.grid-wrapper
+  = image_tag "play/grid_#{Player::GRIDS[@current_player.grid]}.png", class: 'grid', id: :grid
+.info-wrapper
+  = render partial: 'game_info'
+
+.modal{ role: 'dialog', tabindex: '-1', id: "cannot_attack" }
+  .modal-dialog.modal-dialog-centered{ role: 'document' }
+    .modal-content
+      .modal-header
+        %h5.modal-title Oops
+        %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
+          %span{ 'aria-hidden' => 'true' } ×
+      .modal-body
+        %p
+          You cannot attack your own fleet.
+          %br/
+          %br/
+          Click "Opponent Fleet" to launch an attack.
+      .modal-footer
+        %button.btn.btn-primary{ type: 'button', 'data-dismiss' => 'modal' } OK
+
+.modal{ role: 'dialog', tabindex: '-1', id: "game_over" }
+  .modal-dialog.modal-dialog-centered{ role: 'document' }
+    .modal-content
+      .modal-header
+        %h5.modal-title Game Over
+        %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
+          %span{ 'aria-hidden' => 'true' } ×
+      .modal-body
+        %p
+          This game has ended.
+          %br/
+          %br/
+          Click on
+          = link_to 'Players', play_players_path
+          to start a new game.
+      .modal-footer
+        %button.btn.btn-primary{ type: 'button', 'data-dismiss' => 'modal' } OK
+
+:javascript
+  let patrol_boat = null;
+  let patrol_boat_vertical = null;
+  let submarine = null;
+  let submarine_vertical = null;
+  let destroyer = null;
+  let destroyer_vertical = null;
+  let battleship = null;
+  let battleship_vertical = null;
+  let carrier = null;
+  let carrier_vertical = null;
+  let crosshair = null;
+
+  let ships = [];
+  let moves = [];
+  let my_turn = false;
+  let game_over = false;
+
+  $(function() {
+    patrol_boat = "#{ asset_path('play/patrol_boat.png') }";
+    patrol_boat_vertical = "#{ asset_path('play/patrol_boat_vertical.png') }";
+    submarine = "#{ asset_path('play/submarine.png') }";
+    submarine_vertical = "#{ asset_path('play/submarine_vertical.png') }";
+    destroyer = "#{ asset_path('play/destroyer.png') }";
+    destroyer_vertical = "#{ asset_path('play/destroyer_vertical.png') }";
+    battleship = "#{ asset_path('play/battleship.png') }";
+    battleship_vertical = "#{ asset_path('play/battleship_vertical.png') }";
+    carrier = "#{ asset_path('play/carrier.png') }";
+    carrier_vertical = "#{ asset_path('play/carrier_vertical.png') }";
+    crosshair = "#{ asset_path('play/crosshair.png') }";
+
+    ships = [ #{@layouts.html_safe} ];
+    moves = [ #{@moves.html_safe} ];
+    my_turn = #{@my_turn};
+    game_over = #{@game_over};
+
+    $(window).resize(function() { reDraw(); });
+    reDraw();
+
+    const $grid = $('#grid');
+    $grid.attr('draggable', false);
+
+    $grid.on('click', function(event) {
+      if(game_over) {
+        $('#game_over').modal();
+      } else {
+        $('#cannot_attack').modal();
+      }
+    });
+
+    $('#opponent_fleet').on('click', function() {
+      showWait();
+      window.location.href = '/play/games/#{@game.id}/opponent';
+    });
+
+    if(!my_turn) {
+      setTimeout(function() {
+        $.ajax({
+          method: 'get',
+          url: '/play/games/' + #{@game.id} + '/my_turn',
+          headers: {
+            'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+          }
+        });
+      }, 5000);
+    }
+  });
+
+  function reDraw() {
+    reCalculate();
+    draw();
+  }
+
+  function draw() {
+    drawMoves();
+    drawShips();
+    setupMovesShipsNoClick();
+  }
+
+  function setupMovesShipsNoClick() {
+    $('div[id^=move]').each( function() {
+      $(this).on('click', function() {
+        $('#cannot_attack').modal();
+      });
+    });
+
+    $('img[id^=ship]').each( function() {
+      $(this).on('click', function() {
+        $('#cannot_attack').modal();
+      });
+    });
+  }
+
+  function drawShips() {
+    $('img[id^=ship_]').remove();
+
+    $.each(ships, function(index, ship) {
+      $('<img />').attr({
+        'id': 'ship_' + ship['name'],
+        'src': ship['vertical'] ? ship['img_v'] : ship['img_h'],
+        'style': getShipStyle(ship)
+      }).appendTo('body');
+
+      $('#ship_' + ship['name']).attr('draggable', false);
+    });
+  }

@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outer"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:alwaysDrawnWithCache="true"
+    android:background="#bb000000"
+    android:baselineAligned="false"
+    android:gravity="center">
+
+    <LinearLayout
+        android:id="@+id/player_wrapper"
+        android:layout_width="56dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="0"
+        android:background="#000000"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/image"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dip"
+            android:background="@drawable/missing"
+            android:contentDescription="@string/missing" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/info"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:paddingEnd="4dip"
+        android:paddingStart="4dip">
+
+        <TextView
+            android:id="@+id/name"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:shadowColor="#333333"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:text="@string/players"
+            android:textColor="#ffffff"
+            android:textSize="15sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/stats"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:shadowColor="#333333"
+            android:shadowDx="1"
+            android:shadowDy="1"
+            android:shadowRadius="1"
+            android:text="@string/players"
+            android:textColor="#00ffff"
+            android:textSize="12sp" />
+
+        <LinearLayout
+            android:id="@+id/icons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dip"
+            android:gravity="center">
+
+            <ImageView
+                android:id="@+id/rated"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="4dip"
+                android:contentDescription="@string/rated"
+                android:src="@drawable/rated" />
+
+            <ImageView
+                android:id="@+id/five"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/five"
+                android:src="@drawable/five" />
+
+            <ImageView
+                android:id="@+id/four"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/four"
+                android:src="@drawable/four" />
+
+            <ImageView
+                android:id="@+id/three"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/three"
+                android:src="@drawable/three" />
+
+            <ImageView
+                android:id="@+id/two"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/two"
+                android:src="@drawable/two" />
+
+            <ImageView
+                android:id="@+id/one"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/one"
+                android:src="@drawable/one" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/opponent_wrapper"
+        android:layout_width="56dip"
+        android:layout_height="fill_parent"
+        android:layout_weight="0"
+        android:background="#000000"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/image2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_margin="10dip"
+            android:background="@drawable/missing"
+            android:contentDescription="@string/missing" />
+    </LinearLayout>
+</LinearLayout>

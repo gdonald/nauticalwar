@@ -1,0 +1,98 @@
+//= require rails-ujs
+//= require jquery3
+//= require bootstrap.bundle
+//= require bootstrap
+//= require jquery-ui
+//= require jquery.ui.touch-punch
+
+// 640 base size
+//const base_navbar = 57;
+const base_offset_top = 79;
+const base_offset_left = 23.5;
+const base_sqr = 58.95;
+const base_line = 3.20;
+
+let offset_top = base_offset_top;
+let offset_left = base_offset_left;
+let sqr = base_sqr;
+let line = base_line;
+
+let selectedShipName = null;
+
+$(function() {
+
+});
+
+function reCalculate() {
+  const $grid = $('#grid');
+  const h = $grid.height();
+  const base_navbar = $grid[0].offsetTop;
+
+  offset_top = ((base_offset_top - base_navbar) / 640 * h) + base_navbar;
+  offset_left = base_offset_left / 640 * h;
+  sqr = base_sqr / 640 * h;
+  line = base_line / 640 * h;
+}
+
+function getRow(pixelsTop, offset) {
+  const o = offset ? sqr / 2 : 0;
+  return Math.round(Math.abs((pixelsTop - offset_top - o) / (sqr + line)));
+}
+
+function getCol(pixelsLeft, offset) {
+  const o = offset ? sqr / 2 : 0;
+  return Math.round(Math.abs((pixelsLeft - offset_left - o) / (sqr + line)))
+}
+
+function getShipStyle(ship) {
+  let top = ((sqr * ship['row']) + (line * ship['row'])) + offset_top;
+  let left = ((sqr * ship['col']) + (line * ship['col'])) + offset_left;
+  let style = 'top: ' + top + 'px; left: ' + left + 'px; height: ' + getPixelHeight(ship) + 'px; width: ' + getPixelWidth(ship) + 'px;';
+  if(selectedShipName === ship['name']) { style += ' background: rgba(0, 0, 255, 0.3); border: 1px solid aqua;'; }
+  return style;
+}
+
+function getPixelWidth(ship) {
+  if(ship['vertical']) { return sqr; }
+  return (sqr * ship['size']) + ((line - 1) * ship['size']);
+}
+
+function getPixelHeight(ship) {
+  if(!ship['vertical']) { return sqr; }
+  return (sqr * ship['size']) + ((line - 1) * ship['size']);
+}
+
+function getShotStyle(shot) {
+  let top = ((sqr * shot['row']) + (line * shot['row'])) + offset_top;
+  let left = ((sqr * shot['col']) + (line * shot['col'])) + offset_left;
+  return 'top: ' + top + 'px; left: ' + left + 'px; height: ' + sqr + 'px; width: ' + sqr
+    + 'px; background: rgba(255, 255, 255, 0.6); border: 1px dashed red;';
+}
+
+function getMoveStyle(move) {
+  let top = ((sqr * move['row']) + (line * move['row'])) + offset_top - 1;
+  let left = ((sqr * move['col']) + (line * move['col'])) + offset_left - 1;
+  let background = move['hit'] ? '200, 0, 0, 0.5' : '255, 255, 255, 0.3'
+  return 'top: ' + top + 'px; left: ' + left + 'px; height: ' + (sqr + 2) + 'px; width: ' + (sqr + 2)
+    + 'px; background: rgba(' + background + '); border: 1px solid rgba(0, 0, 0, 0.4)';
+}
+
+function drawMoves() {
+  $('div[class=move]').remove();
+
+  $.each(moves, function(index, move) {
+    $('<div />').attr({
+      'id': 'move_' + move['col'] + '_' + move['row'],
+      'style': getMoveStyle(move),
+      'class': 'move'
+    }).appendTo('body');
+  });
+}
+
+function showWait() {
+  $('#wait-modal').modal();
+}
+
+function hideWait() {
+  $('#wait-modal').modal('hide');
+}

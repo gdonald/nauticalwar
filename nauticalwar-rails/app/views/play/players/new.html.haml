@@ -1,0 +1,49 @@
+.container-fluid
+  %p
+  .row
+    .col-md-12
+      .card.card-trans
+        .card-body.card-body-trans.account-type
+          %p Signup for a new account:
+          %form{ action: play_players_path, method: :post }
+            %input{ name: :utf8, type: :hidden, value: '✓' }
+            = hidden_field_tag :authenticity_token, form_authenticity_token
+            .form-group
+              %label.control-label{ for: :name } Name
+              %input#name.form-control{ name: :name, placeholder: 'Name ', type: :name, value: @player.name || '' }
+              - if @player.errors[:name].any?
+                %p.error= @player.errors[:name].first
+            .form-group
+              %label.control-label{ for: :email } Email
+              %input#email.form-control{ name: :email, placeholder: 'Email', type: :email, value: @player.email || '' }
+              - if @player.errors[:email].any?
+                %p.error= @player.errors[:email].first
+            .form-group
+              %label.control-label{ for: :password } Password
+              %input#password.form-control{ name: :password, placeholder: 'Password', type: :password, value: '' }
+              - if @player.errors[:password].any?
+                %p.error= @player.errors[:password].first
+            .form-group
+              %label.control-label{ for: :password_confirmation } Password Confirmation
+              %input#password_confirmation.form-control{ name: :password_confirmation, placeholder: 'Password Confirmation', type: :password, value: '' }
+              - if @player.errors[:password_confirmation].any?
+                %p.error= @player.errors[:password_confirmation].first
+            .form-group
+              %button.btn.btn-primary{ type: :submit, id: :submit }
+                Signup
+
+  .row
+    .col.text-center
+      %br/
+      %p
+        = link_to 'Login', new_play_session_path, class: 'badge badge-light'
+        = link_to 'Locate Account', lost_play_players_path, class: 'badge badge-light'
+
+  .row
+    .col.text-center
+      = link_to 'NauticalWar.com', root_path, class: 'white'
+    %p &nbsp;
+
+- if Rails.env.production?
+  :javascript
+    gtag('event', 'conversion', {'send_to': 'AW-1059689279/tSkJCMbG-cgBEL-mpvkD'});

@@ -1,0 +1,255 @@
+
+.grid-wrapper
+  = image_tag "play/grid_#{Player::GRIDS[@current_player.grid]}.png", class: 'grid', id: :grid
+.info-wrapper
+  = render partial: 'game_info'
+
+:javascript
+  let patrol_boat = null;
+  let patrol_boat_vertical = null;
+  let submarine = null;
+  let submarine_vertical = null;
+  let destroyer = null;
+  let destroyer_vertical = null;
+  let battleship = null;
+  let battleship_vertical = null;
+  let carrier = null;
+  let carrier_vertical = null;
+  let crosshair = null;
+
+  let ships = [];
+
+  $(function() {
+    patrol_boat = "#{ asset_path('play/patrol_boat.png') }";
+    patrol_boat_vertical = "#{ asset_path('play/patrol_boat_vertical.png') }";
+    submarine = "#{ asset_path('play/submarine.png') }";
+    submarine_vertical = "#{ asset_path('play/submarine_vertical.png') }";
+    destroyer = "#{ asset_path('play/destroyer.png') }";
+    destroyer_vertical = "#{ asset_path('play/destroyer_vertical.png') }";
+    battleship = "#{ asset_path('play/battleship.png') }";
+    battleship_vertical = "#{ asset_path('play/battleship_vertical.png') }";
+    carrier = "#{ asset_path('play/carrier.png') }";
+    carrier_vertical = "#{ asset_path('play/carrier_vertical.png') }";
+    crosshair = "#{ asset_path('play/crosshair.png') }";
+
+    ships = [
+      { col: 6, row: 1, size: 2, vertical: false, name: 'patrol_boat', img_h: patrol_boat, img_v: patrol_boat_vertical },
+      { col: 7, row: 6, size: 3, vertical: true,  name: 'submarine', img_h: submarine, img_v: submarine_vertical },
+      { col: 5, row: 3, size: 3, vertical: true,  name: 'destroyer', img_h: destroyer, img_v: destroyer_vertical },
+      { col: 2, row: 7, size: 4, vertical: false, name: 'battleship', img_h: battleship, img_v: battleship_vertical },
+      { col: 1, row: 1, size: 5, vertical: true,  name: 'carrier', img_h: carrier, img_v: carrier_vertical }
+    ];
+
+    $(window).resize(function() { reDraw(); });
+    reDraw();
+
+    const $grid = $('#grid');
+    $grid.attr('draggable', false);
+
+    $grid.on('click', function() {
+      selectedShipName = null;
+      draw();
+    });
+
+    $('#rotate').on('click', function() {
+      rotateSelectedShip();
+    });
+
+    $('#save').on('click', function() {
+      showWait();
+      saveLayout();
+    });
+  });
+
+  function reDraw() {
+    reCalculate();
+    draw();
+  }
+
+  function draw() {
+    drawShips();
+  }
+
+  function drawShips() {
+    console.log('drawShips()');
+    $('img[id^=ship_]').remove();
+
+    console.log('old ships removed');
+
+    $.each(ships, function(index, ship) {
+      $('<img />').attr({
+        'id': 'ship_' + ship['name'],
+        'src': ship['vertical'] ? ship['img_v'] : ship['img_h'],
+        'style': getShipStyle(ship)
+      }).appendTo('body');
+
+      console.log('new ship appended: ' + ship['name']);
+
+      const $ship = $('#ship_' + ship['name']);
+
+      console.log('$ship:' + $ship);
+
+      $ship.draggable({
+        stop: function(event, ui) {
+          setShipColRow(ship['name'], getCol(ui.offset.left, false), getRow(ui.offset.top, false));
+        }
+      });
+
+      console.log('draggable set!');
+
+      $ship.on('click', function() {
+        selectedShipName = ship['name'];
+        draw();
+      });
+
+      console.log('clickable set!');
+
+      hideShowButtons();
+    });
+  }
+
+  function saveLayout() {
+    let layout = { ships: [] }
+    for(let x = 0; x < ships.length; x++) {
+      let s = ships[x];
+      layout['ships'][x] = { name: shipTitle(s['name']), x: s['col'], y: s['row'], vertical: s['vertical'] ? '1' : '0' };
+    }
+
+    $.ajax({
+      method: 'post',
+      url: '/play/layouts',
+      data: {
+        game_id: #{@game.id},
+        layout: JSON.stringify(layout)
+      },
+      headers: {
+        'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+      }
+    });
+  }
+
+  function shipTitle(name) {
+    let words = name.toLowerCase().split('_');
+    for(let i = 0; i < words.length; i++) {
+      words[i] = words[i][0].toUpperCase() + words[i].slice(1);
+    }
+    return words.join(' ');
+  }
+
+  function setShipColRow(name, col, row) {
+    const index = getShipIndex(name);
+    const old_col = ships[index]['col'];
+    const old_row = ships[index]['row'];
+
+    ships[index]['col'] = col;
+    ships[index]['row'] = row;
+
+    if(hasOverlap() || outOfBounds()) {
+      ships[index]['col'] = old_col;
+      ships[index]['row'] = old_row;
+    }
+
+    selectedShipName = name;
+    draw();
+  }
+
+  function rotateSelectedShip() {
+    const index = getShipIndex(selectedShipName);
+    const old_vertical = ships[index]['vertical'];
+
+    ships[index]['vertical'] = !ships[index]['vertical'];
+
+    if(hasOverlap() || outOfBounds()) {
+      ships[index]['vertical'] = old_vertical;
+    }
+
+    draw();
+  }
+
+  function getShipIndex(name) {
+    for(let index = 0; index < ships.length; index++) {
+      if(ships[index]['name'] === name) {
+        return index;
+      }
+    }
+  }
+
+  function outOfBounds() {
+    for(let x = 0; x < ships.length; x++) {
+      const ship = ships[x];
+      if(ship['col'] < 0 || ship['row'] < 0) { return true; }
+
+      if(ship['vertical']) {
+        if(ship['row'] > 10 - ship['size']) { return true; }
+        if(ship['col'] > 9) { return true; }
+      } else {
+        if(ship['col'] > 10 - ship['size']) { return true; }
+        if(ship['row'] > 9) { return true; }
+      }
+    }
+
+    return false;
+  }
+
+  function hasOverlap() {
+    for(let x1 = 0; x1 < ships.length; x1++) {
+      for(let x2 = 0; x2 < ships.length; x2++) {
+
+        const s1 = ships[x1];
+        const s2 = ships[x2];
+
+        if(s1['name'] === s2['name']) { continue; }
+        if(s1['col'] === s2['col'] && s1['row'] === s2['row']) { return true; }
+
+        if(s1['vertical'])
+        {
+          for(let r = s1['row']; r < s1['size'] + s1['row']; r++)
+          {
+            if(isHit(s2, s1['col'], r)) { return true; }
+          }
+        }
+        else
+        {
+          for(let c = s1['col']; c < s1['size'] + s1['col']; c++)
+          {
+            if(isHit(s2, c, s1['row'])) { return true; }
+          }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  function isHit(ship, c, r) {
+    if(ship['row'] < 0 || ship['col'] < 0) { return false; }
+
+    if(ship['vertical'])
+    {
+      if(c === ship['col'])
+      {
+        for(let i = ship['row']; i < ship['row'] + ship['size']; i++)
+        {
+          if(i === r) { return true; }
+        }
+      }
+    }
+    else
+    {
+      if(r === ship['row'])
+      {
+        for(let i = ship['col']; i < ship['col'] + ship['size']; i++)
+        {
+          if(i === c) { return true; }
+        }
+      }
+    }
+
+    return false;
+  }
+
+  function hideShowButtons() {
+    console.log('hideShowButtons()');
+
+    $('#rotate').prop('disabled', selectedShipName === null);
+  }

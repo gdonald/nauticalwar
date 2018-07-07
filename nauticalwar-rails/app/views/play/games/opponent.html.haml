@@ -1,0 +1,233 @@
+
+.grid-wrapper
+  = image_tag "play/grid_#{Player::GRIDS[@current_player.grid]}.png", class: 'grid', id: :grid
+.info-wrapper
+  = render partial: 'game_info'
+
+.modal{ role: 'dialog', tabindex: '-1', id: "game_over" }
+  .modal-dialog.modal-dialog-centered{ role: 'document' }
+    .modal-content
+      .modal-header
+        %h5.modal-title Game Over
+        %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
+          %span{ 'aria-hidden' => 'true' } ×
+      .modal-body
+        %p
+          This game has ended.
+          %br/
+          %br/
+          Click on
+          = link_to 'Players', play_players_path
+          to start a new game.
+      .modal-footer
+        %button.btn.btn-primary{ type: 'button', 'data-dismiss' => 'modal' } OK
+
+:javascript
+  let patrol_boat = null;
+  let patrol_boat_vertical = null;
+  let submarine = null;
+  let submarine_vertical = null;
+  let destroyer = null;
+  let destroyer_vertical = null;
+  let battleship = null;
+  let battleship_vertical = null;
+  let carrier = null;
+  let carrier_vertical = null;
+  let crosshair = null;
+
+  let ships = [];
+  let moves = [];
+  let shots = [];
+  let shots_per_turn = 0;
+  let can_attack = false;
+  let my_turn = false;
+  let game_over = false;
+
+  $(function() {
+    patrol_boat = "#{ asset_path('play/patrol_boat.png') }";
+    patrol_boat_vertical = "#{ asset_path('play/patrol_boat_vertical.png') }";
+    submarine = "#{ asset_path('play/submarine.png') }";
+    submarine_vertical = "#{ asset_path('play/submarine_vertical.png') }";
+    destroyer = "#{ asset_path('play/destroyer.png') }";
+    destroyer_vertical = "#{ asset_path('play/destroyer_vertical.png') }";
+    battleship = "#{ asset_path('play/battleship.png') }";
+    battleship_vertical = "#{ asset_path('play/battleship_vertical.png') }";
+    carrier = "#{ asset_path('play/carrier.png') }";
+    carrier_vertical = "#{ asset_path('play/carrier_vertical.png') }";
+    crosshair = "#{ asset_path('play/crosshair.png') }";
+
+    ships = [ #{@layouts.html_safe} ];
+    moves = [ #{@moves.html_safe} ];
+    shots_per_turn = #{@game.shots_per_turn};
+    can_attack = #{@can_attack};
+    my_turn = #{@my_turn};
+    game_over = #{@game_over};
+
+    updateShotsLeft();
+    $(window).resize(function() { reDraw(); });
+    reDraw();
+
+    const $grid = $('#grid');
+    $grid.attr('draggable', false);
+
+    $grid.on('click', function(event) {
+      if(game_over) {
+        $('#game_over').modal();
+      } else {
+        addRemoveShot(getCol(event.pageX, true), getRow(event.pageY, true));
+        updateShotsLeft();
+        draw();
+      }
+    });
+
+    $('#my_fleet').on('click', function() {
+      showWait();
+      window.location.href = '/play/games/#{@game.id}';
+    });
+
+    $('#attack').on('click', function() {
+      showWait();
+      attack();
+    });
+
+    if(!my_turn) {
+      setTimeout(function() {
+        $.ajax({
+          method: 'get',
+          url: '/play/games/' + #{@game.id} + '/my_turn',
+          headers: {
+            'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+          }
+        });
+      }, 5000);
+    }
+  });
+
+  function reDraw() {
+    reCalculate();
+    draw();
+  }
+
+  function draw() {
+    drawMoves();
+    drawShips();
+    drawShots();
+    drawButtons();
+  }
+
+  function updateShotsLeft() {
+    let shots_left = shots_per_turn - shots.length;
+
+    if(shots_left > 0) {
+      $('#shoot_now').hide();
+      $('#how_to_shoot').show();
+
+      let html = shots_left === 1 ? '' : '&nbsp;' + shots_left;
+      html += ' attack' + (shots_left === 1 ? '' : 's');
+
+      $('#shots_left').html(html);
+    } else {
+      $('#how_to_shoot').hide();
+      $('#shoot_now').show();
+    }
+  }
+
+  function drawShips() {
+    $('img[id^=ship_]').remove();
+
+    $.each(ships, function(index, ship) {
+      $('<img />').attr({
+        'id': 'ship_' + ship['name'],
+        'src': ship['vertical'] ? ship['img_v'] : ship['img_h'],
+        'style': getShipStyle(ship)
+      }).appendTo('body');
+
+      $('#ship_' + ship['name']).attr('draggable', false);
+    });
+  }
+
+  function drawShots() {
+    $('img[class=shot]').remove();
+
+    $.each(shots, function(index, shot) {
+      $('<img />').attr({
+        'id': 'shot_' + shot['col'] + '_' + shot['row'],
+        'style': getShotStyle(shot),
+        'class': 'shot',
+        'src': crosshair
+      }).appendTo('body');
+
+      const $shot = $('#shot_' + shot['col'] + '_' + shot['row']);
+
+      $shot.on('click', function() {
+        removeShot(shot['col'], shot['row']);
+        updateShotsLeft();
+        draw();
+      });
+    });
+  }
+
+  function attack() {
+    let s = [];
+    for(let x = 0; x < shots.length; x++) {
+      s.push({ x: shots[x]['col'], y: shots[x]['row'] });
+    }
+
+    $.ajax({
+      method: 'post',
+      url: '/play/games/#{@game.id}/attack',
+      data: { s: JSON.stringify(s) },
+      headers: {
+        'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+      }
+    });
+  }
+
+  function shotExists(col, row) {
+    for(let x = 0; x < moves.length; x++) {
+      if(moves[x]['col'] === col && moves[x]['row'] === row) { return true; }
+    }
+
+    return false;
+  }
+
+  function addRemoveShot(col, row) {
+    if(shotExists(col, row)) { return; }
+
+    if(shotPresent(col, row)) {
+      removeShot(col, row);
+    } else {
+      addShot(col, row);
+    }
+  }
+
+  function shotPresent(col, row) {
+    for(let x = 0; x < shots.length; x++) {
+      if(shots[x]['col'] === col && shots[x]['row'] === row) { return true; }
+    }
+
+    return false;
+  }
+
+  function removeShot(col, row) {
+    shots = shots.filter(shot => shot['col'] !== col || shot['row'] !== row);
+  }
+
+  function addShot(col, row) {
+    if(!can_attack || shots.length >= shots_per_turn) { return; }
+    shots.push({ col: col, row: row });
+  }
+
+  function drawButtons() {
+    const attack = $('#attack');
+    if(can_attack) {
+      attack.show();
+      if(shots.length === shots_per_turn) {
+        attack.prop('disabled', false);
+      } else {
+        attack.prop('disabled', true);
+      }
+    } else {
+      attack.hide();
+    }
+  }

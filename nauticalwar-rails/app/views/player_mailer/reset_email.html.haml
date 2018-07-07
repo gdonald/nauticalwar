@@ -1,0 +1,21 @@
+%h1
+  Dear #{@player.name},
+%p
+  You may click here to reset your Nautical War account password:
+  %br/
+  %br/
+  = link_to reset_url(token: @player.password_token), reset_url(token: @player.password_token)
+  %br/
+  %br/
+  This link will expire soon.
+  %br/
+  %br/
+  If you did not request a password reset then please disregard this email.
+  %br/
+
+%p
+  Thanks,
+  %br/
+  Nautical War Support
+  %br/
+  = link_to 'support@nauticalwar.com', 'mailto:support@nauticalwar.com'

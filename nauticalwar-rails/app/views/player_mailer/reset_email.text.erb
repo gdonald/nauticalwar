@@ -1,0 +1,13 @@
+Dear <%= @player.name %>,
+
+You may click here to reset your Nautical War account password:
+
+<%= reset_url(token: @player.password_token) %>
+
+This link will expire soon.
+
+If you did not request a password reset then please disregard this email.
+
+Thanks,
+Nautical War Support
+support@nauticalwar.com

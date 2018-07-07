@@ -1,0 +1,24 @@
+.container-fluid
+  %p
+  .row
+    .col-md-12
+      .card.card-trans
+        .card-body.card-body-trans.account-type
+          %p Unsubscribe from Nautical War emails:
+          %form{ action: unsubs_path, method: :post }
+            %input{ name: :utf8, type: :hidden, value: '✓' }
+            %input{ name: :id, type: :hidden, value: @unsub_hash }
+              = hidden_field_tag :authenticity_token, form_authenticity_token
+              .form-group
+                %label.control-label{ for: :email } Email
+                %input#email.form-control{ name: :email, placeholder: 'Email', type: :email, value: @email }
+              .form-group
+                %button.btn.btn-primary{ type: :submit, id: :submit }
+                  Unsubscribe
+
+  %br/
+
+  .row
+    .col.text-center
+      = link_to 'NauticalWar.com', root_path, class: 'white'
+    %p &nbsp;

@@ -1,0 +1,32 @@
+.container-fluid
+  %p
+  .row
+    .col-md-12
+      .card.card-trans
+        .card-body.card-body-trans.account-type
+          %form{ action: play_sessions_path, method: :post }
+            %input{ name: :utf8, type: :hidden, value: '✓' }
+              = hidden_field_tag :authenticity_token, form_authenticity_token
+              %p Login to an exisiting account:
+              .form-group
+                %label.control-label{ for: :email } Email
+                %input#email.form-control{ name: :email, placeholder: 'Email', type: :email, value: params.try(:email) }
+              .form-group
+                %label.control-label{ for: :password } Password
+                %input#password.form-control{ name: :password, placeholder: 'Password', type: :password, value: '' }
+              .form-group
+                %button.btn.btn-primary{ type: :submit, id: :submit }
+                  Login
+
+  .row
+    .col.text-center
+      %br/
+      %p
+        = link_to 'Confirm Email', unconfirmed_play_players_path, class: 'badge badge-light'
+        = link_to 'Signup', new_play_player_path, class: 'badge badge-light'
+        = link_to 'Locate Account', lost_play_players_path, class: 'badge badge-light'
+
+  .row
+    .col.text-center
+      = link_to 'NauticalWar.com', root_path, class: 'white'
+    %p &nbsp;

@@ -1,0 +1,18 @@
+%h1
+  Dear #{@player.name},
+%p
+  Your Nautical War account password has been reset.
+  %br/
+  %br/
+  You may now login using your new password:
+  %br/
+  %br/
+  = link_to root_url, root_url
+  %br/
+
+%p
+  Thanks,
+  %br/
+  Nautical War Support
+  %br/
+  = link_to 'support@nauticalwar.com', 'mailto:support@nauticalwar.com'

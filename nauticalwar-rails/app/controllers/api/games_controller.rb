@@ -1,0 +1,84 @@
+# frozen_string_literal: true
+
+# rubocop:disable Style/ClassAndModuleChildren
+class Api::GamesController < Api::ApiController
+  skip_before_action :verify_authenticity_token,
+                     only: %i[destroy cancel attack skip]
+  respond_to :json
+
+  def index
+    render json: @current_player.active_games.ordered
+  end
+
+  def count
+    render json: { count: @current_player.active_games.count }
+  end
+
+  def next
+    game = @current_player.next_game
+    render json: { status: status(game) }
+  end
+
+  def skip
+    game = @current_player.skip_game!(params[:id])
+    render json: { status: status(game) }
+  end
+
+  def show
+    result = @current_player.player_game(params[:id])
+    render_game(result)
+  end
+
+  def destroy
+    game = @current_player.destroy_game!(params[:id])
+    render json: { status: status(game) }
+  end
+
+  def cancel
+    game = @current_player.cancel_game!(params[:id])
+    render json: { status: status(game) }
+  end
+
+  def my_turn
+    render json: { status: @current_player.my_turn(params[:id]) }
+  end
+
+  def opponent
+    result = @current_player.opponent_game(params[:id])
+    render_game(result)
+  end
+
+  def attack
+    game = Game.find_game(@current_player, params[:id])
+    if game
+      if game.can_attack?(@current_player)
+        @current_player.attack!(game, params)
+        render json: { status: 1 }
+      else
+        render json: { status: -1 }
+      end
+    else
+      render json: { error: 'game not found' }, status: :not_found
+    end
+  end
+
+  private
+
+  def status(game)
+    game.nil? ? -1 : game.id
+  end
+
+  def render_game(result)
+    if result
+      klass = ActiveModelSerializers::SerializableResource
+      render json: {
+        game: klass.new(result[:game], {}).as_json,
+        layouts: klass.new(result[:layouts], {}).as_json,
+        moves: klass.new(result[:moves], {}).as_json
+      }
+    else
+      render json: { error: 'game not found' }, status: :not_found
+    end
+  end
+end
+# rubocop:enable Style/ClassAndModuleChildren

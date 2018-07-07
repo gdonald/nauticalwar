@@ -1,0 +1,3 @@
+$('#players').replaceWith("<%= escape_javascript( render( partial: 'players', locals: { players: @players } ) ) %>");
+setupPlayerTrOnClicks();
+hideWait();

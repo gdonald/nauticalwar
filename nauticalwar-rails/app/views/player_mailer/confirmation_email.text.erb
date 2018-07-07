@@ -1,0 +1,11 @@
+Welcome to Nautical War, <%= @player.name %>
+
+Please complete your signup by confirming your email address using the link below:
+
+<%= confirm_url(token: @player.confirmation_token) %>
+
+If you did not signup for a Nautical War account no further action is required.
+
+Thanks,
+Nautical War Support
+support@nauticalwar.com
