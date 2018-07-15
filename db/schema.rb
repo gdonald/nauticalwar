@@ -10,10 +10,80 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 2) do
+ActiveRecord::Schema.define(version: 10) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "bots", force: :cascade do |t|
+    t.integer "user_id", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
+
+  create_table "enemies", force: :cascade do |t|
+    t.integer "user_id_1", null: false
+    t.integer "user_id_2", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id_1", "user_id_2"], name: "index_enemies_on_user_id_1_and_user_id_2", unique: true
+  end
+
+  create_table "friends", force: :cascade do |t|
+    t.integer "user_id_1", null: false
+    t.integer "user_id_2", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id_1", "user_id_2"], name: "index_friends_on_user_id_1_and_user_id_2", unique: true
+  end
+
+  create_table "games", force: :cascade do |t|
+    t.integer "user_id_1", null: false
+    t.integer "user_id_2", null: false
+    t.boolean "rated", null: false
+    t.boolean "five_shot", null: false
+    t.integer "time_limit", null: false
+    t.integer "turn"
+    t.integer "winner"
+    t.boolean "del_user_1", default: false, null: false
+    t.boolean "del_user_2", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id_1", "user_id_2"], name: "index_games_on_user_id_1_and_user_id_2", unique: true
+  end
+
+  create_table "invites", force: :cascade do |t|
+    t.integer "user_id_1", null: false
+    t.integer "user_id_2", null: false
+    t.boolean "rated", default: true, null: false
+    t.boolean "five_shot", default: false, null: false
+    t.integer "time_limit", default: 60, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id_1", "user_id_2"], name: "index_invites_on_user_id_1_and_user_id_2", unique: true
+  end
+
+  create_table "layouts", force: :cascade do |t|
+    t.integer "game_id", null: false
+    t.integer "user_id", null: false
+    t.integer "ship_id", null: false
+    t.integer "x", null: false
+    t.integer "y", null: false
+    t.boolean "vertical", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id", "user_id", "ship_id", "x", "y"], name: "index_layouts_on_game_id_and_user_id_and_ship_id_and_x_and_y", unique: true
+  end
+
+  create_table "moves", force: :cascade do |t|
+    t.integer "game_id", null: false
+    t.integer "user_id", null: false
+    t.integer "x", null: false
+    t.integer "y", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["game_id", "user_id", "x", "y"], name: "index_moves_on_game_id_and_user_id_and_x_and_y", unique: true
+  end
 
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false
@@ -22,6 +92,13 @@ ActiveRecord::Schema.define(version: 2) do
     t.datetime "updated_at", null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
+  end
+
+  create_table "ships", force: :cascade do |t|
+    t.string "name", limit: 12
+    t.integer "size"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
   end
 
   create_table "users", force: :cascade do |t|
