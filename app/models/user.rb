@@ -20,9 +20,23 @@ class User < ApplicationRecord
   def invites
     invites_1.or(invites_2).order(created_at: :asc)
   end
+
+  def self.list(user)
+    ids = User.select(:id).where(bot: true).collect { |u| u.id }
+    ids += User.select(:id).where(arel_table[:rating].gteq(user.rating)).order(rating: :asc ).limit(15).collect { |u| u.id }
+    ids += User.select(:id).where(arel_table[:rating].lteq(user.rating)).order(rating: :desc).limit(15).collect { |u| u.id }
+    ids.uniq!
+    User.where(id: ids).order(rating: :desc)
+  end
   
   def self.generate_password(length)
     (('a'..'z').to_a + (10..99).to_a + ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_'] * 10).shuffle[0, length].join
   end
-  
+
+  def get_last
+    return 0 if bot || last_sign_in_at > 1.hour.ago
+    return 1 if last_sign_in_at > 1.day.ago
+    return 2 if last_sign_in_at > 3.days.ago
+    3
+  end
 end

@@ -18,7 +18,7 @@ Rails.application.routes.draw do
     resources :layouts, only: %i[create show]
 
     resources :users, only: [:index] do
-      member do
+      collection do
         get :activity
       end
     end

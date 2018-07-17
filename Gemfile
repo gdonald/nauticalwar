@@ -15,6 +15,7 @@ gem 'jbuilder', '~> 2.5'
 gem 'bcrypt', '~> 3.1.7'
 
 gem 'activerecord-session_store'
+gem 'active_model_serializers'
 gem 'acts_as_list'
 gem 'bootstrap-sass', '~> 3.3.6'
 gem 'devise'
