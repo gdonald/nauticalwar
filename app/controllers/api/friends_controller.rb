@@ -1,5 +1,7 @@
 class Api::FriendsController < Api::ApiController
 
+  skip_before_action :verify_authenticity_token, only: %i[create destroy]
+
   def index
   end
 
@@ -8,4 +10,5 @@ class Api::FriendsController < Api::ApiController
 
   def destroy
   end
+
 end

@@ -5,6 +5,7 @@ class Api::InvitesController < Api::ApiController
   respond_to :json
   
   def index
+    render json: current_api_user.invites.ordered
   end
 
   def count

@@ -14,11 +14,11 @@ class User < ApplicationRecord
   has_many :invites_2, foreign_key: :user_id_2, class_name: 'Invite'
   
   def games
-    games_1.or(games_2).order(updated_at: :asc)
+    games_1.or(games_2)
   end
 
   def invites
-    invites_1.or(invites_2).order(created_at: :asc)
+    invites_1.or(invites_2)
   end
 
   def self.list(user)

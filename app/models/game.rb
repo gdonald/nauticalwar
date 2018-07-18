@@ -11,4 +11,6 @@ class Game < ApplicationRecord
   validates :five_shot, presence: true
   validates :time_limit, presence: true
 
+  scope :ordered, -> { order(created_at: :asc) }
+  
 end

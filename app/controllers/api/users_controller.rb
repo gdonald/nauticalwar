@@ -9,4 +9,5 @@ class Api::UsersController < Api::ApiController
   def activity
     render json: { activity: current_api_user.activity }
   end
+
 end
