@@ -6,7 +6,8 @@ class User < ApplicationRecord
 
   validates :email, presence: true, uniqueness: true
   validates :username, presence: true, uniqueness: true, length: { maximum: 12 }
-
+  validates :bot, inclusion: [true, false]
+  
   has_many :games_1, foreign_key: :user_id_1, class_name: 'Game'
   has_many :games_2, foreign_key: :user_id_2, class_name: 'Game'
 
