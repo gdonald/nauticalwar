@@ -7,51 +7,53 @@ class Layout < ApplicationRecord
   validates :user, presence: true
   validates :game, presence: true
   validates :ship, presence: true
-  validates :x, presence: true, inclusion: { in: (0..9).to_a }
-  validates :y, presence: true, inclusion: { in: (0..9).to_a }
+  validates :x, inclusion: { in: (0..9).to_a }
+  validates :y, inclusion: { in: (0..9).to_a }
 
-  validates :user, uniqueness: { scope: %i[game ship x y] }
+  validates :user, uniqueness: { scope: %i[game x y], message: 'layout must be unique' }
 
-  validates :vertical, presence: true
+  validates :vertical, inclusion: [true, false]
 
-  def set_location
+  scope :ordered, -> { order(id: :asc) }
+  
+  def is_hit?(c, r)
+    if vertical && c == x
+      (y..(y + ship.size)).each do |i|
+        return true if i == r
+      end
+    elsif !vertical && r == y
+      (x..(x + ship.size)).each do |i|
+        return true if i == c
+      end
+    end
+    false
+  end
+  
+  def self.set_location(args)
     vertical = [0, 1].sample.zero?
     if vertical
-
+      c = (0..9).to_a.sample
+      r = (0..9).to_a.sample - args[:ship].size
+      r = 0 if r < 0
+      r = 10 - args[:ship].size if r > 10 - args[:ship].size
+      (r..(r + args[:ship].size)).each do |x|
+        if args[:game].is_hit?(args[:user], c, x)
+          return Layout.set_location(args)
+        end
+      end
     else
-
+      c = (0..9).to_a.sample - args[:ship].size
+      r = (0..9).to_a.sample
+      c = 0 if c < 0
+      c = 10 - args[:ship].size if c > 10 - args[:ship].size
+      (c..(c + args[:ship].size)).each do |x|
+        if args[:game].is_hit?(args[:user], x, r)
+          return Layout.set_location(args)
+        end
+      end
     end
-    
-=begin
-    if self.vertical:
-            c = random.randint( 0, 9 )
-            r = random.randint( 0, 9 ) - self.ship.size
-            r = 0 if r < 0 else r
-            r = 9 if r > 9 else r
-            c = 0 if c < 0 else c
-            c = 9 if c > 9 else c
-            if r > 10 - self.ship.size:
-                r = 10 - self.ship.size
-            for x in range( r, r + self.ship.size ):
-                if self.game.is_hit( self.user, c, x ):
-                    self.set_random_location()
-                    return
-        else:
-            c = random.randint( 0, 9 ) - self.ship.size
-            r = random.randint( 0, 9 )
-            r = 0 if r < 0 else r
-            r = 9 if r > 9 else r
-            c = 0 if c < 0 else c
-            c = 9 if c > 9 else c
-            if c > 10 - self.ship.size:
-                c = 10 - self.ship.size
-            for x in range( c, c + self.ship.size ):
-                if self.game.is_hit( self.user, x, r ):
-                    self.set_random_location()
-                    return
-        self.x = c
-        self.y = r
-=end
+    layout = Layout.new(game: args[:game], user: args[:user], ship: args[:ship], vertical: vertical, x: c, y: r)
+    layout.save!
   end
   
 end

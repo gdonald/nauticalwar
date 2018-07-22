@@ -3,6 +3,7 @@ class CreateMoves < ActiveRecord::Migration[5.2]
     create_table :moves do |t|
       t.integer :game_id, null: false
       t.integer :user_id, null: false
+      t.integer :layout_id
       t.integer :x, null: false
       t.integer :y, null: false
       t.timestamps

@@ -16,45 +16,47 @@ ActiveRecord::Schema.define(version: 9) do
   enable_extension "plpgsql"
 
   create_table "enemies", force: :cascade do |t|
-    t.integer "user_id_1", null: false
-    t.integer "user_id_2", null: false
+    t.integer "user_1_id", null: false
+    t.integer "user_2_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id_1", "user_id_2"], name: "index_enemies_on_user_id_1_and_user_id_2", unique: true
+    t.index ["user_1_id", "user_2_id"], name: "index_enemies_on_user_1_id_and_user_2_id", unique: true
   end
 
   create_table "friends", force: :cascade do |t|
-    t.integer "user_id_1", null: false
-    t.integer "user_id_2", null: false
+    t.integer "user_1_id", null: false
+    t.integer "user_2_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id_1", "user_id_2"], name: "index_friends_on_user_id_1_and_user_id_2", unique: true
+    t.index ["user_1_id", "user_2_id"], name: "index_friends_on_user_1_id_and_user_2_id", unique: true
   end
 
   create_table "games", force: :cascade do |t|
-    t.integer "user_id_1", null: false
-    t.integer "user_id_2", null: false
+    t.integer "user_1_id", null: false
+    t.integer "user_2_id", null: false
+    t.boolean "user_1_layed_out", default: false, null: false
+    t.boolean "user_2_layed_out", default: false, null: false
     t.boolean "rated", null: false
     t.boolean "five_shot", null: false
     t.integer "time_limit", null: false
-    t.integer "turn"
-    t.integer "winner"
+    t.integer "turn_id", null: false
+    t.integer "winner_id"
     t.boolean "del_user_1", default: false, null: false
     t.boolean "del_user_2", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id_1", "user_id_2"], name: "index_games_on_user_id_1_and_user_id_2", unique: true
+    t.index ["user_1_id", "user_2_id"], name: "index_games_on_user_1_id_and_user_2_id", unique: true
   end
 
   create_table "invites", force: :cascade do |t|
-    t.integer "user_id_1", null: false
-    t.integer "user_id_2", null: false
+    t.integer "user_1_id", null: false
+    t.integer "user_2_id", null: false
     t.boolean "rated", default: true, null: false
     t.boolean "five_shot", default: false, null: false
     t.integer "time_limit", default: 60, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_id_1", "user_id_2"], name: "index_invites_on_user_id_1_and_user_id_2", unique: true
+    t.index ["user_1_id", "user_2_id"], name: "index_invites_on_user_1_id_and_user_2_id", unique: true
   end
 
   create_table "layouts", force: :cascade do |t|
@@ -66,12 +68,13 @@ ActiveRecord::Schema.define(version: 9) do
     t.boolean "vertical", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["game_id", "user_id", "ship_id", "x", "y"], name: "index_layouts_on_game_id_and_user_id_and_ship_id_and_x_and_y", unique: true
+    t.index ["user_id", "game_id", "x", "y"], name: "index_layouts_on_user_id_and_game_id_and_x_and_y", unique: true
   end
 
   create_table "moves", force: :cascade do |t|
     t.integer "game_id", null: false
     t.integer "user_id", null: false
+    t.integer "layout_id"
     t.integer "x", null: false
     t.integer "y", null: false
     t.datetime "created_at", null: false
@@ -123,6 +126,7 @@ ActiveRecord::Schema.define(version: 9) do
     t.datetime "updated_at", null: false
     t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
+    t.index ["rating"], name: "index_users_on_rating"
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
     t.index ["unlock_token"], name: "index_users_on_unlock_token", unique: true
     t.index ["username"], name: "index_users_on_username", unique: true

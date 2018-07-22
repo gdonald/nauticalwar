@@ -13,16 +13,29 @@ class Api::InvitesController < Api::ApiController
   end
   
   def create
-    user = User.find_by(id: params[:p])
     rated = params[:r] == '1'
     five_shot = params[:m] == '0'
     time_limit = (params[:t] == '1' ? 3.days : 1.day).to_i
-    invite = Invite.create(user_1: current_api_user, user_2: user, rated: rated, five_shot: five_shot, time_limit: time_limit)
-    if invite.persisted?
-      invite.handle_bot(user) if user.bot
-      render json: invite
+
+    user = User.find_by(id: params[:p])
+    args = { user_1: current_api_user, user_2: user, rated: rated, five_shot: five_shot, time_limit: time_limit }
+    
+    if user.bot
+      args[:turn] = current_api_user
+      game = Game.create(args)
+      if game.persisted?
+        game.bot_layout
+        render json: game
+      else
+        render json: { errors: game.errors }
+      end
     else
-      render json: { errors: invite.errors }
+      invite = Invite.create(args)
+      if invite.persisted?
+        render json: invite
+      else
+        render json: { errors: invite.errors }
+      end
     end
   end
 

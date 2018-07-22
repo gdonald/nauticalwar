@@ -1,5 +1,5 @@
 class InviteSerializer < ActiveModel::Serializer
-  attributes :id, :user_id_1, :user_id_2, :created_at, :rated, :five_shot, :time_limit
+  attributes :id, :user_1_id, :user_2_id, :created_at, :rated, :five_shot, :time_limit, :game_id
 
   def rated
     object.rated ? '1' : '0'

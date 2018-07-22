@@ -9,6 +9,6 @@ class CreateLayouts < ActiveRecord::Migration[5.2]
       t.boolean :vertical, null: false
       t.timestamps
     end
-    add_index :layouts, %i[game_id user_id ship_id x y], unique: true
+    add_index :layouts, %i[user_id game_id x y], unique: true
   end
 end
