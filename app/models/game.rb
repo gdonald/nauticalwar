@@ -32,11 +32,8 @@ class Game < ApplicationRecord
   
   def is_hit?(user, c, r)
     layouts.each do |layout|
-      if layout.is_hit?(c, r)
-        return true
-      end
+      layout if layout.is_hit?(c, r)
     end
-    false
   end
 
   def bot_layout
@@ -44,6 +41,14 @@ class Game < ApplicationRecord
       Layout.set_location(game: self, user: user_2, ship: ship)
     end
     update_attributes(user_2_layed_out: true)
+  end
+
+  def opponent(user)
+    user == user_1 ? user_2 : user_1
+  end
+
+  def next_turn
+    
   end
 
 end

@@ -8,6 +8,7 @@ Rails.application.routes.draw do
       member do
         get :opponent
         post :cancel
+        post :attack
       end
       collection do
         get :count

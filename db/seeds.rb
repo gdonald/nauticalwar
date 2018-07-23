@@ -1,7 +1,7 @@
 
 include FactoryBot::Syntax::Methods
 
-%w[FredBot WilmaBot BarneyBot BettyBot].each do |username|
+%w[BarneyBot BettyBot WilmaBot FredBot].each do |username|
   pwd = User.generate_password(16)
   email = "#{username}@nauticalwar.com"
   user = create(:user, bot: true, username: username, email: email, password: pwd, password_confirmation: pwd)
