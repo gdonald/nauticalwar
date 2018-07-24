@@ -72,11 +72,11 @@ class Api::GamesController < Api::ApiController
         if game.winner.nil?
           if opponent.bot
             if game.five_shot
-              (0..bot.id).each do |x|
+              (0..opponent.id).each do |x|
                 move = game.attack_sinking_ship(opponent, current_api_user)
                 game.attack_random_ship(opponent, current_api_user) if move.nil?
               end
-              (0..(5 - bot.id)).each do |x|
+              (0..(5 - opponent.id)).each do |x|
                 game.attack_random_ship(opponent, current_api_user) if move.nil?
               end
             else

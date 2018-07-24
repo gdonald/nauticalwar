@@ -66,8 +66,10 @@ ActiveRecord::Schema.define(version: 9) do
     t.integer "x", null: false
     t.integer "y", null: false
     t.boolean "vertical", null: false
+    t.boolean "sunk", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["sunk"], name: "index_layouts_on_sunk"
     t.index ["user_id", "game_id", "x", "y"], name: "index_layouts_on_user_id_and_game_id_and_x_and_y", unique: true
   end
 

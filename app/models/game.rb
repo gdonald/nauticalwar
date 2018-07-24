@@ -32,8 +32,9 @@ class Game < ApplicationRecord
   
   def is_hit?(user, c, r)
     layouts.each do |layout|
-      layout if layout.is_hit?(c, r)
+      return layout if layout.is_hit?(c, r)
     end
+    nil
   end
 
   def bot_layout
@@ -48,7 +49,38 @@ class Game < ApplicationRecord
   end
 
   def next_turn
-    
+    turn = turn == user_1 ? user_2 : user_1
+    update_attributes(turn: turn)
+    layouts.unsunk.each do |layout|
+      layout.check_sunk
+    end
+    update_attributes(winner: user_2) if layouts.sunk_for_user(user_1).count == 5
+    update_attributes(winner: user_1) if layouts.sunk_for_user(user_2).count == 5
+    calculate_scores unless winner.nil?
   end
 
+  def calculate_scores
+    return unless rated
+    p1 = user_1.rating
+    p2 = user_2.rating
+    p1_p2 = p1 + p2
+    p1_r = p1.to_f / p1_p2
+    p2_r = p2.to_f / p1_p2
+    p1_p = (32 * p1_r).to_i
+    p2_p = (32 * p2_r).to_i
+    if winner == user_1
+      user_1.wins   += 1
+      user_2.losses += 1
+      user_1.rating += p2_p
+      user_2.rating -= p2_p
+    else
+      user_2.wins   += 1
+      user_1.losses += 1
+      user_2.rating += p1_p
+      user_1.rating -= p1_p
+    end
+    user_1.save!
+    user_2.save!
+  end
+  
 end

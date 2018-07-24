@@ -4,6 +4,8 @@ class Layout < ApplicationRecord
   belongs_to :game
   belongs_to :ship
 
+  has_many :moves
+  
   validates :user, presence: true
   validates :game, presence: true
   validates :ship, presence: true
@@ -13,8 +15,11 @@ class Layout < ApplicationRecord
   validates :user, uniqueness: { scope: %i[game x y], message: 'layout must be unique' }
 
   validates :vertical, inclusion: [true, false]
+  validates :sunk, inclusion: [true, false]
 
   scope :ordered, -> { order(id: :asc) }
+  scope :unsunk, -> { where(sunk: false) }
+  scope :sunk_for_user, ->(user) { where(sunk: true, user: user) }
   
   def is_hit?(c, r)
     if vertical && c == x
@@ -37,7 +42,7 @@ class Layout < ApplicationRecord
       r = 0 if r < 0
       r = 10 - args[:ship].size if r > 10 - args[:ship].size
       (r..(r + args[:ship].size)).each do |x|
-        if args[:game].is_hit?(args[:user], c, x)
+        unless args[:game].is_hit?(args[:user], c, x).nil?
           return Layout.set_location(args)
         end
       end
@@ -47,7 +52,7 @@ class Layout < ApplicationRecord
       c = 0 if c < 0
       c = 10 - args[:ship].size if c > 10 - args[:ship].size
       (c..(c + args[:ship].size)).each do |x|
-        if args[:game].is_hit?(args[:user], x, r)
+        unless args[:game].is_hit?(args[:user], x, r).nil?
           return Layout.set_location(args)
         end
       end
@@ -55,5 +60,8 @@ class Layout < ApplicationRecord
     layout = Layout.new(game: args[:game], user: args[:user], ship: args[:ship], vertical: vertical, x: c, y: r)
     layout.save!
   end
-  
+
+  def check_sunk
+    update_attributes(sunk: true) if moves.count >= ship.size
+  end
 end
