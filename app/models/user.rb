@@ -18,6 +18,10 @@ class User < ApplicationRecord
   #  games_1.or(games_2)
   # end
 
+  def to_s
+    username
+  end
+  
   def active_games
     games_1.where(del_user_1: false).or(games_2.where(del_user_2: false))
   end

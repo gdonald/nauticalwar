@@ -17,20 +17,17 @@ class Game < ApplicationRecord
   
   scope :ordered, -> { order(created_at: :asc) }
 
-  def hits(user)
-    moves.where(user: user).where.not(layout: nil).ordered
-  end
-
-  def misses(user)
-    moves.where(user: user).where(layout: nil).ordered
+  def moves_for_user(user)
+    moves.where(user: user).ordered
   end
 
   def last(user)
     limit = five_shot ? 5 : 1
-    moves.where(user: user).limit(limit).ordered
+    moves.where(user: user).limit(limit).ordered.first
   end
   
   def is_hit?(user, c, r)
+    reload
     layouts.each do |layout|
       return layout if layout.is_hit?(c, r)
     end
@@ -81,6 +78,69 @@ class Game < ApplicationRecord
     end
     user_1.save!
     user_2.save!
+  end
+
+  def attack_sinking_ship(user, opponent)
+    layout = get_sinking_ship(opponent)
+    if layout
+      if layout.moves.count == 1
+        move = attack_1(user, opponent, layout.moves.first)
+      else
+        move = attack_2(user, opponent, layout.moves)
+      end
+      return move
+    end
+    false
+  end
+
+  def get_sinking_ship(user)
+    layouts.unsunk_for_user(user).each do |layout|
+      if moves.for_layout(layout).count > 0
+        return layout
+      end
+    end
+    nil
+  end
+  
+  def attack_1(user, opponent, hit)
+    cols = []
+    rows = []
+
+    if hit.x - 1 >= 0
+      move = moves.for_user(user).for_xy(hit.x - 1, hit.y)
+      if move.nil?
+        cols << move.x - 1
+        rows << move.y
+      end
+    end
+    if hit.x + 1 <= 9
+      move = moves.for_user(user).for_xy(hit.x + 1, hit.y)
+      if move.nil?
+        cols << move.x + 1
+        rows << move.y
+      end
+    end
+    if hit.y - 1 >= 0
+      move = moves.for_user(user).for_xy(hit.x, hit.y - 1)
+      if move.nil?
+        cols << move.x
+        rows << move.y - 1
+      end
+    end
+    if hit.y + 1 <= 9
+      move = moves.for_user(user).for_xy(hit.x, hit.y + 1)
+      if move.nil?
+        cols << move.x
+        rows << move.y + 1
+      end
+    end
+    if cols.size > 0
+      r = rand(0, cols.size - 1)
+      layout = game.is_hit?(opponent, cs[r], rs[r])
+      move = moves.create(user: user, layout: layout, x: cols[r], y: rows[r])
+      return move if move.persisted?
+    end
+    false
   end
   
 end

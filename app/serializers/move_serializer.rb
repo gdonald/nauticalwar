@@ -1,4 +1,8 @@
 class MoveSerializer < ActiveModel::Serializer
-  attributes :id, :game_id, :user_id, :layout_id, :x, :y
+  attributes :x, :y, :hit
+
+  def hit
+    object.layout.nil? ? 'M' : 'H'
+  end
 
 end

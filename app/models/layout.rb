@@ -20,14 +20,15 @@ class Layout < ApplicationRecord
   scope :ordered, -> { order(id: :asc) }
   scope :unsunk, -> { where(sunk: false) }
   scope :sunk_for_user, ->(user) { where(sunk: true, user: user) }
+  scope :unsunk_for_user, ->(user) { where(sunk: false, user: user) }
   
   def is_hit?(c, r)
     if vertical && c == x
-      (y..(y + ship.size)).each do |i|
+      (y...(y + ship.size)).each do |i|
         return true if i == r
       end
     elsif !vertical && r == y
-      (x..(x + ship.size)).each do |i|
+      (x...(x + ship.size)).each do |i|
         return true if i == c
       end
     end
@@ -35,33 +36,26 @@ class Layout < ApplicationRecord
   end
   
   def self.set_location(args)
+    game, ship, user = args[:game], args[:ship], args[:user]
     vertical = [0, 1].sample.zero?
     if vertical
       c = (0..9).to_a.sample
-      r = (0..9).to_a.sample - args[:ship].size
-      r = 0 if r < 0
-      r = 10 - args[:ship].size if r > 10 - args[:ship].size
-      (r..(r + args[:ship].size)).each do |x|
-        unless args[:game].is_hit?(args[:user], c, x).nil?
-          return Layout.set_location(args)
-        end
+      r = (0..(10 - ship.size)).to_a.sample
+      (r...(r + ship.size)).each do |y|
+        return Layout.set_location(args) unless game.is_hit?(user, c, y).nil?
       end
     else
-      c = (0..9).to_a.sample - args[:ship].size
+      c = (0..(10 - ship.size)).to_a.sample
       r = (0..9).to_a.sample
-      c = 0 if c < 0
-      c = 10 - args[:ship].size if c > 10 - args[:ship].size
-      (c..(c + args[:ship].size)).each do |x|
-        unless args[:game].is_hit?(args[:user], x, r).nil?
-          return Layout.set_location(args)
-        end
+      (c...(c + ship.size)).each do |x|
+        return Layout.set_location(args) unless game.is_hit?(user, x, r).nil?
       end
     end
-    layout = Layout.new(game: args[:game], user: args[:user], ship: args[:ship], vertical: vertical, x: c, y: r)
-    layout.save!
+    Layout.create!(game: game, user: user, ship: ship, vertical: vertical, x: c, y: r)
   end
 
   def check_sunk
     update_attributes(sunk: true) if moves.count >= ship.size
   end
+
 end

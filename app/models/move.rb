@@ -10,5 +10,8 @@ class Move < ApplicationRecord
   validates :game, uniqueness: { scope: %i[user x y] }
 
   scope :ordered, -> { order(id: :asc) }
+  scope :for_layout, ->(layout) { where(layout: layout) }
+  scope :for_user, ->(user) { where(user: user) }
+  scope :for_xy, ->(x, y) { where(x: x, y: y) }
   
 end

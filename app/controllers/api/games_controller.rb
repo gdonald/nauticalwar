@@ -28,9 +28,7 @@ class Api::GamesController < Api::ApiController
       render json: {
                game: klass.new(game, {}).as_json,
                layouts: klass.new(game.layouts.where(user: current_api_user).ordered, {}).as_json,
-               hits: game.hits(game.user_2),
-               misses: game.misses(game.user_2),
-               last: game.last(game.user_2)
+               moves: klass.new(game.moves_for_user(game.user_2), {}).as_json
              }
     else
       render json: { error: 'game not found' }, status: :not_found
@@ -44,10 +42,8 @@ class Api::GamesController < Api::ApiController
       klass = ActiveModelSerializers::SerializableResource
       render json: {
                game: klass.new(game, {}).as_json,
-               layouts: klass.new(game.layouts.where(user: game.user_2).ordered, {}).as_json,
-               hits: game.hits(current_api_user),
-               misses: game.misses(current_api_user),
-               last: game.last(current_api_user)
+               layouts: klass.new(game.layouts.where(user: game.user_2, sunk: true).ordered, {}).as_json,
+               moves: klass.new(game.moves_for_user(current_api_user), {}).as_json
              }
     else
       render json: { error: 'game not found' }, status: :not_found
@@ -55,19 +51,21 @@ class Api::GamesController < Api::ApiController
   end
 
   def attack
+    status = -1
     game = current_api_user.games_1.find_by(id: params[:id])
     if game
       if game.winner.nil? && game.turn == current_api_user
         opponent = game.opponent(current_api_user)
         shots = JSON.parse(params[:s]).slice(0, game.five_shot ? 5 : 1)
         shots.each do |s|
-          move = game.moves.where(x: s['x'], y: s['y'])
+          move = game.moves.where(x: s['x'], y: s['y']).first
           if move.nil?
             layout = game.is_hit?(game.user_2, s['x'], s['y'])
-            Move.create(game: game, user: current_api_user, x: s['x'], y: s['y'], layout: layout)
+            Move.create!(game: game, user: current_api_user, x: s['x'], y: s['y'], layout: layout)
             layout.check_sunk if layout
           end
         end
+        status = 1
         game.next_turn
         if game.winner.nil?
           if opponent.bot
@@ -76,8 +74,8 @@ class Api::GamesController < Api::ApiController
                 move = game.attack_sinking_ship(opponent, current_api_user)
                 game.attack_random_ship(opponent, current_api_user) if move.nil?
               end
-              (0..(5 - opponent.id)).each do |x|
-                game.attack_random_ship(opponent, current_api_user) if move.nil?
+              ((5 - opponent.id)..0).each do |x|
+                game.attack_random_ship(opponent, current_api_user)
               end
             else
               move = game.attack_sinking_ship(opponent, current_api_user)
@@ -90,6 +88,7 @@ class Api::GamesController < Api::ApiController
           end
         end
       end
+      render json: { status: status }
     else
       render json: { error: 'game not found' }, status: :not_found
     end

@@ -5,4 +5,8 @@ class Ship < ApplicationRecord
 
   scope :ordered, -> { order(id: :asc) }
 
+  def to_s
+    "#{name}(#{size})"
+  end
+
 end
