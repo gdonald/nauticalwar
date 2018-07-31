@@ -18,7 +18,7 @@ class Game < ApplicationRecord
   scope :ordered, -> { order(created_at: :asc) }
 
   def moves_for_user(user)
-    moves.where(user: user).ordered
+    moves.where(user: user)
   end
 
   def last(user)
@@ -103,9 +103,7 @@ class Game < ApplicationRecord
   end
   
   def attack_1(user, opponent, hit)
-    cols = []
-    rows = []
-
+    cols, rows = [], []
     if hit.x - 1 >= 0
       move = moves.for_user(user).for_xy(hit.x - 1, hit.y)
       if move.nil?
@@ -142,5 +140,46 @@ class Game < ApplicationRecord
     end
     false
   end
-  
+
+  def attack_2(user, opponent, hits)
+    cols, rows = [], []
+    vertical = hits[0].x == hits[1].x
+    hit_cols = hits.collect { |h| h.x }
+    hit_rows = hits.collect { |h| h.y }
+    if vertical
+      min_hit_rows = hit_rows.min - 1
+      min_hit_rows = min_hit_rows < 0 ? 0 : min_hit_rows
+      max_hit_rows = hit_rows.max + 1
+      max_hit_rows = max_hit_rows > 9 ? 9 : max_hit_rows
+      (min_hit_rows..max_hit_rows).each do |r|
+        move = moves.for_user(user).where(x: hits[0].x, y: r).ordered.first
+        if move.nil?
+          cols << hits[0].x
+          rows << r
+        end
+      end
+    else
+      min_hit_cols = hit_cols.min - 1
+      min_hit_cols = min_hit_cols < 0 ? 0 : min_hit_cols
+      max_hit_cols = hit_cols.max + 1
+      max_hit_cols = max_hit_cols > 9 ? 9 : max_hit_cols
+      (min_hit_cols..max_hit_cols).each do |c|
+        move = moves.for_user(user).where(x: c, y: hits[0].y).ordered.first
+        if move.nil?
+          cols << c
+          rows << hits[0].y
+        end
+      end
+    end
+
+    return false if cols.empty?
+
+    r = (0..(cols.size - 1)).to_a.sample
+    layout = is_hit?(opponent, cols[r], rows[r])
+    move = moves.create(user: user, layout: layout, x: cols[r], y: rows[r])
+    return move if move.persisted?
+
+    false
+  end
+
 end

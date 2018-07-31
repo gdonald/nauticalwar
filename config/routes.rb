@@ -7,6 +7,7 @@ Rails.application.routes.draw do
     resources :games, only: %i[index show destroy] do
       member do
         get :opponent
+        get :my_turn
         post :cancel
         post :attack
       end

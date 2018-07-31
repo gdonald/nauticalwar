@@ -21,6 +21,12 @@ class Api::GamesController < Api::ApiController
   def cancel
   end
 
+  def my_turn
+    game = current_api_user.games_1.find_by(id: params[:id])
+    status = game && game.turn == current_api_user ? 1 : -1
+    render json: { status: status }
+  end
+  
   def show
     game = current_api_user.games_1.find_by(id: params[:id])
     if game
@@ -28,7 +34,7 @@ class Api::GamesController < Api::ApiController
       render json: {
                game: klass.new(game, {}).as_json,
                layouts: klass.new(game.layouts.where(user: current_api_user).ordered, {}).as_json,
-               moves: klass.new(game.moves_for_user(game.user_2), {}).as_json
+               moves: klass.new(game.moves_for_user(game.user_2).ordered, {}).as_json
              }
     else
       render json: { error: 'game not found' }, status: :not_found
@@ -43,7 +49,7 @@ class Api::GamesController < Api::ApiController
       render json: {
                game: klass.new(game, {}).as_json,
                layouts: klass.new(game.layouts.where(user: game.user_2, sunk: true).ordered, {}).as_json,
-               moves: klass.new(game.moves_for_user(current_api_user), {}).as_json
+               moves: klass.new(game.moves_for_user(current_api_user).ordered, {}).as_json
              }
     else
       render json: { error: 'game not found' }, status: :not_found
@@ -67,9 +73,11 @@ class Api::GamesController < Api::ApiController
         end
         status = 1
         game.next_turn
+        game.reload
         if game.winner.nil?
           if opponent.bot
             if game.five_shot
+              binding.pry
               (0..opponent.id).each do |x|
                 move = game.attack_sinking_ship(opponent, current_api_user)
                 game.attack_random_ship(opponent, current_api_user) if move.nil?
