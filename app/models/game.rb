@@ -28,7 +28,7 @@ class Game < ApplicationRecord
   
   def is_hit?(user, c, r)
     reload
-    layouts.each do |layout|
+    layouts.for_user(user).each do |layout|
       return layout if layout.is_hit?(c, r)
     end
     nil
@@ -93,6 +93,118 @@ class Game < ApplicationRecord
     false
   end
 
+  def get_random_move_lines(user)
+    cols = Array.new(10, 0)
+    rows = Array.new(10, 0)
+    10.times do |i|
+      cols[i] = moves.for_user(user).where(layout: nil, x: i).count
+      rows[i] = moves.for_user(user).where(layout: nil, y: i).count
+    end
+    min_cols, min_rows = [], []
+    10.times do |i|
+      min_cols << i if cols[i] == cols.min
+      min_rows << i if rows[i] == rows.min
+    end
+    x, y = min_cols.sample, min_rows.sample
+    move = moves.for_user(user).where(x: x, y: y).first
+    return get_totally_random_move(user) if move
+    [x, y]
+  end
+
+  def get_random_move_spacing(user)
+    mvs = moves.for_user(user)
+    grid = Array.new(10, Array.new(10, ''))
+    10.times do |x|
+      10.times do |y|
+        hit = ''
+        mvs.each do |m|
+          if m.x == x && m.y == y
+            hit = m.layout ? 'H' : 'M'
+            break
+          end
+        end
+        grid[x][y] = hit
+      end
+    end
+    possibles = []
+    
+    10.times do |x|
+      10.times do |y|
+        next if grid[x][y].size == 1
+        count = 0
+        ((x - 1)..(x + 1)).each do |c|
+          next if c < 0 || c > 9
+          ((y - 1)..(y + 1)).each do |r|
+            next if r < 0 || r > 9
+            next if x == c && y == r
+            if grid[c][r].size == 0
+              count += 1
+            end
+          end
+        end
+        if count > 0
+          possibles << [[x, y], count]
+        end
+      end
+    end
+
+    if possibles.any?
+      possibles.sort_by! { |p| p[1] }.reverse
+      high = possibles[0][1]
+      best = []
+      possibles.each do |p|
+        best << p if p[1] == high
+      end
+      return (best.sample)[0]
+    end
+
+    get_totally_random_move(user)    
+  end
+
+  def get_totally_random_move(user)
+    x = (0..9).to_a.sample
+    y = (0..9).to_a.sample
+    move = moves.for_user(user).where(x: x, y: y).first
+    return [x, y] unless move
+    get_totally_random_move(user)
+  end
+  
+  def attack_random_ship(user, opponent)
+    x, y = get_random_move_lines(user)
+    layout = is_hit?(opponent, x, y)
+
+    if layout.nil?
+      r = (1..100).to_a.sample
+      again = false
+      again = true if user.id == 1 && r < 96
+      again = true if user.id == 2 && r < 97
+      again = true if user.id == 3 && r < 98
+      again = true if user.id == 4 && r < 99
+
+      if again
+        x, y = get_random_move_spacing(user)
+        layout = is_hit?(opponent, x, y)
+        
+        if layout.nil?
+          r = (1..100).to_a.sample
+          again = false
+          again = true if user.id == 1 && r < 96
+          again = true if user.id == 2 && r < 97
+          again = true if user.id == 3 && r < 98
+          again = true if user.id == 4 && r < 99
+
+          if again
+            x, y = get_random_move_lines(user)
+            layout = is_hit?(opponent, x, y)
+          end
+        end
+      end
+    end
+
+    move = moves.create(user: user, layout: layout, x: x, y: y)
+    move.persisted?
+  end
+  
   def get_sinking_ship(user)
     layouts.unsunk_for_user(user).each do |layout|
       if moves.for_layout(layout).count > 0

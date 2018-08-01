@@ -73,16 +73,15 @@ class Api::GamesController < Api::ApiController
         end
         status = 1
         game.next_turn
-        game.reload
+        # game.reload
         if game.winner.nil?
           if opponent.bot
             if game.five_shot
-              binding.pry
-              (0..opponent.id).each do |x|
+              opponent.id.times do
                 move = game.attack_sinking_ship(opponent, current_api_user)
                 game.attack_random_ship(opponent, current_api_user) if move.nil?
               end
-              ((5 - opponent.id)..0).each do |x|
+              (5 - opponent.id).times do
                 game.attack_random_ship(opponent, current_api_user)
               end
             else

@@ -19,6 +19,7 @@ class Layout < ApplicationRecord
 
   scope :ordered, -> { order(id: :asc) }
   scope :unsunk, -> { where(sunk: false) }
+  scope :for_user, ->(user) { where(user: user) }
   scope :sunk_for_user, ->(user) { where(sunk: true, user: user) }
   scope :unsunk_for_user, ->(user) { where(sunk: false, user: user) }
   
