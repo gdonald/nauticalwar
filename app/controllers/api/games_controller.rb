@@ -64,7 +64,7 @@ class Api::GamesController < Api::ApiController
         opponent = game.opponent(current_api_user)
         shots = JSON.parse(params[:s]).slice(0, game.five_shot ? 5 : 1)
         shots.each do |s|
-          move = game.moves.where(x: s['x'], y: s['y']).first
+          move = game.moves.for_user(current_api_user).where(x: s['x'], y: s['y']).first
           if move.nil?
             layout = game.is_hit?(game.user_2, s['x'], s['y'])
             Move.create!(game: game, user: current_api_user, x: s['x'], y: s['y'], layout: layout)
@@ -73,7 +73,6 @@ class Api::GamesController < Api::ApiController
         end
         status = 1
         game.next_turn
-        # game.reload
         if game.winner.nil?
           if opponent.bot
             if game.five_shot
