@@ -76,11 +76,11 @@ class Api::GamesController < Api::ApiController
         if game.winner.nil?
           if opponent.bot
             if game.five_shot
-              opponent.id.times do
+              opponent.strength.times do
                 move = game.attack_sinking_ship(opponent, current_api_user)
                 game.attack_random_ship(opponent, current_api_user) if move.nil?
               end
-              (5 - opponent.id).times do
+              (5 - opponent.strength).times do
                 game.attack_random_ship(opponent, current_api_user)
               end
             else

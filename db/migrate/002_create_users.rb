@@ -33,8 +33,11 @@ class CreateUsers < ActiveRecord::Migration[5.2]
       t.string   :unlock_token # Only if unlock strategy is :email or :both
       t.datetime :locked_at
 
+      # Bot
       t.boolean :bot,      null: false, default: false
-      
+      t.integer :strength, null: false, default: 0
+
+      # Ratings
       t.integer :wins,     null: false, default: 0
       t.integer :losses,   null: false, default: 0
       t.integer :activity, null: false, default: 0

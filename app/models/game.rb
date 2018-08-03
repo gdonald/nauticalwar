@@ -8,7 +8,6 @@ class Game < ApplicationRecord
   has_many :layouts
   has_many :moves
 
-  validates :user_2, uniqueness: { scope: :user_1_id }
   validates :rated, presence: true
   validates :five_shot, presence: true
   validates :time_limit, presence: true
@@ -90,7 +89,7 @@ class Game < ApplicationRecord
       end
       return move
     end
-    false
+    nil
   end
 
   def get_random_move_lines(user)
@@ -168,40 +167,31 @@ class Game < ApplicationRecord
     return [x, y] unless move
     get_totally_random_move(user)
   end
-  
+
+  def again?(user)
+    r = (1..100).to_a.sample
+    return true if user.id == 1 && r < 96
+    return true if user.id == 2 && r < 97
+    return true if user.id == 3 && r < 98
+    return true if user.id == 4 && r < 99
+    false
+  end
+
   def attack_random_ship(user, opponent)
     x, y = get_random_move_lines(user)
     layout = is_hit?(opponent, x, y)
-
-    if layout.nil?
-      r = (1..100).to_a.sample
-      again = false
-      again = true if user.id == 1 && r < 96
-      again = true if user.id == 2 && r < 97
-      again = true if user.id == 3 && r < 98
-      again = true if user.id == 4 && r < 99
-
-      if again
-        x, y = get_random_move_spacing(user)
-        layout = is_hit?(opponent, x, y)
+    
+    if layout.nil? && again?(user)
+      x, y = get_random_move_spacing(user)
+      layout = is_hit?(opponent, x, y)
         
-        if layout.nil?
-          r = (1..100).to_a.sample
-          again = false
-          again = true if user.id == 1 && r < 96
-          again = true if user.id == 2 && r < 97
-          again = true if user.id == 3 && r < 98
-          again = true if user.id == 4 && r < 99
-
-          if again
-            x, y = get_random_move_lines(user)
-            layout = is_hit?(opponent, x, y)
-          end
-        end
+      if layout.nil? && again?(user)
+        x, y = get_random_move_lines(user)
+        layout = is_hit?(opponent, x, y)
       end
     end
 
-    move = moves.create(user: user, layout: layout, x: x, y: y)
+    move = moves.create!(user: user, layout: layout, x: x, y: y)
     move.persisted?
   end
   

@@ -14,6 +14,7 @@ class CreateGames < ActiveRecord::Migration[5.2]
       t.boolean :del_user_2, null: false, default: false
       t.timestamps
     end
-    add_index :games, %i[user_1_id user_2_id], unique: true
+    add_index :games, :user_1_id
+    add_index :games, :user_2_id
   end
 end

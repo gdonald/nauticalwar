@@ -45,7 +45,8 @@ ActiveRecord::Schema.define(version: 9) do
     t.boolean "del_user_2", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["user_1_id", "user_2_id"], name: "index_games_on_user_1_id_and_user_2_id", unique: true
+    t.index ["user_1_id"], name: "index_games_on_user_1_id"
+    t.index ["user_2_id"], name: "index_games_on_user_2_id"
   end
 
   create_table "invites", force: :cascade do |t|
@@ -120,6 +121,7 @@ ActiveRecord::Schema.define(version: 9) do
     t.string "unlock_token"
     t.datetime "locked_at"
     t.boolean "bot", default: false, null: false
+    t.integer "strength", default: 0, null: false
     t.integer "wins", default: 0, null: false
     t.integer "losses", default: 0, null: false
     t.integer "activity", default: 0, null: false

@@ -11,6 +11,9 @@ class Api::LayoutsController < Api::ApiController
         if ship
           vertical = s['vertical'] == '1'
           Layout.create!(user: current_api_user, game: game, ship: ship, x: s['x'], y: s['y'], vertical: vertical)
+        else
+          render json: { errors: 'ship not found' }
+          return
         end
       end
       game.update_attributes(user_1_layed_out: true)
