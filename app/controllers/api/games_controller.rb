@@ -57,6 +57,7 @@ class Api::GamesController < Api::ApiController
   end
 
   def attack
+    log('Game::attack()')
     status = -1
     game = current_api_user.games_1.find_by(id: params[:id])
     if game
@@ -76,11 +77,17 @@ class Api::GamesController < Api::ApiController
         if game.winner.nil?
           if opponent.bot
             if game.five_shot
+              count = 0
               opponent.strength.times do
+                count += 1
+                log("  count: #{count}")
                 move = game.attack_sinking_ship(opponent, current_api_user)
+                log("  move: #{move}")
                 game.attack_random_ship(opponent, current_api_user) if move.nil?
               end
               (5 - opponent.strength).times do
+                count += 1
+                log("  count: #{count}")                
                 game.attack_random_ship(opponent, current_api_user)
               end
             else

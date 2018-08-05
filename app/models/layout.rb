@@ -22,6 +22,10 @@ class Layout < ApplicationRecord
   scope :for_user, ->(user) { where(user: user) }
   scope :sunk_for_user, ->(user) { where(sunk: true, user: user) }
   scope :unsunk_for_user, ->(user) { where(sunk: false, user: user) }
+
+  def to_s
+    "Layout(user: #{user} ship: #{ship} x: #{x} y: #{y} vertical: #{vertical})"
+  end
   
   def is_hit?(c, r)
     if vertical && c == x

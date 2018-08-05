@@ -13,5 +13,9 @@ class Move < ApplicationRecord
   scope :for_layout, ->(layout) { where(layout: layout) }
   scope :for_user, ->(user) { where(user: user) }
   scope :for_xy, ->(x, y) { where(x: x, y: y) }
+
+  def to_s
+    "Move(user: #{user} layout: #{layout} x: #{x} y: #{y})"
+  end
   
 end

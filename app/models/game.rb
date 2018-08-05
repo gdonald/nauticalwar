@@ -2,7 +2,7 @@ class Game < ApplicationRecord
 
   belongs_to :user_1, class_name: 'User', foreign_key: 'user_1_id'
   belongs_to :user_2, class_name: 'User', foreign_key: 'user_2_id'
-  belongs_to :turn, class_name: 'User', foreign_key: 'turn_id'
+  belongs_to :turn,   class_name: 'User', foreign_key: 'turn_id'
   belongs_to :winner, class_name: 'User', foreign_key: 'winner_id', optional: true
 
   has_many :layouts
@@ -80,6 +80,7 @@ class Game < ApplicationRecord
   end
 
   def attack_sinking_ship(user, opponent)
+    log('attack_sinking_ship()')
     layout = get_sinking_ship(opponent)
     if layout
       if layout.moves.count == 1
@@ -87,12 +88,15 @@ class Game < ApplicationRecord
       else
         move = attack_2(user, opponent, layout.moves)
       end
+      log("  returning move: #{move}")
       return move
     end
+    log('  returning nil')
     nil
   end
 
   def get_random_move_lines(user)
+    log('get_random_move_lines()')
     cols = Array.new(10, 0)
     rows = Array.new(10, 0)
     10.times do |i|
@@ -106,11 +110,14 @@ class Game < ApplicationRecord
     end
     x, y = min_cols.sample, min_rows.sample
     move = moves.for_user(user).where(x: x, y: y).first
+    log("  move: #{move}")
     return get_totally_random_move(user) if move
+    log("  returning with x: #{x}, y: #{y}")
     [x, y]
   end
 
   def get_random_move_spacing(user)
+    log('get_random_move_spacing()')
     mvs = moves.for_user(user)
     grid = Array.new(10, Array.new(10, ''))
     10.times do |x|
@@ -126,7 +133,6 @@ class Game < ApplicationRecord
       end
     end
     possibles = []
-    
     10.times do |x|
       10.times do |y|
         next if grid[x][y].size == 1
@@ -146,7 +152,6 @@ class Game < ApplicationRecord
         end
       end
     end
-
     if possibles.any?
       possibles.sort_by! { |p| p[1] }.reverse
       high = possibles[0][1]
@@ -154,16 +159,19 @@ class Game < ApplicationRecord
       possibles.each do |p|
         best << p if p[1] == high
       end
+      log("  returning with best sample: #{(best.sample)[0]}")
       return (best.sample)[0]
     end
-
     get_totally_random_move(user)    
   end
 
   def get_totally_random_move(user)
+    log('get_totally_random_move()')
     x = (0..9).to_a.sample
     y = (0..9).to_a.sample
     move = moves.for_user(user).where(x: x, y: y).first
+    log("  move: #{move}")
+    log("  x: #{x}, y: #{y}")
     return [x, y] unless move
     get_totally_random_move(user)
   end
@@ -178,6 +186,8 @@ class Game < ApplicationRecord
   end
 
   def attack_random_ship(user, opponent)
+    log('attack_random_ship()')
+
     x, y = get_random_move_lines(user)
     layout = is_hit?(opponent, x, y)
     
@@ -192,6 +202,7 @@ class Game < ApplicationRecord
     end
 
     move = moves.create!(user: user, layout: layout, x: x, y: y)
+    log("  move create!: #{move}")
     move.persisted?
   end
   
@@ -205,45 +216,65 @@ class Game < ApplicationRecord
   end
   
   def attack_1(user, opponent, hit)
+    log('attack_1()')
+    log("hit: #{hit}")
     cols, rows = [], []
+
+    # left of hit
     if hit.x - 1 >= 0
-      move = moves.for_user(user).for_xy(hit.x - 1, hit.y)
+      move = moves.for_user(user).for_xy(hit.x - 1, hit.y).first
+      log("left: #{move}")
       if move.nil?
-        cols << move.x - 1
-        rows << move.y
+        cols << hit.x - 1
+        rows << hit.y
       end
     end
+    # right of hit
     if hit.x + 1 <= 9
-      move = moves.for_user(user).for_xy(hit.x + 1, hit.y)
+      move = moves.for_user(user).for_xy(hit.x + 1, hit.y).first
+      log("right: #{move}")
       if move.nil?
-        cols << move.x + 1
-        rows << move.y
+        cols << hit.x + 1
+        rows << hit.y
       end
     end
+    # above hit
     if hit.y - 1 >= 0
-      move = moves.for_user(user).for_xy(hit.x, hit.y - 1)
+      move = moves.for_user(user).for_xy(hit.x, hit.y - 1).first
+      log("above: #{move}")
       if move.nil?
-        cols << move.x
-        rows << move.y - 1
+        cols << hit.x
+        rows << hit.y - 1
       end
     end
+    # below hit
     if hit.y + 1 <= 9
-      move = moves.for_user(user).for_xy(hit.x, hit.y + 1)
+      move = moves.for_user(user).for_xy(hit.x, hit.y + 1).first
+      log("below: #{move}")
       if move.nil?
-        cols << move.x
-        rows << move.y + 1
+        cols << hit.x
+        rows << hit.y + 1
       end
     end
+
+    log("cols: #{cols}")
+    log("rows: #{rows}")
+
     if cols.size > 0
-      r = rand(0, cols.size - 1)
-      layout = game.is_hit?(opponent, cs[r], rs[r])
-      move = moves.create(user: user, layout: layout, x: cols[r], y: rows[r])
-      return move if move.persisted?
+      r = (0..(cols.size - 1)).to_a.sample
+      log("r: #{r}")
+      layout = is_hit?(opponent, cols[r], rows[r])
+      move = moves.create!(user: user, layout: layout, x: cols[r], y: rows[r])
+      log("  move: #{move}")
+      log("  move.persisted?: #{move.persisted?}")
+      return true if move.persisted?
     end
+    log("  returning false")
     false
   end
 
   def attack_2(user, opponent, hits)
+    log('attack_2()')
     cols, rows = [], []
     vertical = hits[0].x == hits[1].x
     hit_cols = hits.collect { |h| h.x }
@@ -274,13 +305,17 @@ class Game < ApplicationRecord
       end
     end
 
+    log("  cols: #{cols}")              
     return false if cols.empty?
 
     r = (0..(cols.size - 1)).to_a.sample
     layout = is_hit?(opponent, cols[r], rows[r])
     move = moves.create(user: user, layout: layout, x: cols[r], y: rows[r])
+    log("  move: #{move}")
+
     return move if move.persisted?
 
+    log('  returning false')
     false
   end
 

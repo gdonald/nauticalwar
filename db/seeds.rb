@@ -6,7 +6,7 @@ x = 0
   x += 1
   pwd = User.generate_password(16)
   email = "#{username}@nauticalwar.com"
-  user = create(:user, bot: true, strength: x, username: username, email: email, password: pwd, password_confirmation: pwd)
+  user = create(:user, bot: true, strength: x, username: username, email: email, password: pwd, password_confirmation: pwd, confirmed_at: Time.current)
 end
 
 create(:ship, name: 'Carrier',     size: 5)

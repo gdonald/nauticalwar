@@ -13,6 +13,10 @@ class User < ApplicationRecord
 
   has_many :invites_1, foreign_key: :user_1_id, class_name: 'Invite'
   has_many :invites_2, foreign_key: :user_2_id, class_name: 'Invite'
+
+  has_many :friends, foreign_key: :user_1_id, class_name: 'User'
+  
+  scope :active, -> { where.not(confirmed_at: nil).where(locked_at: nil) }
   
   # def games
   #  games_1.or(games_2)
