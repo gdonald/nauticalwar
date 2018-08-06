@@ -22,7 +22,7 @@ class Api::InvitesController < Api::ApiController
     
     if user.bot
       args[:turn] = current_api_user
-      game = Game.create(args)
+      game = Game.create!(args)
       if game.persisted?
         game.bot_layout
         render json: game

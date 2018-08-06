@@ -16,6 +16,24 @@ class Api::GamesController < Api::ApiController
   end
 
   def destroy
+    status = -1
+    game = Game.find_by(id: params[:id])
+    if game && game.winner.nil?
+      status = game.id
+      if game.user_1 == current_api_user
+        if game.user_2.bot
+          game.destroy()
+        else
+          game.update_attributes(del_user_1: true)
+        end
+      elsif game.user_2 == current_api_user
+        game.update_attributes(del_user_2: true)
+      end
+      if game.del_user_1 && game.del_user_2
+        game.destroy
+      end
+    end
+    render json: { status: status }
   end
 
   def cancel

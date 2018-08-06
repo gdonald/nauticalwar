@@ -8,9 +8,10 @@ class Game < ApplicationRecord
   has_many :layouts
   has_many :moves
 
-  validates :rated, presence: true
-  validates :five_shot, presence: true
   validates :time_limit, presence: true
+
+  validates :rated,      inclusion: [true, false]
+  validates :five_shot,  inclusion: [true, false]
   validates :del_user_1, inclusion: [true, false]
   validates :del_user_2, inclusion: [true, false]
   
@@ -201,9 +202,14 @@ class Game < ApplicationRecord
       end
     end
 
+    move = moves.for_user(user).for_xy(x, y).first
+    log("  move exists?: #{move}")
+    x, y = get_totally_random_move(user) if move
+    log("x: #{x} y: #{y}")
+    
     move = moves.create!(user: user, layout: layout, x: x, y: y)
     log("  move create!: #{move}")
-    move.persisted?
+    move.persisted?      
   end
   
   def get_sinking_ship(user)
@@ -310,7 +316,7 @@ class Game < ApplicationRecord
 
     r = (0..(cols.size - 1)).to_a.sample
     layout = is_hit?(opponent, cols[r], rows[r])
-    move = moves.create(user: user, layout: layout, x: cols[r], y: rows[r])
+    move = moves.create!(user: user, layout: layout, x: cols[r], y: rows[r])
     log("  move: #{move}")
 
     return move if move.persisted?
