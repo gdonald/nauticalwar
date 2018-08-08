@@ -14,18 +14,30 @@ class Game < ApplicationRecord
   validates :five_shot,  inclusion: [true, false]
   validates :del_user_1, inclusion: [true, false]
   validates :del_user_2, inclusion: [true, false]
+
+  validates :user_1_layed_out, inclusion: [true, false]
+  validates :user_2_layed_out, inclusion: [true, false]
   
   scope :ordered, -> { order(created_at: :asc) }
 
+  def self.find_game(user, id)
+    game = find_by(id: id)
+    game && [game.user_1, game.user_2].include?(user) ? game : nil
+  end
+
+  def t_limit
+    (updated_at + time_limit.seconds - Time.current).seconds.to_i
+  end
+  
   def moves_for_user(user)
     moves.where(user: user)
   end
 
-  def last(user)
-    limit = five_shot ? 5 : 1
-    moves.where(user: user).limit(limit).ordered.first
-  end
-  
+#  def last(user)
+#    limit = five_shot ? 5 : 1
+#    moves.where(user: user).limit(limit).ordered.first
+#  end
+ 
   def is_hit?(user, c, r)
     reload
     layouts.for_user(user).each do |layout|
@@ -54,10 +66,28 @@ class Game < ApplicationRecord
     update_attributes(winner: user_2) if layouts.sunk_for_user(user_1).count == 5
     update_attributes(winner: user_1) if layouts.sunk_for_user(user_2).count == 5
     calculate_scores unless winner.nil?
+    touch
   end
 
+  def calculate_scores_cancel
+    return unless rated && winner
+    if winner == user_1
+      user_1.wins   += 1
+      user_2.losses += 1
+      user_1.rating += 1
+      user_2.rating -= 1
+    elsif winner == user_2
+      user_2.wins   += 1
+      user_1.losses += 1
+      user_2.rating += 1
+      user_1.rating -= 1
+    end
+    user_1.save!
+    user_2.save!
+  end
+  
   def calculate_scores
-    return unless rated
+    return unless rated && winner
     p1 = user_1.rating
     p2 = user_2.rating
     p1_p2 = p1 + p2
@@ -70,7 +100,7 @@ class Game < ApplicationRecord
       user_2.losses += 1
       user_1.rating += p2_p
       user_2.rating -= p2_p
-    else
+    elsif winner == user_2
       user_2.wins   += 1
       user_1.losses += 1
       user_2.rating += p1_p

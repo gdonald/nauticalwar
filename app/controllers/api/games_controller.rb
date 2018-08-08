@@ -17,8 +17,8 @@ class Api::GamesController < Api::ApiController
 
   def destroy
     status = -1
-    game = Game.find_by(id: params[:id])
-    if game && game.winner.nil?
+    game = Game.find_game(current_api_user, params[:id])
+    if game && game.winner
       status = game.id
       if game.user_1 == current_api_user
         if game.user_2.bot
@@ -37,16 +37,52 @@ class Api::GamesController < Api::ApiController
   end
 
   def cancel
+    status = -1
+    game = Game.find_game(current_api_user, params[:id])
+    if game
+      if game.t_limit < 0
+        # opponent won't layout
+        if current_api_user == game.user_1 && game.user_1_layed_out && !game.user_2_layed_out
+          game.update_attributes(winner: game.user_1)
+        elsif current_api_user == game.user_2 && game.user_2_layed_out && !game.user_1_layed_out
+          game.update_attributes(winner: game.user_2)
+
+        # opponent won't play
+        elsif current_api_user != game.turn
+          if current_api_user == game.user_1
+            game.update_attributes(winner: game.user_1)
+          else
+            game.update_attributes(winner: game.user_2)
+          end
+
+        # i'm giving up
+        elsif current_api_user == game.turn
+          if current_api_user == game.user_1
+            game.update_attributes(winner: game.user_2)
+          else
+            game.update_attributes(winner: game.user_1)
+          end
+        end
+      else
+        if current_api_user == game.user_1
+          game.update_attributes(winner: game.user_2)
+        else
+          game.update_attributes(winner: game.user_1)
+        end
+      end
+      game.calculate_scores_cancel
+    end
+    render json: game
   end
 
   def my_turn
-    game = current_api_user.games_1.find_by(id: params[:id])
+    game = Game.find_game(current_api_user, params[:id])
     status = game && game.turn == current_api_user ? 1 : -1
     render json: { status: status }
   end
   
   def show
-    game = current_api_user.games_1.find_by(id: params[:id])
+    game = Game.find_game(current_api_user, params[:id])
     if game
       klass = ActiveModelSerializers::SerializableResource
       render json: {
@@ -56,12 +92,11 @@ class Api::GamesController < Api::ApiController
              }
     else
       render json: { error: 'game not found' }, status: :not_found
-
     end
   end
   
   def opponent
-    game = current_api_user.games_1.find_by(id: params[:id])
+    game = Game.find_game(current_api_user, params[:id])
     if game
       klass = ActiveModelSerializers::SerializableResource
       render json: {
@@ -77,7 +112,7 @@ class Api::GamesController < Api::ApiController
   def attack
     log('Game::attack()')
     status = -1
-    game = current_api_user.games_1.find_by(id: params[:id])
+    game = Game.find_game(current_api_user, params[:id])
     if game
       if game.winner.nil? && game.turn == current_api_user
         opponent = game.opponent(current_api_user)

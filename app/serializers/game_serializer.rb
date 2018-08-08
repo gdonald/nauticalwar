@@ -1,6 +1,10 @@
 class GameSerializer < ActiveModel::Serializer
-  attributes :id, :user_1_id, :user_2_id, :user_1_username, :user_2_username, :turn_id, :winner_id, :updated_at, :user_1_layed_out, :user_2_layed_out, :rated, :five_shot, :time_limit
+  attributes :id, :user_1_id, :user_2_id, :user_1_username, :user_2_username, :turn_id, :winner_id, :updated_at, :user_1_layed_out, :user_2_layed_out, :rated, :five_shot, :t_limit
 
+  def t_limit
+    object.t_limit
+  end
+  
   def user_1_username
     object.user_1.username
   end
