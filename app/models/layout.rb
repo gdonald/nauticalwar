@@ -16,7 +16,7 @@ class Layout < ApplicationRecord
 
   validates :vertical, inclusion: [true, false]
   validates :sunk, inclusion: [true, false]
-
+  
   scope :ordered, -> { order(id: :asc) }
   scope :unsunk, -> { where(sunk: false) }
   scope :for_user, ->(user) { where(user: user) }

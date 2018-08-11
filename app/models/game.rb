@@ -236,7 +236,8 @@ class Game < ApplicationRecord
     log("  move exists?: #{move}")
     x, y = get_totally_random_move(user) if move
     log("x: #{x} y: #{y}")
-    
+
+    layout = is_hit?(opponent, x, y)
     move = moves.create!(user: user, layout: layout, x: x, y: y)
     log("  move create!: #{move}")
     move.persisted?      

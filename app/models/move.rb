@@ -9,6 +9,8 @@ class Move < ApplicationRecord
 
   validates :game, uniqueness: { scope: %i[user x y] }
 
+  validate :layout_hits_max
+  
   scope :ordered, -> { order(id: :desc) }
   scope :for_layout, ->(layout) { where(layout: layout) }
   scope :for_user, ->(user) { where(user: user) }
@@ -16,6 +18,12 @@ class Move < ApplicationRecord
 
   def to_s
     "Move(user: #{user} layout: #{layout} x: #{x} y: #{y})"
+  end
+
+  def layout_hits_max
+    if layout && layout.moves.count == layout.ship.size
+      errors.add(:layout, 'ship already sunk')
+    end
   end
   
 end
