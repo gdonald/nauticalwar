@@ -17,17 +17,13 @@ class User < ApplicationRecord
   has_many :friends, foreign_key: :user_1_id, class_name: 'Friend'
   
   scope :active, -> { where.not(confirmed_at: nil).where(locked_at: nil) }
-  
-  # def games
-  #  games_1.or(games_2)
-  # end
 
   def to_s
     username
   end
   
   def active_games
-    games_1.where(del_user_1: false).or(games_2.where(del_user_2: false))
+    games_1.includes([:user_1, :user_2]).where(del_user_1: false).or(games_2.includes([:user_1, :user_2]).where(del_user_2: false))
   end
   
   def invites
