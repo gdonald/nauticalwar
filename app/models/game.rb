@@ -58,8 +58,8 @@ class Game < ApplicationRecord
   end
 
   def next_turn
-    turn = turn == user_1 ? user_2 : user_1
-    update_attributes(turn: turn)
+    new_turn = turn == user_1 ? user_2 : user_1
+    update_attributes(turn: new_turn)
     layouts.unsunk.each do |layout|
       layout.check_sunk
     end

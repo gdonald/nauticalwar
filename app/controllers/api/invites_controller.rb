@@ -43,10 +43,10 @@ class Api::InvitesController < Api::ApiController
     invite = current_api_user.invites_2.find_by(id: params[:id])
     if invite
       game = invite.create_game
-      id = invite.id
+      invite_id = invite.id
       invite.destroy
       klass = ActiveModelSerializers::SerializableResource
-      render json: { id: id,
+      render json: { invite_id: invite_id,
                      game: klass.new(game, {}).as_json,
                      user: klass.new(game.user_1, {}).as_json }
     else

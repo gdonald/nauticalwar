@@ -10,6 +10,7 @@ Rails.application.routes.draw do
         get :my_turn
         post :cancel
         post :attack
+        post :skip
       end
       collection do
         get :count

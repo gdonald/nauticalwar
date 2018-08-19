@@ -1,6 +1,6 @@
 class Api::GamesController < Api::ApiController
 
-  skip_before_action :verify_authenticity_token, only: %i[destroy cancel attack]
+  skip_before_action :verify_authenticity_token, only: %i[destroy cancel attack skip]
   
   respond_to :json
   
@@ -15,6 +15,16 @@ class Api::GamesController < Api::ApiController
   def next
   end
 
+  def skip
+    status = -1
+    game = Game.find_game(current_api_user, params[:id])
+    if game && game.winner.nil? && game.turn != current_api_user && game.t_limit <= 0
+      game.next_turn
+      status = 1
+    end
+    render json: { status: status }
+  end
+  
   def destroy
     status = -1
     game = Game.find_game(current_api_user, params[:id])
@@ -85,10 +95,12 @@ class Api::GamesController < Api::ApiController
     game = Game.find_game(current_api_user, params[:id])
     if game
       klass = ActiveModelSerializers::SerializableResource
+      moves_user = current_api_user == game.user_1 ? game.user_2 : game.user_1
+      layouts_user = current_api_user == game.user_1 ? game.user_1 : game.user_2
       render json: {
                game: klass.new(game, {}).as_json,
-               layouts: klass.new(game.layouts.where(user: current_api_user).ordered, {}).as_json,
-               moves: klass.new(game.moves_for_user(game.user_2).ordered, {}).as_json
+               layouts: klass.new(game.layouts.where(user: layouts_user).ordered, {}).as_json,
+               moves: klass.new(game.moves_for_user(moves_user).ordered, {}).as_json
              }
     else
       render json: { error: 'game not found' }, status: :not_found
@@ -99,10 +111,12 @@ class Api::GamesController < Api::ApiController
     game = Game.find_game(current_api_user, params[:id])
     if game
       klass = ActiveModelSerializers::SerializableResource
+      moves_user = current_api_user == game.user_1 ? game.user_1 : game.user_2
+      layouts_user = current_api_user == game.user_1 ? game.user_2 : game.user_1
       render json: {
                game: klass.new(game, {}).as_json,
-               layouts: klass.new(game.layouts.where(user: game.user_2, sunk: true).ordered, {}).as_json,
-               moves: klass.new(game.moves_for_user(current_api_user).ordered, {}).as_json
+               layouts: klass.new(game.layouts.where(user: layouts_user, sunk: true).ordered, {}).as_json,
+               moves: klass.new(game.moves_for_user(moves_user).ordered, {}).as_json
              }
     else
       render json: { error: 'game not found' }, status: :not_found
@@ -120,7 +134,8 @@ class Api::GamesController < Api::ApiController
         shots.each do |s|
           move = game.moves.for_user(current_api_user).where(x: s['x'], y: s['y']).first
           if move.nil?
-            layout = game.is_hit?(game.user_2, s['x'], s['y'])
+            layout_user = game.user_1 == current_api_user ? game.user_2 : game.user_1
+            layout = game.is_hit?(layout_user, s['x'], s['y'])
             Move.create!(game: game, user: current_api_user, x: s['x'], y: s['y'], layout: layout)
             layout.check_sunk if layout
           end
