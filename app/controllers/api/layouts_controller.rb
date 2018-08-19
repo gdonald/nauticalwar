@@ -3,7 +3,7 @@ class Api::LayoutsController < Api::ApiController
   skip_before_action :verify_authenticity_token, only: [:create]
   
   def create
-    game = current_api_user.games_1.find_by(id: params[:game_id])
+    game = current_api_user.active_games.where(id: params[:game_id]).first
     if game
       ships = JSON.parse(params[:layout])['ships']
       ships.each do |s|
@@ -16,7 +16,8 @@ class Api::LayoutsController < Api::ApiController
           return
         end
       end
-      game.update_attributes(user_1_layed_out: true)
+      user = current_api_user == game.user_1 ? 1 : 2
+      game.update_attributes("user_#{user}_layed_out": true)
       render json: game
     else
       render json: { errors: 'game not found' }

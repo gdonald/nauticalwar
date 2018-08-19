@@ -1,6 +1,6 @@
 class Api::InvitesController < Api::ApiController
 
-  skip_before_action :verify_authenticity_token, only: %i[create cancel]
+  skip_before_action :verify_authenticity_token, only: %i[create cancel accept cancel]
   
   respond_to :json
   
@@ -40,16 +40,36 @@ class Api::InvitesController < Api::ApiController
   end
 
   def accept
+    invite = current_api_user.invites_2.find_by(id: params[:id])
+    if invite
+      game = invite.create_game
+      id = invite.id
+      invite.destroy
+      klass = ActiveModelSerializers::SerializableResource
+      render json: { id: id,
+                     game: klass.new(game, {}).as_json,
+                     user: klass.new(game.user_1, {}).as_json }
+    else
+      render json: { error: 'Invite not found' }, status: :not_found
+    end
   end
 
   def decline
+    invite = current_api_user.invites_2.find_by(id: params[:id])
+    if invite
+      id = invite.id
+      invite.destroy
+      render json: { id: id }, status: :ok
+    else 
+      render json: { error: 'Invite not found' }, status: :not_found     
+    end
   end
 
   def cancel
-    @invite = current_api_user.invites_1.find_by(id: params[:id])
-    if @invite
-      id = @invite.id
-      @invite.destroy
+    invite = current_api_user.invites_1.find_by(id: params[:id])
+    if invite
+      id = invite.id
+      invite.destroy
       render json: { id: id }, status: :ok
     else 
       render json: { error: 'Invite not found' }, status: :not_found     

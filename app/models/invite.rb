@@ -21,4 +21,9 @@ class Invite < ApplicationRecord
     errors.add(:user_2, 'Cannot invite self') if user_1 == user_2
   end
 
+  def create_game
+    user_2.update_attributes(activity: user_2.activity + 1)
+    attrs = attributes.except('id', 'created_at', 'updated_at').merge('turn' => user_1)
+    Game.create!(attrs)
+  end
 end
