@@ -1,0 +1,129 @@
+!!!
+%html{:lang => "en"}
+  %head
+    %meta{:charset => "utf-8"}/
+    %meta{:content => "width=device-width, initial-scale=1, shrink-to-fit=no", :name => "viewport"}/
+    %meta{:content => "", :name => "description"}/
+    %meta{:content => "", :name => "author"}/
+    %title New Age - Start Bootstrap Theme
+
+    = stylesheet_link_tag    'application', media: 'all'
+    = javascript_include_tag 'application'
+
+    %link{:href => "https://fonts.googleapis.com/css?family=Lato", :rel => "stylesheet"}/
+    %link{:href => "https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900", :rel => "stylesheet"}/
+    %link{:href => "https://fonts.googleapis.com/css?family=Muli", :rel => "stylesheet"}/
+  %body#page-top
+    %nav#mainNav.navbar.navbar-expand-lg.navbar-light.fixed-top
+      .container
+        %a.navbar-brand.js-scroll-trigger{:href => "#page-top"} Nautical War
+        %button.navbar-toggler.navbar-toggler-right{"aria-controls" => "navbarResponsive", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-target" => "#navbarResponsive", "data-toggle" => "collapse", :type => "button"}
+          Menu
+          %i.fa.fa-bars
+        #navbarResponsive.collapse.navbar-collapse
+          %ul.navbar-nav.ml-auto
+            %li.nav-item
+              %a.nav-link.js-scroll-trigger{:href => "#download"} Download
+            %li.nav-item
+              %a.nav-link.js-scroll-trigger{:href => "#features"} Features
+            %li.nav-item
+              %a.nav-link.js-scroll-trigger{:href => "#contact"} Contact
+    %header.masthead
+      .container.h-100
+        .row.h-100
+          .col-lg-7.my-auto
+            .header-content.mx-auto
+              %h1.mb-5 Nautical War is a multiplayer mobile game where opponents battle to sink each other's ships first.
+              %a.btn.btn-outline.btn-xl.js-scroll-trigger{:href => "#download"} Play Now!
+          .col-lg-5.my-auto
+            .device-container
+              .device-mockup.nexus7.portrait.white
+                .device
+                  .screen
+                    %img.img-fluid{:alt => "", :src => asset_path('android_phone_nautical_war.png')}/
+                  .button
+    %section#download.download.bg-primary.text-center
+      .container
+        .row
+          .col-md-8.mx-auto
+            %h2.section-heading Discover a turn-based strategy game!
+            %p Our game is available on Android mobile devices! &nbsp;Download now!
+            %p &nbsp;
+            .badges
+              %a.badge-link{:href => "#"}
+                %img{:alt => "", :src => asset_path('google-play-badge.svg')}/
+    %section#features.features
+      .container
+        .section-heading.text-center
+          %h2 Unlimited Fun
+          %p.text-muted Check out all the different game options!
+          %hr/
+        .row
+          .col-lg-4.my-auto
+            .device-container
+              .device-mockup.nexus7.portrait.white
+                .device
+                  .screen
+                    %img.img-fluid{:alt => "", :src => asset_path('android_phone_nautical_war.png')}/
+                  .button
+          .col-lg-8.my-auto
+            .container-fluid
+              .row
+                .col-lg-6
+                  .feature-item
+                    %i.icon-game-controller.text-primary
+                    %h3 Multi/Single Player
+                    %p.text-muted Play against friends or robots!
+                .col-lg-6
+                  .feature-item
+                    %i.icon-hourglass.text-primary
+                    %h3 Multiple Shot Modes
+                    %p.text-muted Play a fast multishot game or enjoy a slower pace with a single shot game!
+              .row
+                .col-lg-6
+                  .feature-item
+                    %i.icon-present.text-primary
+                    %h3 Free to Use
+                    %p.text-muted As always, this theme is free to download and use for any purpose!
+                .col-lg-6
+                  .feature-item
+                    %i.icon-lock-open.text-primary
+                    %h3 Open Source
+                    %p.text-muted Since this theme is MIT licensed, you can use it commercially!
+    %section.cta
+      .cta-content
+        .container
+          %h2
+            Stop waiting.
+            %br>/
+            Start building.
+          %a.btn.btn-outline.btn-xl.js-scroll-trigger{:href => "#contact"} Let's Get Started!
+      .overlay
+    %section#contact.contact.bg-primary
+      .container
+        %h2
+          We
+          %i.fa.fa-heart
+          new friends!
+        %ul.list-inline.list-social
+          %li.list-inline-item.social-twitter
+            %a{:href => "#"}
+              %i.fa.fa-twitter
+          %li.list-inline-item.social-facebook
+            %a{:href => "#"}
+              %i.fa.fa-facebook
+          %li.list-inline-item.social-google-plus
+            %a{:href => "#"}
+              %i.fa.fa-google-plus
+    %footer
+      .container
+        %p © Your Website 2018. All Rights Reserved.
+        %ul.list-inline
+          %li.list-inline-item
+            %a{:href => "#"} Privacy
+          %li.list-inline-item
+            %a{:href => "#"} Terms
+          %li.list-inline-item
+            %a{:href => "#"} FAQ
+
+    %script{:src => asset_path("new-age.js")}
