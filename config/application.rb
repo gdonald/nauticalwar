@@ -16,6 +16,6 @@ module Nauticalwar
     # -- all .rb files in that directory are automatically loaded after loading
     # the framework and any gems in your application.
 
-    config.web_console.whitelisted_ips = '10.0.0.0/8'
+    #config.web_console.whitelisted_ips = '10.0.0.0/8'
   end
 end
