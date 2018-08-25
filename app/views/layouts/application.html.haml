@@ -5,11 +5,9 @@
     %meta{:content => "width=device-width, initial-scale=1, shrink-to-fit=no", :name => "viewport"}/
     %meta{:content => "", :name => "description"}/
     %meta{:content => "", :name => "author"}/
-    %title New Age - Start Bootstrap Theme
-
+    %title Nautical War - Turn Based Stategy Sea Battle Game for Android
     = stylesheet_link_tag    'application', media: 'all'
     = javascript_include_tag 'application'
-
     %link{:href => "https://fonts.googleapis.com/css?family=Lato", :rel => "stylesheet"}/
     %link{:href => "https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900", :rel => "stylesheet"}/
     %link{:href => "https://fonts.googleapis.com/css?family=Muli", :rel => "stylesheet"}/
@@ -76,28 +74,28 @@
                     %p.text-muted Play against friends or robots!
                 .col-lg-6
                   .feature-item
-                    %i.icon-hourglass.text-primary
+                    %i.icon-target.text-primary
                     %h3 Multiple Shot Modes
                     %p.text-muted Play a fast multishot game or enjoy a slower pace with a single shot game!
               .row
                 .col-lg-6
                   .feature-item
-                    %i.icon-present.text-primary
-                    %h3 Free to Use
-                    %p.text-muted As always, this theme is free to download and use for any purpose!
+                    %i.icon-anchor.text-primary
+                    %h3 Ranks and Ratings
+                    %p.text-muted Fight your way up to Admiral!
                 .col-lg-6
                   .feature-item
-                    %i.icon-lock-open.text-primary
-                    %h3 Open Source
-                    %p.text-muted Since this theme is MIT licensed, you can use it commercially!
+                    %i.icon-compass.text-primary
+                    %h3 Traditional Strategy
+                    %p.text-muted Place your ships so your opponent can't find them!
     %section.cta
       .cta-content
         .container
           %h2
-            Stop waiting.
+            Download Now.
             %br>/
-            Start building.
-          %a.btn.btn-outline.btn-xl.js-scroll-trigger{:href => "#contact"} Let's Get Started!
+            Start playing today.
+          %a.btn.btn-outline.btn-xl.js-scroll-trigger{:href => "#contact"} Play Now!
       .overlay
     %section#contact.contact.bg-primary
       .container
@@ -117,13 +115,17 @@
               %i.fa.fa-google-plus
     %footer
       .container
-        %p © Your Website 2018. All Rights Reserved.
+        %p © Nautical War 2018 &nbsp;&middot; &nbsp;All Rights Reserved.
         %ul.list-inline
           %li.list-inline-item
-            %a{:href => "#"} Privacy
+            %a{:href => "/privacy"} Privacy
           %li.list-inline-item
-            %a{:href => "#"} Terms
+            &middot;
           %li.list-inline-item
-            %a{:href => "#"} FAQ
+            %a{:href => "/terms"} Terms
+          %li.list-inline-item
+            &middot;
+          %li.list-inline-item
+            %a{:href => "/faq"} FAQ
 
     %script{:src => asset_path("new-age.js")}
