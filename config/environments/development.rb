@@ -61,3 +61,5 @@ Rails.application.configure do
   # routes, locales, etc. This feature depends on the listen gem.
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 end
+
+ANDROID_URL = 'nauticalwar://10.0.0.2'

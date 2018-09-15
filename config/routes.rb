@@ -43,5 +43,7 @@ Rails.application.routes.draw do
     devise_for :users, controllers: { sessions: 'api/sessions' }
   end
 
+  get '/android', to: 'home#android'
+  
   root to: 'home#index'
 end
