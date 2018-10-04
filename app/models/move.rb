@@ -1,5 +1,6 @@
-class Move < ApplicationRecord
+# frozen_string_literal: true
 
+class Move < ApplicationRecord
   belongs_to :game
   belongs_to :user
   belongs_to :layout, optional: true
@@ -10,7 +11,7 @@ class Move < ApplicationRecord
   validates :game, uniqueness: { scope: %i[user x y] }
 
   validate :layout_hits_max
-  
+
   scope :ordered, -> { order(id: :desc) }
   scope :for_layout, ->(layout) { where(layout: layout) }
   scope :for_user, ->(user) { where(user: user) }
@@ -25,5 +26,4 @@ class Move < ApplicationRecord
       errors.add(:layout, 'ship already sunk')
     end
   end
-  
 end

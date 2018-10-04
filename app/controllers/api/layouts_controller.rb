@@ -1,7 +1,8 @@
-class Api::LayoutsController < Api::ApiController
+# frozen_string_literal: true
 
+class Api::LayoutsController < Api::ApiController
   skip_before_action :verify_authenticity_token, only: [:create]
-  
+
   def create
     game = current_api_user.active_games.where(id: params[:game_id]).first
     if game
@@ -24,6 +25,5 @@ class Api::LayoutsController < Api::ApiController
     end
   end
 
-  def show
-  end
+  def show; end
 end

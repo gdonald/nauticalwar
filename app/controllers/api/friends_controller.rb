@@ -1,9 +1,10 @@
-class Api::FriendsController < Api::ApiController
+# frozen_string_literal: true
 
+class Api::FriendsController < Api::ApiController
   skip_before_action :verify_authenticity_token, only: %i[create destroy]
 
   def index
-    render json: { ids: current_api_user.friends.collect { |f| f.user_2_id } }
+    render json: { ids: current_api_user.friends.collect(&:user_2_id) }
   end
 
   def create
@@ -21,10 +22,9 @@ class Api::FriendsController < Api::ApiController
     user = User.find_by(id: params[:id])
     if user
       friend = current_api_user.friends.where(user_2: user).first
-      friend.destroy if friend
+      friend&.destroy
       status = user.id
     end
     render json: { status: status }
   end
-
 end

@@ -1,7 +1,9 @@
-# config valid for current version and patch releases of Capistrano
-lock "~> 3.11.0"
+# frozen_string_literal: true
 
-set :application, "nauticalwar.com"
+# config valid for current version and patch releases of Capistrano
+lock '~> 3.11.0'
+
+set :application, 'nauticalwar.com'
 set :deploy_user, 'gd'
 set :repo_url, 'ssh://gd@darkclear.io:2217/git/nauticalwar'
 set :pty, true

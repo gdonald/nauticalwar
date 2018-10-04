@@ -1,9 +1,10 @@
-class Api::InvitesController < Api::ApiController
+# frozen_string_literal: true
 
+class Api::InvitesController < Api::ApiController
   skip_before_action :verify_authenticity_token, only: %i[create cancel accept cancel]
-  
+
   respond_to :json
-  
+
   def index
     render json: current_api_user.invites.ordered
   end
@@ -11,7 +12,7 @@ class Api::InvitesController < Api::ApiController
   def count
     render json: { count: current_api_user.invites.count }
   end
-  
+
   def create
     rated = params[:r] == '1'
     five_shot = params[:m] == '0'
@@ -19,7 +20,7 @@ class Api::InvitesController < Api::ApiController
 
     user = User.find_by(id: params[:p])
     args = { user_1: current_api_user, user_2: user, rated: rated, five_shot: five_shot, time_limit: time_limit }
-    
+
     if user.bot
       args[:turn] = current_api_user
       game = Game.create!(args)
@@ -60,8 +61,8 @@ class Api::InvitesController < Api::ApiController
       id = invite.id
       invite.destroy
       render json: { id: id }, status: :ok
-    else 
-      render json: { error: 'Invite not found' }, status: :not_found     
+    else
+      render json: { error: 'Invite not found' }, status: :not_found
     end
   end
 
@@ -71,8 +72,8 @@ class Api::InvitesController < Api::ApiController
       id = invite.id
       invite.destroy
       render json: { id: id }, status: :ok
-    else 
-      render json: { error: 'Invite not found' }, status: :not_found     
+    else
+      render json: { error: 'Invite not found' }, status: :not_found
     end
   end
 end

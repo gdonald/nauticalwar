@@ -1,7 +1,7 @@
+# frozen_string_literal: true
+
 Rails.application.routes.draw do
-
   namespace :api do
-
     resources :ping, only: [:index]
 
     resources :games, only: %i[index show destroy] do
@@ -44,6 +44,6 @@ Rails.application.routes.draw do
   end
 
   get '/android', to: 'home#android'
-  
+
   root to: 'home#index'
 end

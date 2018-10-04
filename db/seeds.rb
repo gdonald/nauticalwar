@@ -1,3 +1,4 @@
+# frozen_string_literal: true
 
 include FactoryBot::Syntax::Methods
 
@@ -10,7 +11,7 @@ x = 0
 end
 
 create(:ship, name: 'Carrier',     size: 5)
-create(:ship, name: 'Battleship',  size: 4);
-create(:ship, name: 'Destroyer',   size: 3);
-create(:ship, name: 'Submarine',   size: 3);
-create(:ship, name: 'Patrol Boat', size: 2);
+create(:ship, name: 'Battleship',  size: 4)
+create(:ship, name: 'Destroyer',   size: 3)
+create(:ship, name: 'Submarine',   size: 3)
+create(:ship, name: 'Patrol Boat', size: 2)

@@ -1,11 +1,12 @@
-class Layout < ApplicationRecord
+# frozen_string_literal: true
 
+class Layout < ApplicationRecord
   belongs_to :user
   belongs_to :game
   belongs_to :ship
 
   has_many :moves
-  
+
   validates :user, presence: true
   validates :game, presence: true
   validates :ship, presence: true
@@ -16,7 +17,7 @@ class Layout < ApplicationRecord
 
   validates :vertical, inclusion: [true, false]
   validates :sunk, inclusion: [true, false]
-  
+
   scope :ordered, -> { order(id: :asc) }
   scope :unsunk, -> { where(sunk: false) }
   scope :for_user, ->(user) { where(user: user) }
@@ -26,7 +27,7 @@ class Layout < ApplicationRecord
   def to_s
     "Layout(user: #{user} ship: #{ship} x: #{x} y: #{y} vertical: #{vertical})"
   end
-  
+
   def is_hit?(c, r)
     if vertical && c == x
       (y...(y + ship.size)).each do |i|
@@ -39,9 +40,11 @@ class Layout < ApplicationRecord
     end
     false
   end
-  
+
   def self.set_location(args)
-    game, ship, user = args[:game], args[:ship], args[:user]
+    game = args[:game]
+    ship = args[:ship]
+    user = args[:user]
     vertical = [0, 1].sample.zero?
     if vertical
       c = (0..9).to_a.sample
@@ -62,5 +65,4 @@ class Layout < ApplicationRecord
   def check_sunk
     update_attributes(sunk: true) if moves.count >= ship.size
   end
-
 end

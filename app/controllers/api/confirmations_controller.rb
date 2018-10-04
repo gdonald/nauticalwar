@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 class Api::ConfirmationsController < Devise::ConfirmationsController
-
   skip_before_action :authenticate_user!
   # skip_before_action :authenticate_api_user!
 
@@ -29,7 +28,7 @@ class Api::ConfirmationsController < Devise::ConfirmationsController
       # respond_with_navigational(resource){ redirect_to after_confirmation_path_for(resource_name, resource) }
       redirect_to android_path
     else
-      respond_with_navigational(resource.errors, status: :unprocessable_entity){ render :new }
+      respond_with_navigational(resource.errors, status: :unprocessable_entity) { render :new }
     end
   end
 

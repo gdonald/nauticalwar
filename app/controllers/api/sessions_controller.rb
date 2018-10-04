@@ -4,7 +4,7 @@ class Api::SessionsController < Devise::SessionsController
   skip_before_action :verify_authenticity_token
   skip_before_action :authenticate_user!
   # skip_before_action :authenticate_api_user!
-  
+
   respond_to :json
 
   # before_action :configure_sign_in_params, only: [:create]

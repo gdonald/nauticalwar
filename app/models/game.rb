@@ -1,5 +1,6 @@
-class Game < ApplicationRecord
+# frozen_string_literal: true
 
+class Game < ApplicationRecord
   belongs_to :user_1, class_name: 'User', foreign_key: 'user_1_id'
   belongs_to :user_2, class_name: 'User', foreign_key: 'user_2_id'
   belongs_to :turn,   class_name: 'User', foreign_key: 'turn_id'
@@ -17,7 +18,7 @@ class Game < ApplicationRecord
 
   validates :user_1_layed_out, inclusion: [true, false]
   validates :user_2_layed_out, inclusion: [true, false]
-  
+
   scope :ordered, -> { order(created_at: :asc) }
 
   def self.find_game(user, id)
@@ -28,16 +29,16 @@ class Game < ApplicationRecord
   def t_limit
     (updated_at + time_limit.seconds - Time.current).seconds.to_i
   end
-  
+
   def moves_for_user(user)
     moves.where(user: user)
   end
 
-#  def last(user)
-#    limit = five_shot ? 5 : 1
-#    moves.where(user: user).limit(limit).ordered.first
-#  end
- 
+  #  def last(user)
+  #    limit = five_shot ? 5 : 1
+  #    moves.where(user: user).limit(limit).ordered.first
+  #  end
+
   def is_hit?(user, c, r)
     reload
     layouts.for_user(user).each do |layout|
@@ -60,9 +61,7 @@ class Game < ApplicationRecord
   def next_turn
     new_turn = turn == user_1 ? user_2 : user_1
     update_attributes(turn: new_turn)
-    layouts.unsunk.each do |layout|
-      layout.check_sunk
-    end
+    layouts.unsunk.each(&:check_sunk)
     update_attributes(winner: user_2) if layouts.sunk_for_user(user_1).count == 5
     update_attributes(winner: user_1) if layouts.sunk_for_user(user_2).count == 5
     calculate_scores unless winner.nil?
@@ -85,7 +84,7 @@ class Game < ApplicationRecord
     user_1.save!
     user_2.save!
   end
-  
+
   def calculate_scores
     return unless rated && winner
     p1 = user_1.rating
@@ -114,11 +113,11 @@ class Game < ApplicationRecord
     log('attack_sinking_ship()')
     layout = get_sinking_ship(opponent)
     if layout
-      if layout.moves.count == 1
-        move = attack_1(user, opponent, layout.moves.first)
-      else
-        move = attack_2(user, opponent, layout.moves)
-      end
+      move = if layout.moves.count == 1
+               attack_1(user, opponent, layout.moves.first)
+             else
+               attack_2(user, opponent, layout.moves)
+             end
       log("  returning move: #{move}")
       return move
     end
@@ -134,12 +133,14 @@ class Game < ApplicationRecord
       cols[i] = moves.for_user(user).where(layout: nil, x: i).count
       rows[i] = moves.for_user(user).where(layout: nil, y: i).count
     end
-    min_cols, min_rows = [], []
+    min_cols = []
+    min_rows = []
     10.times do |i|
       min_cols << i if cols[i] == cols.min
       min_rows << i if rows[i] == rows.min
     end
-    x, y = min_cols.sample, min_rows.sample
+    x = min_cols.sample
+    y = min_rows.sample
     move = moves.for_user(user).where(x: x, y: y).first
     log("  move: #{move}")
     return get_totally_random_move(user) if move
@@ -173,14 +174,10 @@ class Game < ApplicationRecord
           ((y - 1)..(y + 1)).each do |r|
             next if r < 0 || r > 9
             next if x == c && y == r
-            if grid[c][r].size == 0
-              count += 1
-            end
+            count += 1 if grid[c][r].empty?
           end
         end
-        if count > 0
-          possibles << [[x, y], count]
-        end
+        possibles << [[x, y], count] if count > 0
       end
     end
     if possibles.any?
@@ -190,10 +187,10 @@ class Game < ApplicationRecord
       possibles.each do |p|
         best << p if p[1] == high
       end
-      log("  returning with best sample: #{(best.sample)[0]}")
-      return (best.sample)[0]
+      log("  returning with best sample: #{best.sample[0]}")
+      return best.sample[0]
     end
-    get_totally_random_move(user)    
+    get_totally_random_move(user)
   end
 
   def get_totally_random_move(user)
@@ -221,11 +218,11 @@ class Game < ApplicationRecord
 
     x, y = get_random_move_lines(user)
     layout = is_hit?(opponent, x, y)
-    
+
     if layout.nil? && again?(user)
       x, y = get_random_move_spacing(user)
       layout = is_hit?(opponent, x, y)
-        
+
       if layout.nil? && again?(user)
         x, y = get_random_move_lines(user)
         layout = is_hit?(opponent, x, y)
@@ -240,22 +237,21 @@ class Game < ApplicationRecord
     layout = is_hit?(opponent, x, y)
     move = moves.create!(user: user, layout: layout, x: x, y: y)
     log("  move create!: #{move}")
-    move.persisted?      
+    move.persisted?
   end
-  
+
   def get_sinking_ship(user)
     layouts.unsunk_for_user(user).each do |layout|
-      if moves.for_layout(layout).count > 0
-        return layout
-      end
+      return layout if moves.for_layout(layout).count > 0
     end
     nil
   end
-  
+
   def attack_1(user, opponent, hit)
     log('attack_1()')
     log("hit: #{hit}")
-    cols, rows = [], []
+    cols = []
+    rows = []
 
     # left of hit
     if hit.x - 1 >= 0
@@ -297,7 +293,7 @@ class Game < ApplicationRecord
     log("cols: #{cols}")
     log("rows: #{rows}")
 
-    if cols.size > 0
+    unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample
       log("r: #{r}")
       layout = is_hit?(opponent, cols[r], rows[r])
@@ -306,16 +302,17 @@ class Game < ApplicationRecord
       log("  move.persisted?: #{move.persisted?}")
       return true if move.persisted?
     end
-    log("  returning false")
+    log('  returning false')
     false
   end
 
   def attack_2(user, opponent, hits)
     log('attack_2()')
-    cols, rows = [], []
+    cols = []
+    rows = []
     vertical = hits[0].x == hits[1].x
-    hit_cols = hits.collect { |h| h.x }
-    hit_rows = hits.collect { |h| h.y }
+    hit_cols = hits.collect(&:x)
+    hit_rows = hits.collect(&:y)
     if vertical
       min_hit_rows = hit_rows.min - 1
       min_hit_rows = min_hit_rows < 0 ? 0 : min_hit_rows
@@ -342,7 +339,7 @@ class Game < ApplicationRecord
       end
     end
 
-    log("  cols: #{cols}")              
+    log("  cols: #{cols}")
     return false if cols.empty?
 
     r = (0..(cols.size - 1)).to_a.sample
@@ -355,5 +352,4 @@ class Game < ApplicationRecord
     log('  returning false')
     false
   end
-
 end

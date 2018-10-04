@@ -1,5 +1,6 @@
-class User < ApplicationRecord
+# frozen_string_literal: true
 
+class User < ApplicationRecord
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :trackable, :validatable,
          :confirmable, :lockable, :timeoutable
@@ -7,7 +8,7 @@ class User < ApplicationRecord
   validates :email, presence: true, uniqueness: true
   validates :username, presence: true, uniqueness: true, length: { maximum: 12 }
   validates :bot, inclusion: [true, false]
-  
+
   has_many :games_1, foreign_key: :user_1_id, class_name: 'Game'
   has_many :games_2, foreign_key: :user_2_id, class_name: 'Game'
 
@@ -15,29 +16,29 @@ class User < ApplicationRecord
   has_many :invites_2, foreign_key: :user_2_id, class_name: 'Invite'
 
   has_many :friends, foreign_key: :user_1_id, class_name: 'Friend'
-  
+
   scope :active, -> { where.not(confirmed_at: nil).where(locked_at: nil) }
 
   def to_s
     username
   end
-  
+
   def active_games
-    games_1.includes([:user_1, :user_2]).where(del_user_1: false).or(games_2.includes([:user_1, :user_2]).where(del_user_2: false))
+    games_1.includes(%i[user_1 user_2]).where(del_user_1: false).or(games_2.includes(%i[user_1 user_2]).where(del_user_2: false))
   end
-  
+
   def invites
     invites_1.or(invites_2)
   end
 
   def self.list(user)
-    ids = User.select(:id).where(bot: true).collect { |u| u.id }
-    ids += User.select(:id).where(arel_table[:rating].gteq(user.rating)).order(rating: :asc ).limit(15).collect { |u| u.id }
-    ids += User.select(:id).where(arel_table[:rating].lteq(user.rating)).order(rating: :desc).limit(15).collect { |u| u.id }
+    ids = User.select(:id).where(bot: true).collect(&:id)
+    ids += User.select(:id).where(arel_table[:rating].gteq(user.rating)).order(rating: :asc).limit(15).collect(&:id)
+    ids += User.select(:id).where(arel_table[:rating].lteq(user.rating)).order(rating: :desc).limit(15).collect(&:id)
     ids.uniq!
     User.where(id: ids).order(rating: :desc)
   end
-  
+
   def self.generate_password(length)
     (('a'..'z').to_a + (10..99).to_a + ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_'] * 10).shuffle[0, length].join
   end
