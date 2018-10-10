@@ -30,4 +30,4 @@
 
 coverage
 vendor/bundle
-.idea
+.idea/*
