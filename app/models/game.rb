@@ -34,15 +34,10 @@ class Game < ApplicationRecord
     moves.where(user: user)
   end
 
-  #  def last(user)
-  #    limit = five_shot ? 5 : 1
-  #    moves.where(user: user).limit(limit).ordered.first
-  #  end
-
-  def is_hit?(user, c, r)
+  def is_hit?(user, col, row)
     reload
     layouts.for_user(user).each do |layout|
-      return layout if layout.is_hit?(c, r)
+      return layout if layout.is_hit?(col, row)
     end
     nil
   end
