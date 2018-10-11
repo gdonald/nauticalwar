@@ -11,7 +11,7 @@ RSpec.describe Move, type: :model do
     let(:move) { create(:move, game: game, user: user_1, x: 1, y: 1) }
 
     it 'returns a string' do
-      expected = 'Move(user: user1 layout:  x: 1 y: 1)'
+      expected = "Move(user: #{user_1.username} layout:  x: 1 y: 1)"
       expect(move.to_s).to eq(expected)
     end
   end
