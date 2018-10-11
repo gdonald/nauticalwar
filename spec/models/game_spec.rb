@@ -61,4 +61,15 @@ RSpec.describe Game, type: :model do
       expect(game.is_hit?(user_2, 1, 1)).to be_falsey
     end
   end
+
+  describe '#empty_neighbors' do
+    let(:ship) { create(:ship) }
+    let!(:layout) { create(:layout, game: game, user: user_1, ship: ship, x: 0, y: 0, vertical: true) }
+    let!(:hit) { create(:move, game: game, user: user_2, x: 0, y: 0, layout: layout) }
+
+    it 'returns empty neighbors for a hit' do
+      expected = [[1, 0], [0, 1]]
+      expect(game.empty_neighbors(user_1, hit)).to eq(expected)
+    end
+  end
 end

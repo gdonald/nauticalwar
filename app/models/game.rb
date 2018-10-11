@@ -242,62 +242,26 @@ class Game < ApplicationRecord
     nil
   end
 
-  def attack_1(user, opponent, hit)
-    log('attack_1()')
-    log("hit: #{hit}")
+  def empty_neighbors(user, hit)
     cols = []
     rows = []
+    [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |cr|
+      next unless (hit.x + cr[0]).between?(0, 9) && (hit.y + cr[1]).between?(0, 9)
+      next unless moves.for_user(user).for_xy(hit.x + cr[0], hit.y + cr[1]).empty?
+      cols << hit.x + cr[0]
+      rows << hit.y + cr[1]
+    end
+    [cols, rows]
+  end
 
-    # left of hit
-    if hit.x - 1 >= 0
-      move = moves.for_user(user).for_xy(hit.x - 1, hit.y).first
-      log("left: #{move}")
-      if move.nil?
-        cols << hit.x - 1
-        rows << hit.y
-      end
-    end
-    # right of hit
-    if hit.x + 1 <= 9
-      move = moves.for_user(user).for_xy(hit.x + 1, hit.y).first
-      log("right: #{move}")
-      if move.nil?
-        cols << hit.x + 1
-        rows << hit.y
-      end
-    end
-    # above hit
-    if hit.y - 1 >= 0
-      move = moves.for_user(user).for_xy(hit.x, hit.y - 1).first
-      log("above: #{move}")
-      if move.nil?
-        cols << hit.x
-        rows << hit.y - 1
-      end
-    end
-    # below hit
-    if hit.y + 1 <= 9
-      move = moves.for_user(user).for_xy(hit.x, hit.y + 1).first
-      log("below: #{move}")
-      if move.nil?
-        cols << hit.x
-        rows << hit.y + 1
-      end
-    end
-
-    log("cols: #{cols}")
-    log("rows: #{rows}")
-
+  def attack_1(user, opponent, hit)
+    cols, rows = empty_neighbors(user, hit)
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample
-      log("r: #{r}")
       layout = is_hit?(opponent, cols[r], rows[r])
       move = moves.create!(user: user, layout: layout, x: cols[r], y: rows[r])
-      log("  move: #{move}")
-      log("  move.persisted?: #{move.persisted?}")
       return true if move.persisted?
     end
-    log('  returning false')
     false
   end
 
