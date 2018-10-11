@@ -7,6 +7,6 @@ class Ship < ApplicationRecord
   scope :ordered, -> { order(id: :asc) }
 
   def to_s
-    "#{name}(#{size})"
+    "Ship(name: #{name}, size: #{size})"
   end
 end

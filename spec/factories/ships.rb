@@ -2,7 +2,9 @@
 
 FactoryBot.define do
   factory :ship do
-    name 'Name'
+    sequence :name do |n|
+      "ship#{n}"
+    end
     size 2
   end
 end
