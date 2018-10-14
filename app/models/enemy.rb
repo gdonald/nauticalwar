@@ -1,10 +1,10 @@
 # frozen_string_literal: true
 
 class Enemy < ApplicationRecord
-  belongs_to :user_1, class_name: 'User', foreign_key: 'user_1_id'
-  belongs_to :user_2, class_name: 'User', foreign_key: 'user_2_id'
+  belongs_to :player_1, class_name: 'Player', foreign_key: 'player_1_id'
+  belongs_to :player_2, class_name: 'Player', foreign_key: 'player_2_id'
 
-  validates :user_1, presence: true
-  validates :user_2, presence: true
-  validates :user_2, uniqueness: { scope: :user_1_id }
+  validates :player_1, presence: true
+  validates :player_2, presence: true
+  validates :player_2, uniqueness: { scope: :player_1_id }
 end

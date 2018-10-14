@@ -6,11 +6,11 @@ class Api::InvitesController < Api::ApiController
   respond_to :json
 
   def index
-    render json: current_api_user.invites.ordered
+    render json: current_api_player.invites.ordered
   end
 
   def count
-    render json: { count: current_api_user.invites.count }
+    render json: { count: current_api_player.invites.count }
   end
 
   def create
@@ -18,11 +18,11 @@ class Api::InvitesController < Api::ApiController
     five_shot = params[:m] == '0'
     time_limit = (params[:t] == '1' ? 3.days : 1.day).to_i
 
-    user = User.find_by(id: params[:p])
-    args = { user_1: current_api_user, user_2: user, rated: rated, five_shot: five_shot, time_limit: time_limit }
+    player = Player.find_by(id: params[:p])
+    args = { player_1: current_api_player, player_2: player, rated: rated, five_shot: five_shot, time_limit: time_limit }
 
-    if user.bot
-      args[:turn] = current_api_user
+    if player.bot
+      args[:turn] = current_api_player
       game = Game.create!(args)
       if game.persisted?
         game.bot_layout
@@ -41,7 +41,7 @@ class Api::InvitesController < Api::ApiController
   end
 
   def accept
-    invite = current_api_user.invites_2.find_by(id: params[:id])
+    invite = current_api_player.invites_2.find_by(id: params[:id])
     if invite
       game = invite.create_game
       invite_id = invite.id
@@ -49,14 +49,14 @@ class Api::InvitesController < Api::ApiController
       klass = ActiveModelSerializers::SerializableResource
       render json: { invite_id: invite_id,
                      game: klass.new(game, {}).as_json,
-                     user: klass.new(game.user_1, {}).as_json }
+                     player: klass.new(game.player_1, {}).as_json }
     else
       render json: { error: 'Invite not found' }, status: :not_found
     end
   end
 
   def decline
-    invite = current_api_user.invites_2.find_by(id: params[:id])
+    invite = current_api_player.invites_2.find_by(id: params[:id])
     if invite
       id = invite.id
       invite.destroy
@@ -67,7 +67,7 @@ class Api::InvitesController < Api::ApiController
   end
 
   def cancel
-    invite = current_api_user.invites_1.find_by(id: params[:id])
+    invite = current_api_player.invites_1.find_by(id: params[:id])
     if invite
       id = invite.id
       invite.destroy

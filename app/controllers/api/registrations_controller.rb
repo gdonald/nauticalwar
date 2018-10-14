@@ -2,8 +2,8 @@
 
 class Api::RegistrationsController < Devise::RegistrationsController
   skip_before_action :verify_authenticity_token
-  skip_before_action :authenticate_user!
-  # skip_before_action :authenticate_api_user!
+  skip_before_action :authenticate_player!
+  # skip_before_action :authenticate_api_player!
 
   before_action :configure_permitted_parameters
 
@@ -39,7 +39,7 @@ class Api::RegistrationsController < Devise::RegistrationsController
 
   # GET /resource/cancel
   # Forces the session data which is usually expired after sign
-  # in to be expired now. This is useful if the user wants to
+  # in to be expired now. This is useful if the player wants to
   # cancel oauth signing in/up in the middle of the process,
   # removing all OAuth session data.
   # def cancel
@@ -49,7 +49,7 @@ class Api::RegistrationsController < Devise::RegistrationsController
   protected
 
   def configure_permitted_parameters
-    devise_parameter_sanitizer.permit(:sign_up, keys: [:username])
+    devise_parameter_sanitizer.permit(:sign_up, keys: [:name])
   end
 
   # If you have extra params to permit, append them to the sanitizer.

@@ -4,26 +4,26 @@ class Api::FriendsController < Api::ApiController
   skip_before_action :verify_authenticity_token, only: %i[create destroy]
 
   def index
-    render json: { ids: current_api_user.friends.collect(&:user_2_id) }
+    render json: { ids: current_api_player.friends.collect(&:player_2_id) }
   end
 
   def create
     status = -1
-    user = User.active.find_by(id: params[:p])
-    unless current_api_user.friends.include?(user)
-      Friend.create!(user_1: current_api_user, user_2: user)
-      status = user.id
+    player = Player.active.find_by(id: params[:p])
+    unless current_api_player.friends.include?(player)
+      Friend.create!(player_1: current_api_player, player_2: player)
+      status = player.id
     end
     render json: { status: status }
   end
 
   def destroy
     status = -1
-    user = User.find_by(id: params[:id])
-    if user
-      friend = current_api_user.friends.where(user_2: user).first
+    player = Player.find_by(id: params[:id])
+    if player
+      friend = current_api_player.friends.where(player_2: player).first
       friend&.destroy
-      status = user.id
+      status = player.id
     end
     render json: { status: status }
   end

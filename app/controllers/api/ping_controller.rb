@@ -2,6 +2,6 @@
 
 class Api::PingController < Api::ApiController
   def index
-    render json: { id: current_api_user.id }
+    render json: { id: current_api_player.id }
   end
 end

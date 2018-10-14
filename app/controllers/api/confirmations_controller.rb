@@ -1,8 +1,8 @@
 # frozen_string_literal: true
 
 class Api::ConfirmationsController < Devise::ConfirmationsController
-  skip_before_action :authenticate_user!
-  # skip_before_action :authenticate_api_user!
+  skip_before_action :authenticate_player!
+  # skip_before_action :authenticate_api_player!
 
   # GET /resource/confirmation/new
   # def new

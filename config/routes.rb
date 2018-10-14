@@ -20,7 +20,7 @@ Rails.application.routes.draw do
 
     resources :layouts, only: %i[create show]
 
-    resources :users, only: [:index] do
+    resources :players, only: [:index] do
       collection do
         get :activity
       end
@@ -40,7 +40,7 @@ Rails.application.routes.draw do
     resources :friends, only: %i[index create destroy]
     resources :enemies, only: %i[create]
 
-    devise_for :users, controllers: { sessions: 'api/sessions' }
+    devise_for :players, controllers: { sessions: 'api/sessions' }
   end
 
   get '/android', to: 'home#android'

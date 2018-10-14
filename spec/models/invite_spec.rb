@@ -4,19 +4,19 @@ require 'rails_helper'
 
 RSpec.describe Invite, type: :model do
   describe '#cannot_invite_self' do
-    let(:user) { create(:user) }
-    let(:invite) { build(:invite, user_1: user, user_2: user) }
+    let(:player) { create(:player) }
+    let(:invite) { build(:invite, player_1: player, player_2: player) }
 
     it 'adds an error' do
       expect(invite).to be_invalid
-      expect(invite.errors['user_2']).to be_present
+      expect(invite.errors['player_2']).to be_present
     end
   end
 
   describe '#create_game' do
-    let(:user_1) { create(:user) }
-    let(:user_2) { create(:user) }
-    let(:invite) { build(:invite, user_1: user_1, user_2: user_2) }
+    let(:player_1) { create(:player) }
+    let(:player_2) { create(:player) }
+    let(:invite) { build(:invite, player_1: player_1, player_2: player_2) }
 
     it 'returns a game' do
       game = invite.create_game

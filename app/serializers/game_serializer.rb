@@ -1,30 +1,30 @@
 # frozen_string_literal: true
 
 class GameSerializer < ActiveModel::Serializer
-  attributes :id, :user_1_id, :user_2_id, :user_1_username, :user_2_username, :turn_id, :winner_id, :updated_at, :user_1_layed_out, :user_2_layed_out, :rated, :five_shot, :t_limit
+  attributes :id, :player_1_id, :player_2_id, :player_1_name, :player_2_name, :turn_id, :winner_id, :updated_at, :player_1_layed_out, :player_2_layed_out, :rated, :five_shot, :t_limit
 
   def t_limit
     object.t_limit
   end
 
-  def user_1_username
-    object.user_1.username
+  def player_1_name
+    object.player_1.name
   end
 
-  def user_2_username
-    object.user_2.username
+  def player_2_name
+    object.player_2.name
   end
 
   def winner_id
     object.winner ? object.winner_id : '0'
   end
 
-  def user_1_layed_out
-    object.user_1_layed_out ? '1' : '0'
+  def player_1_layed_out
+    object.player_1_layed_out ? '1' : '0'
   end
 
-  def user_2_layed_out
-    object.user_2_layed_out ? '1' : '0'
+  def player_2_layed_out
+    object.player_2_layed_out ? '1' : '0'
   end
 
   def rated

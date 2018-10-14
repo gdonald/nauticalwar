@@ -16,7 +16,7 @@ class Api::OmniauthCallbacksController < Devise::OmniauthCallbacksController
   #   super
   # end
 
-  # GET|POST /users/auth/twitter/callback
+  # GET|POST /players/auth/twitter/callback
   # def failure
   #   super
   # end

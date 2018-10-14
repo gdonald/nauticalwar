@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class Bot < ApplicationRecord
-  belongs_to :user
+  belongs_to :player
 
-  validates :user, presence: true
+  validates :player, presence: true
 end

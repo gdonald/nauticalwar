@@ -3,10 +3,10 @@
 class CreateEnemies < ActiveRecord::Migration[5.2]
   def change
     create_table :enemies do |t|
-      t.integer :user_1_id, null: false
-      t.integer :user_2_id, null: false
+      t.integer :player_1_id, null: false
+      t.integer :player_2_id, null: false
       t.timestamps
     end
-    add_index :enemies, %i[user_1_id user_2_id], unique: true
+    add_index :enemies, %i[player_1_id player_2_id], unique: true
   end
 end
