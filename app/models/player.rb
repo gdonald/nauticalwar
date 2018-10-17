@@ -40,7 +40,7 @@ class Player < ApplicationRecord
   end
 
   def self.generate_password(length)
-    (('a'..'z').to_a + (10..99).to_a + ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_'] * 10).shuffle[0, length].join
+    (('a'..'z').to_a + (0..9).to_a + ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_'] * 10).shuffle[0, length].join
   end
 
   def get_last

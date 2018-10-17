@@ -10,5 +10,10 @@ FactoryBot.define do
     end
     password 'changeme'
     password_confirmation 'changeme'
+    last_sign_in_at Time.current
+        
+    trait :bot do
+      bot true
+    end
   end
 end
