@@ -8,10 +8,11 @@ FactoryBot.define do
     sequence :email do |n|
       "foo#{n}@bar.com"
     end
-    password 'changeme'
-    password_confirmation 'changeme'
-    last_sign_in_at Time.current
-        
+    password { 'changeme' }
+    password_confirmation { 'changeme' }
+    last_sign_in_at { Time.current }
+    confirmed_at { Time.current }
+
     trait :bot do
       bot true
     end

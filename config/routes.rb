@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do
+  devise_for :players, ActiveAdmin::Devise.config
+  ActiveAdmin.routes(self)
   namespace :api do
     resources :ping, only: [:index]
 

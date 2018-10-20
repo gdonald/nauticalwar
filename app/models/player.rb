@@ -1,7 +1,11 @@
 # frozen_string_literal: true
 
 class Player < ApplicationRecord
-  devise :database_authenticatable, :registerable,
+  # Include default devise modules. Others available are:
+  # :confirmable, :lockable, :timeoutable and :omniauthable
+  devise :database_authenticatable, 
+         :recoverable, :rememberable, :trackable, :validatable
+  devise :database_authenticatable, 
          :recoverable, :rememberable, :trackable, :validatable,
          :confirmable, :lockable, :timeoutable
 

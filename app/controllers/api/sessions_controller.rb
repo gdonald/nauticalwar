@@ -2,7 +2,7 @@
 
 class Api::SessionsController < Devise::SessionsController
   skip_before_action :verify_authenticity_token
-  skip_before_action :authenticate_player!
+  # skip_before_action :authenticate_player!
   # skip_before_action :authenticate_api_player!
 
   respond_to :json

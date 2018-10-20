@@ -16,6 +16,7 @@ gem 'bcrypt', '~> 3.1.7'
 gem 'coffee-rails', '~> 4.2'
 gem 'jbuilder', '~> 2.5'
 
+gem 'activeadmin'
 gem 'active_model_serializers'
 gem 'activerecord-session_store'
 gem 'acts_as_list'
@@ -33,7 +34,7 @@ gem 'paperclip'
 # gem 'simple_form'
 # gem 'thor', '0.19.1'
 gem 'tzinfo-data'
-gem 'will_paginate-bootstrap'
+#gem 'will_paginate-bootstrap'
 
 gem 'bootsnap', '>= 1.1.0', require: false
 
