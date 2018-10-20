@@ -5,6 +5,6 @@ FactoryBot.define do
     sequence :name do |n|
       "ship#{n}"
     end
-    size 2
+    size { 2 }
   end
 end

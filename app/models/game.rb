@@ -34,10 +34,10 @@ class Game < ApplicationRecord
     moves.where(player: player)
   end
 
-  def is_hit?(player, col, row)
+  def hit?(player, col, row)
     reload
     layouts.for_player(player).each do |layout|
-      return layout if layout.is_hit?(col, row)
+      return layout if layout.hit?(col, row)
     end
     nil
   end
@@ -212,15 +212,15 @@ class Game < ApplicationRecord
     log('attack_random_ship()')
 
     x, y = get_random_move_lines(player)
-    layout = is_hit?(opponent, x, y)
+    layout = hit?(opponent, x, y)
 
     if layout.nil? && again?(player)
       x, y = get_random_move_spacing(player)
-      layout = is_hit?(opponent, x, y)
+      layout = hit?(opponent, x, y)
 
       if layout.nil? && again?(player)
         x, y = get_random_move_lines(player)
-        layout = is_hit?(opponent, x, y)
+        layout = hit?(opponent, x, y)
       end
     end
 
@@ -229,7 +229,7 @@ class Game < ApplicationRecord
     x, y = get_totally_random_move(player) if move
     log("x: #{x} y: #{y}")
 
-    layout = is_hit?(opponent, x, y)
+    layout = hit?(opponent, x, y)
     move = moves.create!(player: player, layout: layout, x: x, y: y)
     log("  move create!: #{move}")
     move.persisted?
@@ -258,7 +258,7 @@ class Game < ApplicationRecord
     cols, rows = empty_neighbors(player, hit)
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample
-      layout = is_hit?(opponent, cols[r], rows[r])
+      layout = hit?(opponent, cols[r], rows[r])
       move = moves.create!(player: player, layout: layout, x: cols[r], y: rows[r])
       return true if move.persisted?
     end
@@ -302,7 +302,7 @@ class Game < ApplicationRecord
     return false if cols.empty?
 
     r = (0..(cols.size - 1)).to_a.sample
-    layout = is_hit?(opponent, cols[r], rows[r])
+    layout = hit?(opponent, cols[r], rows[r])
     move = moves.create!(player: player, layout: layout, x: cols[r], y: rows[r])
     log("  move: #{move}")
 

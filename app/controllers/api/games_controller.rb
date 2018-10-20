@@ -133,7 +133,7 @@ class Api::GamesController < Api::ApiController
           move = game.moves.for_player(current_api_player).where(x: s['x'], y: s['y']).first
           next unless move.nil?
           layout_player = game.player_1 == current_api_player ? game.player_2 : game.player_1
-          layout = game.is_hit?(layout_player, s['x'], s['y'])
+          layout = game.hit?(layout_player, s['x'], s['y'])
           Move.create!(game: game, player: current_api_player, x: s['x'], y: s['y'], layout: layout)
           layout&.check_sunk
         end

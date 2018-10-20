@@ -49,16 +49,16 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#is_hit?' do
+  describe '#hit?' do
     let(:ship) { create(:ship) }
     let!(:layout) { create(:layout, game: game, player: player_1, ship: ship, x: 0, y: 0, vertical: true) }
 
     it 'returns true' do
-      expect(game.is_hit?(player_1, 0, 0)).to be_truthy
+      expect(game.hit?(player_1, 0, 0)).to be_truthy
     end
 
     it 'returns false' do
-      expect(game.is_hit?(player_2, 1, 1)).to be_falsey
+      expect(game.hit?(player_2, 1, 1)).to be_falsey
     end
   end
 
