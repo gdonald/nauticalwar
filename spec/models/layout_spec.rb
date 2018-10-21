@@ -11,6 +11,32 @@ RSpec.describe Layout, type: :model do
   let(:layout_1) { create(:layout, game: game, ship: ship_1, player: player_1) }
   let(:layout_2) { create(:layout, :horizontal, game: game, ship: ship_2, player: player_1) }
 
+  describe '.set_location' do
+    it 'creates a new layout' do
+      expect do
+        Layout.set_location(game, player_1, ship_1, true)
+      end.to change(Layout, :count).by(1)
+    end
+  end
+
+  describe '.vertical_location' do
+    it 'returns a row and col' do
+      result = Layout.vertical_location(game, player_1, ship_1)
+      expect(result).to be_a(Array)
+      expect(result[0]).to be_between(0, 9)
+      expect(result[1]).to be_between(0, 9)
+    end
+  end
+
+  describe '.horizontal_location' do
+    it 'returns a row and col' do
+      result = Layout.horizontal_location(game, player_1, ship_1)
+      expect(result).to be_a(Array)
+      expect(result[0]).to be_between(0, 9)
+      expect(result[1]).to be_between(0, 9)
+    end
+  end
+
   describe '#to_s' do
     it 'returns a string' do
       expected = "Layout(player: #{player_1.name} ship: Ship(name: #{ship_1.name}, size: 2) x: 0 y: 0 vertical: true)"

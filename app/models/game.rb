@@ -44,7 +44,7 @@ class Game < ApplicationRecord
 
   def bot_layout
     Ship.ordered.each do |ship|
-      Layout.set_location(game: self, player: player_2, ship: ship)
+      Layout.set_location(self, player_2, ship, [0, 1].sample.zero?)
     end
     update_attributes(player_2_layed_out: true)
   end

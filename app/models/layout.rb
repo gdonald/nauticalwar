@@ -24,6 +24,38 @@ class Layout < ApplicationRecord
   scope :sunk_for_player, ->(player) { where(sunk: true, player: player) }
   scope :unsunk_for_player, ->(player) { where(sunk: false, player: player) }
 
+  def self.vertical_location(game, player, ship)
+    c = (0..9).to_a.sample
+    r = (0..(10 - ship.size)).to_a.sample
+    (r...(r + ship.size)).each do |y|
+      if game.hit?(player, c, y).present?
+        return Layout.vertical_location(game, player, ship)
+      end
+    end
+    [c, r]
+  end
+
+  def self.horizontal_location(game, player, ship)
+    c = (0..(10 - ship.size)).to_a.sample
+    r = (0..9).to_a.sample
+    (c...(c + ship.size)).each do |x|
+      if game.hit?(player, x, r).present?
+        return Layout.horizontal_location(game, player, ship)
+      end
+    end
+    [c, r]
+  end
+
+  def self.set_location(game, player, ship, vertical)
+    if vertical
+      c, r = Layout.vertical_location(game, player, ship)
+    else
+      c, r = Layout.horizontal_location(game, player, ship)
+    end
+    args = { game: game, player: player, ship: ship, vertical: vertical, x: c, y: r }
+    Layout.create!(args)
+  end
+
   def to_s
     "Layout(player: #{player} ship: #{ship} x: #{x} y: #{y} vertical: #{vertical})"
   end
@@ -52,27 +84,6 @@ class Layout < ApplicationRecord
 
   def hit?(col, row)
     vertical_hit?(col, row) || horizontal_hit?(col, row)
-  end
-
-  def self.set_location(args)
-    game = args[:game]
-    ship = args[:ship]
-    player = args[:player]
-    vertical = [0, 1].sample.zero?
-    if vertical
-      c = (0..9).to_a.sample
-      r = (0..(10 - ship.size)).to_a.sample
-      (r...(r + ship.size)).each do |y|
-        return Layout.set_location(args) unless game.hit?(player, c, y).nil?
-      end
-    else
-      c = (0..(10 - ship.size)).to_a.sample
-      r = (0..9).to_a.sample
-      (c...(c + ship.size)).each do |x|
-        return Layout.set_location(args) unless game.hit?(player, x, r).nil?
-      end
-    end
-    Layout.create!(game: game, player: player, ship: ship, vertical: vertical, x: c, y: r)
   end
 
   def check_sunk
