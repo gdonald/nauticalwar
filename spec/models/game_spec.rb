@@ -2,13 +2,17 @@
 
 require 'rails_helper'
 
-RSpec.describe Game, type: :model do
+RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   let(:ship) { Ship.first }
   let(:player_1) { create(:player) }
   let(:player_2) { create(:player) }
   let(:player_3) { create(:player) }
-  let!(:game_1) { create(:game, player_1: player_1, player_2: player_2, turn: player_1) }
-  let!(:game_2) { create(:game, player_1: player_1, player_2: player_2, turn: player_2) }
+  let!(:game_1) do
+    create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+  end
+  let!(:game_2) do
+    create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+  end
 
   before do
     Game.create_ships
@@ -16,9 +20,15 @@ RSpec.describe Game, type: :model do
     create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
   end
 
-  describe '#calculate_scores' do
-    let!(:game_1) { create(:game, player_1: player_1, player_2: player_2, turn: player_2, winner: player_1) }
-    let!(:game_2) { create(:game, player_1: player_1, player_2: player_2, turn: player_2, winner: player_2) }
+  describe '#calculate_scores' do # rubocop:disable Metrics/BlockLength
+    let!(:game_1) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                    winner: player_1)
+    end
+    let!(:game_2) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                    winner: player_2)
+    end
 
     it 'scores a game where player 1 wins' do
       game_1.calculate_scores
@@ -41,9 +51,15 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#calculate_scores_cancel' do
-    let!(:game_1) { create(:game, player_1: player_1, player_2: player_2, turn: player_2, winner: player_1) }
-    let!(:game_2) { create(:game, player_1: player_1, player_2: player_2, turn: player_2, winner: player_2) }
+  describe '#calculate_scores_cancel' do # rubocop:disable Metrics/BlockLength
+    let!(:game_1) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                    winner: player_1)
+    end
+    let!(:game_2) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                    winner: player_2)
+    end
 
     it 'scores a canceled game where player 1 wins' do
       game_1.calculate_scores_cancel
@@ -167,7 +183,10 @@ RSpec.describe Game, type: :model do
   end
 
   describe '#hit?' do
-    let!(:layout) { create(:layout, game: game_1, player: player_1, ship: ship, x: 2, y: 2, vertical: true) }
+    let!(:layout) do
+      create(:layout, game: game_1, player: player_1, ship: ship, x: 2, y: 2,
+                      vertical: true)
+    end
 
     it 'returns true' do
       expect(game_1.hit?(player_1, 2, 2)).to be_truthy
@@ -178,9 +197,14 @@ RSpec.describe Game, type: :model do
     end
   end
 
-  describe '#empty_neighbors' do
-    let!(:layout) { create(:layout, game: game_1, player: player_1, ship: ship, x: 5, y: 5, vertical: true) }
-    let!(:hit) { create(:move, game: game_1, player: player_2, x: 5, y: 5, layout: layout) }
+  describe '#empty_neighbors' do # rubocop:disable Metrics/BlockLength
+    let!(:layout) do
+      create(:layout, game: game_1, player: player_1, ship: ship, x: 5, y: 5,
+                      vertical: true)
+    end
+    let!(:hit) do
+      create(:move, game: game_1, player: player_2, x: 5, y: 5, layout: layout)
+    end
 
     it 'returns 4 empty neighbors for a hit' do
       expected = [[4, 6, 5, 5], [5, 5, 4, 6]]

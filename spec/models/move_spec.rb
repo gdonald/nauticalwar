@@ -2,10 +2,12 @@
 
 require 'rails_helper'
 
-RSpec.describe Move, type: :model do
+RSpec.describe Move, type: :model do # rubocop:disable Metrics/BlockLength
   let(:player_1) { create(:player) }
   let(:player_2) { create(:player) }
-  let(:game) { create(:game, player_1: player_1, player_2: player_2, turn: player_1) }
+  let(:game) do
+    create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+  end
 
   describe '#to_s' do
     let(:move) { build(:move, game: game, player: player_1) }
@@ -19,9 +21,15 @@ RSpec.describe Move, type: :model do
   describe 'validations' do
     describe '#layout_hits_max' do
       let(:ship) { create(:ship) }
-      let!(:layout) { create(:layout, game: game, player: player_1, ship: ship) }
-      let!(:move_1) { create(:move, game: game, layout: layout, player: player_1) }
-      let!(:move_2) { create(:move, game: game, layout: layout, player: player_2, y: 1) }
+      let!(:layout) do
+        create(:layout, game: game, player: player_1, ship: ship)
+      end
+      let!(:move_1) do
+        create(:move, game: game, layout: layout, player: player_1)
+      end
+      let!(:move_2) do
+        create(:move, game: game, layout: layout, player: player_2, y: 1)
+      end
 
       it 'creates an error' do
         move = build(:move, game: game, layout: layout, player: player_1)

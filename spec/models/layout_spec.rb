@@ -2,14 +2,18 @@
 
 require 'rails_helper'
 
-RSpec.describe Layout, type: :model do
+RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
   let(:player_1) { create(:player) }
   let(:player_2) { create(:player) }
-  let(:game) { create(:game, player_1: player_1, player_2: player_2, turn: player_1) }
+  let(:game) do
+    create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+  end
   let(:ship_1) { create(:ship) }
   let(:ship_2) { create(:ship) }
   let(:layout_1) { create(:layout, game: game, ship: ship_1, player: player_1) }
-  let(:layout_2) { create(:layout, :horizontal, game: game, ship: ship_2, player: player_1) }
+  let(:layout_2) do
+    create(:layout, :horizontal, game: game, ship: ship_2, player: player_1)
+  end
 
   describe '.sample_col_row' do
     it 'returns an array of integers' do
@@ -61,7 +65,7 @@ RSpec.describe Layout, type: :model do
 
   describe '#to_s' do
     it 'returns a string' do
-      expected = "Layout(player: #{player_1.name} ship: Ship(name: #{ship_1.name}, size: 2) x: 0 y: 0 vertical: true)"
+      expected = "Layout(player: #{player_1.name} ship: Ship(name: #{ship_1.name}, size: 2) x: 0 y: 0 vertical: true)" # rubocop:disable Metrics/LineLength
       expect(layout_1.to_s).to eq(expected)
     end
   end
