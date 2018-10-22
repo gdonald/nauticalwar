@@ -11,10 +11,32 @@ RSpec.describe Layout, type: :model do
   let(:layout_1) { create(:layout, game: game, ship: ship_1, player: player_1) }
   let(:layout_2) { create(:layout, :horizontal, game: game, ship: ship_2, player: player_1) }
 
+  describe '.sample_col_row' do
+    it 'returns an array of integers' do
+      result = Layout.sample_col_row(9, 9)
+      expect(result).to be_a(Array)
+      expect(result[0]).to be_between(0, 9)
+      expect(result[1]).to be_between(0, 9)
+    end
+
+    it 'returns an array of integers between 0 and 5' do
+      result = Layout.sample_col_row(5, 5)
+      expect(result).to be_a(Array)
+      expect(result[0]).to be_between(0, 5)
+      expect(result[1]).to be_between(0, 5)
+    end
+  end
+
   describe '.set_location' do
-    it 'creates a new layout' do
+    it 'creates a new vertical layout' do
       expect do
         Layout.set_location(game, player_1, ship_1, true)
+      end.to change(Layout, :count).by(1)
+    end
+
+    it 'creates a new horizontal layout' do
+      expect do
+        Layout.set_location(game, player_1, ship_1, false)
       end.to change(Layout, :count).by(1)
     end
   end
@@ -81,6 +103,18 @@ RSpec.describe Layout, type: :model do
 
     it 'returns false' do
       expect(layout_1.horizontal).to be_falsey
+    end
+  end
+
+  describe '#sunk?' do
+    it 'returns false' do
+      expect(layout_1.sunk?).to be_falsey
+    end
+
+    it 'returns true' do
+      create(:move, player: player_1, game: game, layout: layout_1)
+      create(:move, player: player_1, game: game, layout: layout_1, x: 1, y: 1)
+      expect(layout_1.sunk?).to be_truthy
     end
   end
 end

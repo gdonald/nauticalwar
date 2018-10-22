@@ -3,9 +3,9 @@
 class Player < ApplicationRecord
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
-  devise :database_authenticatable, 
+  devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable
-  devise :database_authenticatable, 
+  devise :database_authenticatable,
          :recoverable, :rememberable, :trackable, :validatable,
          :confirmable, :lockable, :timeoutable
 
@@ -49,6 +49,7 @@ class Player < ApplicationRecord
 
   def get_last
     return 0 if bot
+
     if last_sign_in_at
       return 0 if last_sign_in_at > 1.hour.ago
       return 1 if last_sign_in_at > 1.day.ago

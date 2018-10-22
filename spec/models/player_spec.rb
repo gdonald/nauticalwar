@@ -36,7 +36,7 @@ RSpec.describe Player, type: :model do
 
   describe '.generate_password' do
     let(:password) { Player.generate_password(16) }
-    
+
     it 'returns a generated password' do
       expect(password.length).to eq(16)
     end
@@ -65,7 +65,7 @@ RSpec.describe Player, type: :model do
     it 'signed in 4 days ago returns a 3' do
       expect(player_4.get_last).to eq(3)
     end
-    
+
     it 'never logged in returns a 3' do
       expect(player_5.get_last).to eq(3)
     end

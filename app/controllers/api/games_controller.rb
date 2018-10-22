@@ -122,7 +122,6 @@ class Api::GamesController < Api::ApiController
   end
 
   def attack
-    log('Game::attack()')
     status = -1
     game = Game.find_game(current_api_player, params[:id])
     if game
@@ -132,10 +131,11 @@ class Api::GamesController < Api::ApiController
         shots.each do |s|
           move = game.moves.for_player(current_api_player).where(x: s['x'], y: s['y']).first
           next unless move.nil?
+
           layout_player = game.player_1 == current_api_player ? game.player_2 : game.player_1
           layout = game.hit?(layout_player, s['x'], s['y'])
           Move.create!(game: game, player: current_api_player, x: s['x'], y: s['y'], layout: layout)
-          layout&.check_sunk
+          layout&.sunk?
         end
         status = 1
         game.next_turn
@@ -145,9 +145,7 @@ class Api::GamesController < Api::ApiController
               count = 0
               opponent.strength.times do
                 count += 1
-                log("  count: #{count}")
                 move = game.attack_sinking_ship(opponent, current_api_player)
-                log("  move: #{move}")
                 game.attack_random_ship(opponent, current_api_player) if move.nil?
               end
               (5 - opponent.strength).times do
