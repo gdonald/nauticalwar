@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CreatePlayers < ActiveRecord::Migration[5.2]
-  def change
+  def change # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     create_table :players do |t|
       ## Database authenticatable
       t.string :email,              null: false, default: ''
@@ -29,7 +29,8 @@ class CreatePlayers < ActiveRecord::Migration[5.2]
       t.string   :unconfirmed_email # Only if using reconfirmable
 
       ## Lockable
-      t.integer  :failed_attempts, null: false, default: 0 # Only if lock strategy is :failed_attempts
+      # Only if lock strategy is :failed_attempts
+      t.integer  :failed_attempts, null: false, default: 0
       t.string   :unlock_token # Only if unlock strategy is :email or :both
       t.datetime :locked_at
 

@@ -1,7 +1,19 @@
 # frozen_string_literal: true
 
 class GameSerializer < ActiveModel::Serializer
-  attributes :id, :player_1_id, :player_2_id, :player_1_name, :player_2_name, :turn_id, :winner_id, :updated_at, :player_1_layed_out, :player_2_layed_out, :rated, :five_shot, :t_limit
+  attributes :id,
+             :player_1_id,
+             :player_2_id,
+             :player_1_name,
+             :player_2_name,
+             :turn_id,
+             :winner_id,
+             :updated_at,
+             :player_1_layed_out,
+             :player_2_layed_out,
+             :rated,
+             :five_shot,
+             :t_limit
 
   def t_limit
     object.t_limit

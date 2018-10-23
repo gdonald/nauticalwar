@@ -28,26 +28,32 @@ class Player < ApplicationRecord
   end
 
   def active_games
-    games_1.includes(%i[player_1 player_2]).where(del_player_1: false).or(games_2.includes(%i[player_1 player_2]).where(del_player_2: false))
+    games_1.includes(%i[player_1 player_2])
+           .where(del_player_1: false)
+           .or(games_2.includes(%i[player_1 player_2])
+                      .where(del_player_2: false))
   end
 
   def invites
     invites_1.or(invites_2)
   end
 
-  def self.list(player)
+  def self.list(player) # rubocop:disable Metrics/AbcSize
     ids = Player.select(:id).where(bot: true).collect(&:id)
-    ids += Player.select(:id).where(arel_table[:rating].gteq(player.rating)).order(rating: :asc).limit(15).collect(&:id)
-    ids += Player.select(:id).where(arel_table[:rating].lteq(player.rating)).order(rating: :desc).limit(15).collect(&:id)
+    ids += Player.select(:id).where(arel_table[:rating].gteq(player.rating))
+                 .order(rating: :asc).limit(15).collect(&:id)
+    ids += Player.select(:id).where(arel_table[:rating].lteq(player.rating))
+                 .order(rating: :desc).limit(15).collect(&:id)
     ids.uniq!
     Player.where(id: ids).order(rating: :desc)
   end
 
   def self.generate_password(length)
-    (('a'..'z').to_a + (0..9).to_a + ['!', '@', '#', '$', '%', '^', '&', '*', '(', ')', '-', '_'] * 10).shuffle[0, length].join
+    chars = (('a'..'z').to_a + (0..9).to_a + %w[! @ # $ % ^ & * ( ) - _] * 10)
+    chars.shuffle[0, length].join
   end
 
-  def get_last
+  def last
     return 0 if bot
 
     if last_sign_in_at

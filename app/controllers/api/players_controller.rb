@@ -1,5 +1,6 @@
 # frozen_string_literal: true
 
+# rubocop:disable Style/ClassAndModuleChildren
 class Api::PlayersController < Api::ApiController
   respond_to :json
 
@@ -11,3 +12,4 @@ class Api::PlayersController < Api::ApiController
     render json: { activity: current_api_player.activity }
   end
 end
+# rubocop:enable Style/ClassAndModuleChildren

@@ -8,7 +8,8 @@ class Invite < ApplicationRecord
 
   validates :player_1, presence: true
   validates :player_2, presence: true
-  validates :player_2, uniqueness: { scope: :player_1_id, message: 'Invite already exists' }
+  validates :player_2, uniqueness: { scope: :player_1_id,
+                                     message: 'Invite already exists' }
 
   validates :rated, inclusion: [true, false]
   validates :five_shot, inclusion: [true, false]
@@ -24,7 +25,8 @@ class Invite < ApplicationRecord
 
   def create_game
     player_2.update_attributes(activity: player_2.activity + 1)
-    attrs = attributes.except('id', 'created_at', 'updated_at').merge('turn' => player_1)
+    attrs = attributes.except('id', 'created_at', 'updated_at')
+                      .merge('turn' => player_1)
     Game.create!(attrs)
   end
 end

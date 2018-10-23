@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
-Rails.application.routes.draw do
+Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   devise_for :players, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
-  namespace :api do
+  namespace :api do # rubocop:disable Metrics/BlockLength
     resources :ping, only: [:index]
 
     resources :games, only: %i[index show destroy] do

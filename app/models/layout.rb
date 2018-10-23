@@ -13,7 +13,8 @@ class Layout < ApplicationRecord
   validates :ship, presence: true
   validates :y, inclusion: { in: (0..9).to_a }
 
-  validates :player, uniqueness: { scope: %i[game x y], message: 'layout must be unique' }
+  validates :player, uniqueness: { scope: %i[game x y],
+                                   message: 'layout must be unique' }
 
   validates :vertical, inclusion: [true, false]
   validates :sunk, inclusion: [true, false]
@@ -59,7 +60,7 @@ class Layout < ApplicationRecord
   end
 
   def to_s
-    "Layout(player: #{player} ship: #{ship} x: #{x} y: #{y} vertical: #{vertical})"
+    "Layout(player: #{player} ship: #{ship} x: #{x} y: #{y} vertical: #{vertical})" # rubocop:disable Metrics/LineLength
   end
 
   def horizontal

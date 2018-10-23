@@ -50,7 +50,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#get_last' do
+  describe '#last' do
     let(:player_1) { create(:player, last_sign_in_at: Time.current) }
     let(:player_2) { create(:player, last_sign_in_at: 2.hours.ago) }
     let(:player_3) { create(:player, last_sign_in_at: 2.days.ago) }
@@ -59,27 +59,27 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     let(:bot) { create(:player, :bot) }
 
     it 'signed in recently returns a 0' do
-      expect(player_1.get_last).to eq(0)
+      expect(player_1.last).to eq(0)
     end
 
     it 'signed in 2 hours ago returns a 1' do
-      expect(player_2.get_last).to eq(1)
+      expect(player_2.last).to eq(1)
     end
 
     it 'signed in 2 days ago returns a 2' do
-      expect(player_3.get_last).to eq(2)
+      expect(player_3.last).to eq(2)
     end
 
     it 'signed in 4 days ago returns a 3' do
-      expect(player_4.get_last).to eq(3)
+      expect(player_4.last).to eq(3)
     end
 
     it 'never logged in returns a 3' do
-      expect(player_5.get_last).to eq(3)
+      expect(player_5.last).to eq(3)
     end
 
     it 'bot returns a 0' do
-      expect(bot.get_last).to eq(0)
+      expect(bot.last).to eq(0)
     end
   end
 end

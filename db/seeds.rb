@@ -3,7 +3,7 @@
 include FactoryBot::Syntax::Methods # rubocop:disable Style/MixinUsage
 
 create(:player, email: 'gdonald@gmail.com', name: 'gdonald',
-                password: 'rapture17', password_confirmation: 'rapture17',
+                password: 'changeme17', password_confirmation: 'changeme17',
                 confirmed_at: Time.current)
 
 x = 0

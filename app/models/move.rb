@@ -22,8 +22,8 @@ class Move < ApplicationRecord
   end
 
   def layout_hits_max
-    if layout && layout.moves.count == layout.ship.size
-      errors.add(:layout, 'ship already sunk')
-    end
+    return unless layout && layout.moves.count == layout.ship.size
+
+    errors.add(:layout, 'ship already sunk')
   end
 end

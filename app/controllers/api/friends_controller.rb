@@ -1,10 +1,12 @@
 # frozen_string_literal: true
 
+# rubocop:disable Style/ClassAndModuleChildren
 class Api::FriendsController < Api::ApiController
   skip_before_action :verify_authenticity_token, only: %i[create destroy]
 
   def index
-    render json: { ids: current_api_player.friends.collect(&:player_2_id) }
+    ids = current_api_player.friends.collect(&:player_2_id)
+    render json: { ids: ids }
   end
 
   def create
@@ -28,3 +30,4 @@ class Api::FriendsController < Api::ApiController
     render json: { status: status }
   end
 end
+# rubocop:enable Style/ClassAndModuleChildren

@@ -1,10 +1,13 @@
 # frozen_string_literal: true
 
-class Game < ApplicationRecord
+class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   belongs_to :player_1, class_name: 'Player', foreign_key: 'player_1_id'
   belongs_to :player_2, class_name: 'Player', foreign_key: 'player_2_id'
   belongs_to :turn, class_name: 'Player', foreign_key: 'turn_id'
-  belongs_to :winner, class_name: 'Player', foreign_key: 'winner_id', optional: true
+  belongs_to :winner,
+             class_name: 'Player',
+             foreign_key: 'winner_id',
+             optional: true
 
   has_many :layouts
   has_many :moves
@@ -83,7 +86,7 @@ class Game < ApplicationRecord
     touch
   end
 
-  def calculate_scores_cancel
+  def calculate_scores_cancel # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
     if winner == player_1
       player_1.wins   += 1
       player_2.losses += 1
@@ -99,7 +102,7 @@ class Game < ApplicationRecord
     player_2.save!
   end
 
-  def calculate_scores
+  def calculate_scores # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     p1 = player_1.rating
     p2 = player_2.rating
     p1_p2 = p1 + p2
@@ -135,7 +138,7 @@ class Game < ApplicationRecord
     nil
   end
 
-  def get_random_move_lines(player)
+  def get_random_move_lines(player) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
     cols = Array.new(10, 0)
     rows = Array.new(10, 0)
     10.times do |i|
@@ -156,7 +159,7 @@ class Game < ApplicationRecord
     [x, y]
   end
 
-  def get_random_move_spacing(player)
+  def get_random_move_spacing(player) # rubocop:disable Metrics/PerceivedComplexity, Metrics/LineLength, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
     mvs = moves.for_player(player)
     grid = Array.new(10, Array.new(10, ''))
     10.times do |x|
@@ -214,15 +217,13 @@ class Game < ApplicationRecord
 
   def again?(player)
     r = (1..100).to_a.sample
-    return true if player.id == 1 && r < 96
-    return true if player.id == 2 && r < 97
-    return true if player.id == 3 && r < 98
-    return true if player.id == 4 && r < 99
-
+    [[1, 96], [2, 97], [3, 98], [4, 99]].each do |a|
+      return true if player.id == a[0] && r < a[1]
+    end
     false
   end
 
-  def attack_random_ship(player, opponent)
+  def attack_random_ship(player, opponent) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
     x, y = get_random_move_lines(player)
     layout = hit?(opponent, x, y)
     if layout.nil? && again?(player)
@@ -230,7 +231,7 @@ class Game < ApplicationRecord
       layout = hit?(opponent, x, y)
       if layout.nil? && again?(player)
         x, y = get_random_move_lines(player)
-        layout = hit?(opponent, x, y)
+        # layout = hit?(opponent, x, y)
       end
     end
     move = moves.for_player(player).for_xy(x, y).first
@@ -242,18 +243,21 @@ class Game < ApplicationRecord
 
   def get_sinking_ship(player)
     layouts.unsunk_for_player(player).each do |layout|
-      return layout if moves.for_layout(layout).count > 0
+      return layout if moves.for_layout(layout).count.positive?
     end
     nil
   end
 
-  def empty_neighbors(player, hit)
+  def empty_neighbors(player, hit) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
     cols = []
     rows = []
     [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |cr|
       next unless (hit.x + cr[0]).between?(0, 9) &&
                   (hit.y + cr[1]).between?(0, 9) &&
-                  moves.for_player(player).for_xy(hit.x + cr[0], hit.y + cr[1]).empty?
+                  moves.for_player(player).for_xy(
+                    hit.x + cr[0],
+                    hit.y + cr[1]
+                  ).empty?
 
       cols << hit.x + cr[0]
       rows << hit.y + cr[1]
@@ -261,18 +265,19 @@ class Game < ApplicationRecord
     [cols, rows]
   end
 
-  def attack_1(player, opponent, hit)
+  def attack_1(player, opponent, hit) # rubocop:disable Metrics/AbcSize
     cols, rows = empty_neighbors(player, hit)
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample
       layout = hit?(opponent, cols[r], rows[r])
-      move = moves.create!(player: player, layout: layout, x: cols[r], y: rows[r])
+      args = { player: player, layout: layout, x: cols[r], y: rows[r] }
+      move = moves.create!(args)
       return true if move.persisted?
     end
     false
   end
 
-  def attack_2(player, opponent, hits)
+  def attack_2(player, opponent, hits) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/LineLength
     cols = []
     rows = []
     vertical = hits[0].x == hits[1].x
@@ -280,7 +285,7 @@ class Game < ApplicationRecord
     hit_rows = hits.collect(&:y)
     if vertical
       min_hit_rows = hit_rows.min - 1
-      min_hit_rows = min_hit_rows < 0 ? 0 : min_hit_rows
+      min_hit_rows = min_hit_rows.negative? ? 0 : min_hit_rows
       max_hit_rows = hit_rows.max + 1
       max_hit_rows = max_hit_rows > 9 ? 9 : max_hit_rows
       (min_hit_rows..max_hit_rows).each do |r|
@@ -292,7 +297,7 @@ class Game < ApplicationRecord
       end
     else
       min_hit_cols = hit_cols.min - 1
-      min_hit_cols = min_hit_cols < 0 ? 0 : min_hit_cols
+      min_hit_cols = min_hit_cols.negative? ? 0 : min_hit_cols
       max_hit_cols = hit_cols.max + 1
       max_hit_cols = max_hit_cols > 9 ? 9 : max_hit_cols
       (min_hit_cols..max_hit_cols).each do |c|

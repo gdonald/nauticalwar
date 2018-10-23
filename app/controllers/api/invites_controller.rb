@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
+# rubocop:disable Style/ClassAndModuleChildren
 class Api::InvitesController < Api::ApiController
-  skip_before_action :verify_authenticity_token, only: %i[create cancel accept cancel]
+  skip_before_action :verify_authenticity_token,
+                     only: %i[create cancel accept cancel]
 
   respond_to :json
 
@@ -13,13 +15,17 @@ class Api::InvitesController < Api::ApiController
     render json: { count: current_api_player.invites.count }
   end
 
-  def create
+  def create # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
     rated = params[:r] == '1'
     five_shot = params[:m] == '0'
     time_limit = (params[:t] == '1' ? 3.days : 1.day).to_i
 
     player = Player.find_by(id: params[:p])
-    args = { player_1: current_api_player, player_2: player, rated: rated, five_shot: five_shot, time_limit: time_limit }
+    args = { player_1: current_api_player,
+             player_2: player,
+             rated: rated,
+             five_shot: five_shot,
+             time_limit: time_limit }
 
     if player.bot
       args[:turn] = current_api_player
@@ -40,7 +46,7 @@ class Api::InvitesController < Api::ApiController
     end
   end
 
-  def accept
+  def accept # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     invite = current_api_player.invites_2.find_by(id: params[:id])
     if invite
       game = invite.create_game
@@ -77,3 +83,4 @@ class Api::InvitesController < Api::ApiController
     end
   end
 end
+# rubocop:enable Style/ClassAndModuleChildren
