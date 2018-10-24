@@ -15,7 +15,31 @@ class Api::GamesController < Api::ApiController
     render json: { count: current_api_player.active_games.count }
   end
 
-  def next; end
+  def next
+    status = -1
+    game = current_api_player.active_games
+                             .where(winner: nil,
+                                    turn: current_api_player,
+                                    player_1_layed_out: true,
+                                    player_2_layed_out: true)
+                             .order(updated_at: :desc).first
+    if game
+      status = game.id
+    else
+      current_api_player.active_games
+                        .where(winner: nil,
+                               player_1_layed_out: true,
+                               player_2_layed_out: true)
+                        .order(updated_at: :desc).each do |game|
+        if game.turn != current_api_player && game.t_limit <= 0
+          status = game.id
+          break
+        end
+      end
+    end
+
+    render json: { status: status }
+  end
 
   def skip
     status = -1
