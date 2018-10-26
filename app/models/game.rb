@@ -86,43 +86,34 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     touch
   end
 
-  def calculate_scores_cancel # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
-    if winner == player_1
-      player_1.wins   += 1
-      player_2.losses += 1
-      player_1.rating += 1
-      player_2.rating -= 1
-    elsif winner == player_2
-      player_2.wins   += 1
-      player_1.losses += 1
-      player_2.rating += 1
-      player_1.rating -= 1
-    end
-    player_1.save!
-    player_2.save!
+  def update_winner(player, variance)
+    player.wins   += 1
+    player.rating += variance
+    player.save!
   end
 
-  def calculate_scores # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
+  def update_loser(player, variance)
+    player.losses += 1
+    player.rating -= variance
+    player.save!
+  end
+
+  def score_variance(player_1, player_2)
     p1 = player_1.rating
     p2 = player_2.rating
-    p1_p2 = p1 + p2
-    p1_r = p1.to_f / p1_p2
-    p2_r = p2.to_f / p1_p2
-    p1_p = (32 * p1_r).to_i
-    p2_p = (32 * p2_r).to_i
+    p12 = p1 + p2
+    [(32 * p1.to_f / p12).to_i, (32 * p2.to_f / p12).to_i]
+  end
+
+  def calculate_scores(cancel=false)
+    p1_p, p2_p = cancel ? [1, 1] : score_variance(player_1, player_2)
     if winner == player_1
-      player_1.wins   += 1
-      player_2.losses += 1
-      player_1.rating += p2_p
-      player_2.rating -= p2_p
+      update_winner(player_1, p2_p)
+      update_loser(player_2, p2_p)
     elsif winner == player_2
-      player_2.wins   += 1
-      player_1.losses += 1
-      player_2.rating += p1_p
-      player_1.rating -= p1_p
+      update_winner(player_2, p1_p)
+      update_loser(player_1, p1_p)
     end
-    player_1.save!
-    player_2.save!
   end
 
   def attack_sinking_ship(player, opponent)
@@ -138,28 +129,37 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     nil
   end
 
-  def get_random_move_lines(player) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
+  def col_row_moves(player)
     cols = Array.new(10, 0)
     rows = Array.new(10, 0)
+    mvs = moves.for_player(player).for_layout(nil)
     10.times do |i|
-      cols[i] = moves.for_player(player).where(layout: nil, x: i).count
-      rows[i] = moves.for_player(player).where(layout: nil, y: i).count
+      cols[i] = mvs.where(x: i).count
+      rows[i] = mvs.where(y: i).count
     end
+    [cols, rows]
+  end
+
+  def random_min_col_row(cols, rows)
     min_cols = []
     min_rows = []
     10.times do |i|
       min_cols << i if cols[i] == cols.min
       min_rows << i if rows[i] == rows.min
     end
-    x = min_cols.sample
-    y = min_rows.sample
+    [min_cols.sample, min_rows.sample]
+  end
+
+  def get_random_move_lines(player)
+    cols, rows = col_row_moves(player)
+    x, y = random_min_col_row(cols, rows)
     move = moves.for_player(player).where(x: x, y: y).first
     return get_totally_random_move(player) if move
 
     [x, y]
   end
 
-  def get_random_move_spacing(player) # rubocop:disable Metrics/PerceivedComplexity, Metrics/LineLength, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+  def hit_mis_grid(player)
     mvs = moves.for_player(player)
     grid = Array.new(10, Array.new(10, ''))
     10.times do |x|
@@ -174,6 +174,11 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
         grid[x][y] = hit
       end
     end
+    grid
+  end
+
+  def get_random_move_spacing(player)
+    grid = hit_miss_grid(player)
     possibles = []
     10.times do |x|
       10.times do |y|
@@ -248,19 +253,21 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     nil
   end
 
-  def empty_neighbors(player, hit) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
+  def empty_neighbor?(player, x, y)
+    x.between?(0, 9) && y.between?(0, 9) &&
+      moves.for_player(player).for_xy(x, y).empty?
+  end
+
+  def empty_neighbors(player, hit)
     cols = []
     rows = []
-    [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |cr|
-      next unless (hit.x + cr[0]).between?(0, 9) &&
-                  (hit.y + cr[1]).between?(0, 9) &&
-                  moves.for_player(player).for_xy(
-                    hit.x + cr[0],
-                    hit.y + cr[1]
-                  ).empty?
+    [[-1, 0], [1, 0], [0, -1], [0, 1]].each do |col, row|
+      x = hit.x + col
+      y = hit.y + row
+      next unless empty_neighbor?(player, x, y)
 
-      cols << hit.x + cr[0]
-      rows << hit.y + cr[1]
+      cols << x
+      rows << y
     end
     [cols, rows]
   end

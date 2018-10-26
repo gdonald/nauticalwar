@@ -20,6 +20,29 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
   end
 
+  describe '#random_min_col_row' do
+    it 'returns indexes for least hit areas' do
+      cols, rows = [[2, 2, 1], [3, 3, 2]]
+      expected = [2, 2]
+      expect(game_1.random_min_col_row(cols, rows)).to eq(expected)
+    end
+  end
+
+  describe '#col_row_moves' do
+    it 'returns empty grid' do
+      expected = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
+      expect(game_1.col_row_moves(player_1)).to eq(expected)
+    end
+
+    it 'returns cols and rows' do
+      create(:move, game: game_1, player: player_1, x: 3, y: 3)
+      expected = [[0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
+                  [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]]
+      expect(game_1.col_row_moves(player_1)).to eq(expected)
+    end
+  end
+
   describe '#calculate_scores' do # rubocop:disable Metrics/BlockLength
     let!(:game_1) do
       create(:game, player_1: player_1, player_2: player_2, turn: player_2,
@@ -62,7 +85,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     it 'scores a canceled game where player 1 wins' do
-      game_1.calculate_scores_cancel
+      game_1.calculate_scores(true)
       expect(player_1.wins).to eq(1)
       expect(player_1.losses).to eq(0)
       expect(player_1.rating).to eq(1201)
@@ -72,7 +95,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     it 'scores a canceled game where player 2 wins' do
-      game_2.calculate_scores_cancel
+      game_2.calculate_scores(true)
       expect(player_1.wins).to eq(0)
       expect(player_1.losses).to eq(1)
       expect(player_1.rating).to eq(1199)

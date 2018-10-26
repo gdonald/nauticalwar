@@ -105,7 +105,7 @@ class Api::GamesController < Api::ApiController
           game.update_attributes(winner: game.player_1)
         end
       end
-      game.calculate_scores_cancel
+      game.calculate_scores(true)
     end
     render json: game
   end
