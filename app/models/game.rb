@@ -105,7 +105,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [(32 * p1.to_f / p12).to_i, (32 * p2.to_f / p12).to_i]
   end
 
-  def calculate_scores(cancel=false)
+  def calculate_scores(cancel = false)
     p1_p, p2_p = cancel ? [1, 1] : score_variance(player_1, player_2)
     if winner == player_1
       update_winner(player_1, p2_p)
@@ -114,19 +114,6 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
       update_winner(player_2, p1_p)
       update_loser(player_1, p1_p)
     end
-  end
-
-  def attack_sinking_ship(player, opponent)
-    layout = get_sinking_ship(opponent)
-    if layout
-      move = if layout.moves.count == 1
-               attack_1(player, opponent, layout.moves.first)
-             else
-               attack_2(player, opponent, layout.moves)
-             end
-      return move
-    end
-    nil
   end
 
   def col_row_moves(player)
@@ -159,9 +146,9 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [x, y]
   end
 
-  def hit_mis_grid(player)
+  def hit_miss_grid(player)
     mvs = moves.for_player(player)
-    grid = Array.new(10, Array.new(10, ''))
+    grid = Array.new(10) { Array.new(10, '') }
     10.times do |x|
       10.times do |y|
         hit = ''
@@ -177,7 +164,11 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     grid
   end
 
-  def get_random_move_spacing(player)
+  def in_grid?(n)
+    n.between?(0, 9)
+  end
+
+  def get_possible_spacing_moves
     grid = hit_miss_grid(player)
     possibles = []
     10.times do |x|
@@ -186,11 +177,10 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
         count = 0
         ((x - 1)..(x + 1)).each do |c|
-          next if c.negative? || c > 9
+          next unless in_grid?(c)
 
           ((y - 1)..(y + 1)).each do |r|
-            next if r.negative? || r > 9
-
+            next unless in_grid?(r)
             next if x == c && y == r
 
             count += 1 if grid[c][r].empty?
@@ -199,6 +189,11 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
         possibles << [[x, y], count] if count.positive?
       end
     end
+    possibles
+  end
+
+  def get_random_move_spacing(player)
+    possibles = get_possible_spacing_moves
     if possibles.any?
       possibles.sort_by! { |p| p[1] }.reverse
       high = possibles[0][1]
@@ -228,7 +223,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     false
   end
 
-  def attack_random_ship(player, opponent) # rubocop:disable Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
+  def attack_random_ship(player, opponent)
     x, y = get_random_move_lines(player)
     layout = hit?(opponent, x, y)
     if layout.nil? && again?(player)
@@ -236,7 +231,6 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
       layout = hit?(opponent, x, y)
       if layout.nil? && again?(player)
         x, y = get_random_move_lines(player)
-        # layout = hit?(opponent, x, y)
       end
     end
     move = moves.for_player(player).for_xy(x, y).first
@@ -323,5 +317,15 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     return move if move.persisted?
 
     false
+  end
+
+  def attack_sinking_ship(player, opponent)
+    layout = get_sinking_ship(opponent)
+    return nil unless layout
+    if layout.moves.count == 1
+      attack_1(player, opponent, layout.moves.first)
+    else
+      attack_2(player, opponent, layout.moves)
+    end
   end
 end

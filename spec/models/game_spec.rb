@@ -20,9 +20,67 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
   end
 
+  describe '#in_grid?' do
+    it 'returns true' do
+      expect(game_1.in_grid?(0)).to be_truthy
+      expect(game_1.in_grid?(9)).to be_truthy
+    end
+
+    it 'returns false' do
+      expect(game_1.in_grid?(-1)).to be_falsey
+      expect(game_1.in_grid?(10)).to be_falsey
+    end
+  end
+
+  describe '#hit_miss_grid' do
+    it 'returns a grid of hits and misses' do
+      result = game_1.hit_miss_grid(player_1)
+      expected = [['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', '']]
+      expect(result).to eq(expected)
+    end
+
+    it 'returns a grid of hits and misses' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                      x: 3, y: 5, vertical: true)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      result = game_1.hit_miss_grid(player_1)
+      expected = [['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', 'H', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', ''],
+                  ['', '', '', '', '', '', '', '', '', '']]
+      expect(result).to eq(expected)
+    end
+  end
+
+  describe '#get_random_move_lines' do
+    it 'gets an x, y coordinate' do
+      x, y = game_1.get_random_move_lines(player_1)
+      expect(x).to be_a(Integer)
+      expect(y).to be_a(Integer)
+      expect(x).to be_between(0, 9)
+      expect(y).to be_between(0, 9)
+    end
+  end
+
   describe '#random_min_col_row' do
     it 'returns indexes for least hit areas' do
-      cols, rows = [[2, 2, 1], [3, 3, 2]]
+      cols = [2, 2, 1]
+      rows = [3, 3, 2]
       expected = [2, 2]
       expect(game_1.random_min_col_row(cols, rows)).to eq(expected)
     end
