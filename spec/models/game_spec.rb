@@ -20,6 +20,77 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
   end
 
+  describe '.rand_xy' do
+    it 'returns a random x, y coordinate' do
+      result = Game.rand_xy
+      expect(result[0]).to be_a(Integer)
+      expect(result[1]).to be_a(Integer)
+      expect(result[0]).to be_between(0, 9)
+      expect(result[1]).to be_between(0, 9)
+    end
+  end
+
+  describe '#get_totally_random_move' do
+    it 'returns a random move' do
+      result = game_1.get_totally_random_move(player_1)
+      expect(result[0]).to be_a(Integer)
+      expect(result[1]).to be_a(Integer)
+      expect(result[0]).to be_between(0, 9)
+      expect(result[1]).to be_between(0, 9)
+    end
+  end
+
+  describe '#get_random_move_spacing' do
+    it 'returns a random move' do
+      result = game_1.get_random_move_spacing(player_1)
+      expect(result[0]).to be_a(Integer)
+      expect(result[1]).to be_a(Integer)
+      expect(result[0]).to be_between(0, 9)
+      expect(result[1]).to be_between(0, 9)
+    end
+
+    it 'returns a totally random move instead' do
+      allow(game_1).to receive(:get_possible_spacing_moves).with(player_1) { [] }
+      expect(game_1).to receive(:get_totally_random_move).with(player_1)
+      game_1.get_random_move_spacing(player_1)
+    end
+  end
+
+  describe '#get_possible_spacing_moves' do
+    it 'returns possible moves based on previous moves spacing' do
+      result = game_1.get_possible_spacing_moves(player_1)
+      expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3],
+                  [[1, 0], 5], [[1, 1], 8], [[1, 2], 8], [[1, 3], 8], [[1, 4], 8], [[1, 5], 8], [[1, 6], 8], [[1, 7], 8], [[1, 8], 8], [[1, 9], 5],
+                  [[2, 0], 5], [[2, 1], 8], [[2, 2], 8], [[2, 3], 8], [[2, 4], 8], [[2, 5], 8], [[2, 6], 8], [[2, 7], 8], [[2, 8], 8], [[2, 9], 5],
+                  [[3, 0], 5], [[3, 1], 8], [[3, 2], 8], [[3, 3], 8], [[3, 4], 8], [[3, 5], 8], [[3, 6], 8], [[3, 7], 8], [[3, 8], 8], [[3, 9], 5],
+                  [[4, 0], 5], [[4, 1], 8], [[4, 2], 8], [[4, 3], 8], [[4, 4], 8], [[4, 5], 8], [[4, 6], 8], [[4, 7], 8], [[4, 8], 8], [[4, 9], 5],
+                  [[5, 0], 5], [[5, 1], 8], [[5, 2], 8], [[5, 3], 8], [[5, 4], 8], [[5, 5], 8], [[5, 6], 8], [[5, 7], 8], [[5, 8], 8], [[5, 9], 5],
+                  [[6, 0], 5], [[6, 1], 8], [[6, 2], 8], [[6, 3], 8], [[6, 4], 8], [[6, 5], 8], [[6, 6], 8], [[6, 7], 8], [[6, 8], 8], [[6, 9], 5],
+                  [[7, 0], 5], [[7, 1], 8], [[7, 2], 8], [[7, 3], 8], [[7, 4], 8], [[7, 5], 8], [[7, 6], 8], [[7, 7], 8], [[7, 8], 8], [[7, 9], 5],
+                  [[8, 0], 5], [[8, 1], 8], [[8, 2], 8], [[8, 3], 8], [[8, 4], 8], [[8, 5], 8], [[8, 6], 8], [[8, 7], 8], [[8, 8], 8], [[8, 9], 5],
+                  [[9, 0], 3], [[9, 1], 5], [[9, 2], 5], [[9, 3], 5], [[9, 4], 5], [[9, 5], 5], [[9, 6], 5], [[9, 7], 5], [[9, 8], 5], [[9, 9], 3]]
+      expect(result).to eq(expected)
+    end
+
+    it 'returns possible moves based on previous moves spacing' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                      x: 3, y: 5, vertical: true)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      result = game_1.get_possible_spacing_moves(player_1)
+      expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3],
+                  [[1, 0], 5], [[1, 1], 8], [[1, 2], 8], [[1, 3], 8], [[1, 4], 8], [[1, 5], 8], [[1, 6], 8], [[1, 7], 8], [[1, 8], 8], [[1, 9], 5],
+                  [[2, 0], 5], [[2, 1], 8], [[2, 2], 8], [[2, 3], 8], [[2, 4], 7], [[2, 5], 7], [[2, 6], 7], [[2, 7], 8], [[2, 8], 8], [[2, 9], 5],
+                  [[3, 0], 5], [[3, 1], 8], [[3, 2], 8], [[3, 3], 8], [[3, 4], 7],              [[3, 6], 7], [[3, 7], 8], [[3, 8], 8], [[3, 9], 5],
+                  [[4, 0], 5], [[4, 1], 8], [[4, 2], 8], [[4, 3], 8], [[4, 4], 7], [[4, 5], 7], [[4, 6], 7], [[4, 7], 8], [[4, 8], 8], [[4, 9], 5],
+                  [[5, 0], 5], [[5, 1], 8], [[5, 2], 8], [[5, 3], 8], [[5, 4], 8], [[5, 5], 8], [[5, 6], 8], [[5, 7], 8], [[5, 8], 8], [[5, 9], 5],
+                  [[6, 0], 5], [[6, 1], 8], [[6, 2], 8], [[6, 3], 8], [[6, 4], 8], [[6, 5], 8], [[6, 6], 8], [[6, 7], 8], [[6, 8], 8], [[6, 9], 5],
+                  [[7, 0], 5], [[7, 1], 8], [[7, 2], 8], [[7, 3], 8], [[7, 4], 8], [[7, 5], 8], [[7, 6], 8], [[7, 7], 8], [[7, 8], 8], [[7, 9], 5],
+                  [[8, 0], 5], [[8, 1], 8], [[8, 2], 8], [[8, 3], 8], [[8, 4], 8], [[8, 5], 8], [[8, 6], 8], [[8, 7], 8], [[8, 8], 8], [[8, 9], 5],
+                  [[9, 0], 3], [[9, 1], 5], [[9, 2], 5], [[9, 3], 5], [[9, 4], 5], [[9, 5], 5], [[9, 6], 5], [[9, 7], 5], [[9, 8], 5], [[9, 9], 3]]
+      expect(result).to eq(expected)
+    end
+  end
+
   describe '#in_grid?' do
     it 'returns true' do
       expect(game_1.in_grid?(0)).to be_truthy

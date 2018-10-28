@@ -168,7 +168,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     n.between?(0, 9)
   end
 
-  def get_possible_spacing_moves
+  def get_possible_spacing_moves(player)
     grid = hit_miss_grid(player)
     possibles = []
     10.times do |x|
@@ -193,7 +193,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def get_random_move_spacing(player)
-    possibles = get_possible_spacing_moves
+    possibles = get_possible_spacing_moves(player)
     if possibles.any?
       possibles.sort_by! { |p| p[1] }.reverse
       high = possibles[0][1]
@@ -206,9 +206,13 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     get_totally_random_move(player)
   end
 
+  def self.rand_xy
+    a = (0..9).to_a
+    [a.sample, a.sample]
+  end
+
   def get_totally_random_move(player)
-    x = (0..9).to_a.sample
-    y = (0..9).to_a.sample
+    x, y = Game.rand_xy
     move = moves.for_player(player).where(x: x, y: y).first
     return [x, y] unless move
 
