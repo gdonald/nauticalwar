@@ -206,13 +206,17 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     get_totally_random_move(player)
   end
 
-  def self.rand_xy
+  def rand_xy
     a = (0..9).to_a
     [a.sample, a.sample]
   end
 
+  def rand_n(low, high)
+    (low..high).to_a.sample
+  end
+
   def get_totally_random_move(player)
-    x, y = Game.rand_xy
+    x, y = rand_xy
     move = moves.for_player(player).where(x: x, y: y).first
     return [x, y] unless move
 
@@ -220,7 +224,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def again?(player)
-    r = (1..100).to_a.sample
+    r = rand_n(1, 100)
     [[1, 96], [2, 97], [3, 98], [4, 99]].each do |a|
       return true if player.id == a[0] && r < a[1]
     end

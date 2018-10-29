@@ -16,17 +16,71 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
   before do
     Game.create_ships
-    create(:layout, game: game_1, player: player_1, ship: ship)
-    create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
   end
 
-  describe '.rand_xy' do
+  describe '#attack_random_ship' do
+    it 'attacks a random ship' do
+      expect do
+        game_1.attack_random_ship(player_1, player_2)
+      end.to change(Move, :count).by(1)
+    end
+  end
+
+  describe '#get_sinking_ship' do
+    it 'returns nil' do
+      create(:layout, game: game_1, player: player_2, ship: ship, x: 3, y: 5,
+             vertical: true)
+      expect(game_1.get_sinking_ship(player_2)).to be_nil
+    end
+
+    it 'returns an unsunk ship layout with a hit' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                      x: 3, y: 5, vertical: true)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      expect(game_1.get_sinking_ship(player_2)).to eq(layout)
+    end
+  end
+
+  describe '#again?' do
+    let(:player) { build(:player, id: 1) }
+
+    it 'returns true' do
+      allow(game_1).to receive(:rand_n) { 1 }
+      expect(game_1.again?(player)).to be_truthy
+    end
+
+    it 'returns true' do
+      allow(game_1).to receive(:rand_n) { 95 }
+      expect(game_1.again?(player)).to be_truthy
+    end
+
+    it 'returns falsey' do
+      allow(game_1).to receive(:rand_n) { 96 }
+      expect(game_1.again?(player)).to be_falsey
+    end
+
+    it 'returns falsey' do
+      player.id = 2
+      allow(game_1).to receive(:rand_n) { 97 }
+      expect(game_1.again?(player)).to be_falsey
+    end
+  end
+
+  describe '#rand_xy' do
     it 'returns a random x, y coordinate' do
-      result = Game.rand_xy
+      result = game_1.rand_xy
       expect(result[0]).to be_a(Integer)
       expect(result[1]).to be_a(Integer)
       expect(result[0]).to be_between(0, 9)
       expect(result[1]).to be_between(0, 9)
+    end
+  end
+
+  describe '#rand_n' do
+    it 'returns a random number' do
+      result = game_1.rand_n(0, 9)
+      expect(result[0]).to be_a(Integer)
+      expect(result[0]).to be_between(0, 9)
     end
   end
 
@@ -37,6 +91,14 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
       expect(result[1]).to be_a(Integer)
       expect(result[0]).to be_between(0, 9)
       expect(result[1]).to be_between(0, 9)
+    end
+
+    it 'returns a random move after calling get_totally_random_move again' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                      x: 3, y: 5, vertical: true)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      allow(game_1).to receive(:rand_xy).and_return([3, 5], [0, 0])
+      game_1.get_totally_random_move(player_1)
     end
   end
 
@@ -242,6 +304,11 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#declare_winner' do
+    before do
+      create(:layout, game: game_1, player: player_1, ship: ship)
+      create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
+    end
+
     it 'sets a game winner' do
       game_1.declare_winner
       expect(game_1.winner).to eq(player_1)
@@ -249,6 +316,11 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#all_ships_sunk?' do
+    before do
+      create(:layout, game: game_1, player: player_1, ship: ship)
+      create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
+    end
+
     it 'returns false' do
       expect(game_1.all_ships_sunk?(player_1)).to be_falsey
     end
