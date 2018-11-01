@@ -18,10 +18,30 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     Game.create_ships
   end
 
+  describe '#attack_1' do
+    it 'creates a move and returns true' do
+
+    end
+
+    it 'returns false' do
+
+    end
+  end
+
   describe '#attack_random_ship' do
     it 'attacks a random ship' do
       expect do
         game_1.attack_random_ship(player_1, player_2)
+      end.to change(Move, :count).by(1)
+    end
+
+    it 'attacks a random ship using get_random_move_spacing' do
+      layout = double('layout')
+      allow(layout).to receive(:nil?).once { true }
+      allow(game_1).to receive(:again?).with(player_1) { true }
+      expect(game_1).to receive(:get_random_move_spacing).with(player_1)
+      expect do
+        expect(game_1.attack_random_ship(player_1, player_2)).to be_truthy
       end.to change(Move, :count).by(1)
     end
   end
