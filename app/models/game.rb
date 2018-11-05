@@ -272,7 +272,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [cols, rows]
   end
 
-  def attack_1(player, opponent, hit) # rubocop:disable Metrics/AbcSize
+  def attack_1(player, opponent, hit)
     cols, rows = empty_neighbors(player, hit)
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample
@@ -284,36 +284,41 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     false
   end
 
-  def attack_2(player, opponent, hits) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/LineLength
-    cols = []
-    rows = []
-    vertical = hits[0].x == hits[1].x
-    hit_cols = hits.collect(&:x)
+  def normal_range(min, max)
+    ((min.negative? ? 0 : min)..(max > 9 ? 9 : max))
+  end
+
+  def attack_2_vertical(player, hits)
+    cols_rows = [[], []]
     hit_rows = hits.collect(&:y)
-    if vertical
-      min_hit_rows = hit_rows.min - 1
-      min_hit_rows = min_hit_rows.negative? ? 0 : min_hit_rows
-      max_hit_rows = hit_rows.max + 1
-      max_hit_rows = max_hit_rows > 9 ? 9 : max_hit_rows
-      (min_hit_rows..max_hit_rows).each do |r|
-        move = moves.for_player(player).where(x: hits[0].x, y: r).ordered.first
-        if move.nil?
-          cols << hits[0].x
-          rows << r
-        end
-      end
+    normal_range(hit_rows.min - 1, hit_rows.max + 1).each do |r|
+      move = moves.for_player(player).where(x: hits[0].x, y: r).ordered.first
+      next unless move
+
+      cols_rows[0] << hits[0].x
+      cols_rows[1] << r
+    end
+    cols_rows
+  end
+
+  def attack_2_horizontal(player, hits)
+    cols_rows = [[], []]
+    hit_cols = hits.collect(&:x)
+    normal_range(hit_cols.min - 1, hit_cols.max + 1).each do |c|
+      move = moves.for_player(player).where(x: c, y: hits[0].y).ordered.first
+      next unless move
+
+      cols_rows[0] << c
+      cols_rows[1] << hits[0].y
+    end
+    cols_rows
+  end
+
+  def attack_2(player, opponent, hits)
+    if hits[0].x == hits[1].x
+      cols, rows = attack_2_vertical(player, hits)
     else
-      min_hit_cols = hit_cols.min - 1
-      min_hit_cols = min_hit_cols.negative? ? 0 : min_hit_cols
-      max_hit_cols = hit_cols.max + 1
-      max_hit_cols = max_hit_cols > 9 ? 9 : max_hit_cols
-      (min_hit_cols..max_hit_cols).each do |c|
-        move = moves.for_player(player).where(x: c, y: hits[0].y).ordered.first
-        if move.nil?
-          cols << c
-          rows << hits[0].y
-        end
-      end
+      cols, rows = attack_2_horizontal(player, hits)
     end
     return false if cols.empty?
 
