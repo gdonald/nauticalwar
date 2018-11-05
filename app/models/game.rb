@@ -237,9 +237,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     if layout.nil? && again?(player)
       x, y = get_random_move_spacing(player)
       layout = hit?(opponent, x, y)
-      if layout.nil? && again?(player)
-        x, y = get_random_move_lines(player)
-      end
+      x, y = get_random_move_lines(player) if layout.nil? && again?(player)
     end
     move = moves.for_player(player).for_xy(x, y).first
     x, y = get_totally_random_move(player) if move
@@ -330,6 +328,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def attack_sinking_ship(player, opponent)
     layout = get_sinking_ship(opponent)
     return nil unless layout
+
     if layout.moves.count == 1
       attack_1(player, opponent, layout.moves.first)
     else

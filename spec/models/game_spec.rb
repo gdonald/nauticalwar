@@ -20,11 +20,43 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#attack_1' do
     it 'creates a move and returns true' do
-
     end
 
     it 'returns false' do
+    end
+  end
 
+  describe '#attack_2' do
+    it 'creates and returns a move' do
+    end
+
+    it 'returns false' do
+    end
+  end
+
+  describe '#attack_sinking_ship' do
+    it 'returns nil' do
+      result = game_1.attack_sinking_ship(player_1, player_2)
+      expect(result).to_not be
+    end
+
+    it 'calls attack_2' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                               x: 3, y: 5, vertical: true)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
+      moves = layout.moves
+      expect(game_1).to receive(:attack_2).with(player_1, player_2, moves)
+      game_1.attack_sinking_ship(player_1, player_2)
+    end
+
+    it 'calls attack_1' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                               x: 3, y: 5, vertical: true)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      moves = layout.moves
+      expect(game_1).to receive(:attack_1).with(player_1, player_2, moves.first)
+      game_1.attack_sinking_ship(player_1, player_2)
     end
   end
 
@@ -49,13 +81,13 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   describe '#get_sinking_ship' do
     it 'returns nil' do
       create(:layout, game: game_1, player: player_2, ship: ship, x: 3, y: 5,
-             vertical: true)
+                      vertical: true)
       expect(game_1.get_sinking_ship(player_2)).to be_nil
     end
 
     it 'returns an unsunk ship layout with a hit' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
-                      x: 3, y: 5, vertical: true)
+                               x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       expect(game_1.get_sinking_ship(player_2)).to eq(layout)
     end
@@ -115,7 +147,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
     it 'returns a random move after calling get_totally_random_move again' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
-                      x: 3, y: 5, vertical: true)
+                               x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       allow(game_1).to receive(:rand_xy).and_return([3, 5], [0, 0])
       game_1.get_totally_random_move(player_1)
@@ -156,7 +188,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
     it 'returns possible moves based on previous moves spacing' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
-                      x: 3, y: 5, vertical: true)
+                               x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       result = game_1.get_possible_spacing_moves(player_1)
       expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3],
@@ -203,7 +235,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
     it 'returns a grid of hits and misses' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
-                      x: 3, y: 5, vertical: true)
+                               x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       result = game_1.hit_miss_grid(player_1)
       expected = [['', '', '', '', '', '', '', '', '', ''],
