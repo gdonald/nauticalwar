@@ -18,6 +18,28 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     Game.create_ships
   end
 
+  describe '#attack_2' do
+    it 'creates and returns a move on a vertical layout' do
+      layout = create(:layout, game: game_1, player: player_2, ship: Ship.last,
+                      x: 3, y: 5, vertical: true)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
+      expect do
+        game_1.attack_2(player_1, player_2, layout.moves)
+      end.to change(Move, :count).by(1)
+    end
+
+    it 'creates and returns a move on a horizontal layout' do
+      layout = create(:layout, game: game_1, player: player_2, ship: Ship.last,
+                      x: 3, y: 5)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      create(:move, game: game_1, player: player_1, x: 4, y: 5, layout: layout)
+      expect do
+        game_1.attack_2(player_1, player_2, layout.moves)
+      end.to change(Move, :count).by(1)
+    end
+  end
+
   describe '#attack_2_vertical' do
     it 'returns possible vertical moves' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
