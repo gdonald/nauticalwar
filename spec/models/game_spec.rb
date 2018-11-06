@@ -18,19 +18,59 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     Game.create_ships
   end
 
-  describe '#attack_1' do
-    it 'creates a move and returns true' do
-    end
-
-    it 'returns false' do
+  describe '#attack_2_vertical' do
+    it 'returns possible vertical moves' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                               x: 3, y: 5, vertical: true)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      result = game_1.attack_2_vertical(player_1, layout.moves)
+      expect(result).to eq([[3, 3], [4, 6]])
     end
   end
 
-  describe '#attack_2' do
-    it 'creates and returns a move' do
+  describe '#attack_2_horizontal' do
+    it 'returns possible horizontal moves' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                               x: 3, y: 5, vertical: false)
+      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      result = game_1.attack_2_horizontal(player_1, layout.moves)
+      expect(result).to eq([[2, 4], [5, 5]])
+    end
+  end
+
+  describe '#attack_1' do
+    it 'creates a move and returns true' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                               x: 3, y: 5, vertical: true)
+      hit = create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
+      create(:move, game: game_1, player: player_1, x: 4, y: 5)
+      create(:move, game: game_1, player: player_1, x: 2, y: 5)
+      expect(game_1.attack_1(player_1, player_2, hit)).to be_truthy
+      move = game_1.moves.last
+      expect(move.x).to eq(3)
+      expect(move.y).to eq(4)
     end
 
     it 'returns false' do
+      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+                               x: 3, y: 5, vertical: true)
+      hit = create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
+      create(:move, game: game_1, player: player_1, x: 4, y: 5)
+      create(:move, game: game_1, player: player_1, x: 2, y: 5)
+      create(:move, game: game_1, player: player_1, x: 3, y: 4)
+      expect(game_1.attack_1(player_1, player_2, hit)).to be_falsey
+    end
+  end
+
+  describe '#normal_range' do
+    it 'returns a range from 0 to 9' do
+      expect(game_1.normal_range(-1, 10)).to eq((0..9))
+    end
+
+    it 'returns a range from 2 to 7' do
+      expect(game_1.normal_range(2, 7)).to eq((2..7))
     end
   end
 

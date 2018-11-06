@@ -293,7 +293,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     hit_rows = hits.collect(&:y)
     normal_range(hit_rows.min - 1, hit_rows.max + 1).each do |r|
       move = moves.for_player(player).where(x: hits[0].x, y: r).ordered.first
-      next unless move
+      next if move
 
       cols_rows[0] << hits[0].x
       cols_rows[1] << r
@@ -306,7 +306,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     hit_cols = hits.collect(&:x)
     normal_range(hit_cols.min - 1, hit_cols.max + 1).each do |c|
       move = moves.for_player(player).where(x: c, y: hits[0].y).ordered.first
-      next unless move
+      next if move
 
       cols_rows[0] << c
       cols_rows[1] << hits[0].y
