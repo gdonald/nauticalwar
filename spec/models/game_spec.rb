@@ -18,57 +18,58 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     Game.create_ships
   end
 
-  describe '#attack_2' do
+  describe '#attack_known_vert' do
     it 'creates and returns a move on a vertical layout' do
       layout = create(:layout, game: game_1, player: player_2, ship: Ship.last,
-                      x: 3, y: 5, vertical: true)
+                               x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
       expect do
-        game_1.attack_2(player_1, player_2, layout.moves)
+        game_1.attack_known_vert(player_1, player_2, layout.moves)
       end.to change(Move, :count).by(1)
     end
 
     it 'creates and returns a move on a horizontal layout' do
       layout = create(:layout, game: game_1, player: player_2, ship: Ship.last,
-                      x: 3, y: 5)
+                               x: 3, y: 5)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       create(:move, game: game_1, player: player_1, x: 4, y: 5, layout: layout)
       expect do
-        game_1.attack_2(player_1, player_2, layout.moves)
+        game_1.attack_known_vert(player_1, player_2, layout.moves)
       end.to change(Move, :count).by(1)
     end
   end
 
-  describe '#attack_2_vertical' do
+  describe '#attack_vertical' do
     it 'returns possible vertical moves' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
                                x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      result = game_1.attack_2_vertical(player_1, layout.moves)
+      result = game_1.attack_vertical(player_1, layout.moves)
       expect(result).to eq([[3, 3], [4, 6]])
     end
   end
 
-  describe '#attack_2_horizontal' do
+  describe '#attack_horizontal' do
     it 'returns possible horizontal moves' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
                                x: 3, y: 5, vertical: false)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      result = game_1.attack_2_horizontal(player_1, layout.moves)
+      result = game_1.attack_horizontal(player_1, layout.moves)
       expect(result).to eq([[2, 4], [5, 5]])
     end
   end
 
-  describe '#attack_1' do
+  describe '#attack_unknown_vert' do
     it 'creates a move and returns true' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
                                x: 3, y: 5, vertical: true)
-      hit = create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      hit = create(:move, game: game_1, player: player_1, x: 3, y: 5,
+                          layout: layout)
       create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
       create(:move, game: game_1, player: player_1, x: 4, y: 5)
       create(:move, game: game_1, player: player_1, x: 2, y: 5)
-      expect(game_1.attack_1(player_1, player_2, hit)).to be_truthy
+      expect(game_1.attack_unknown_vert(player_1, player_2, hit)).to be_truthy
       move = game_1.moves.last
       expect(move.x).to eq(3)
       expect(move.y).to eq(4)
@@ -77,12 +78,13 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     it 'returns false' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
                                x: 3, y: 5, vertical: true)
-      hit = create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      hit = create(:move, game: game_1, player: player_1, x: 3, y: 5,
+                          layout: layout)
       create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
       create(:move, game: game_1, player: player_1, x: 4, y: 5)
       create(:move, game: game_1, player: player_1, x: 2, y: 5)
       create(:move, game: game_1, player: player_1, x: 3, y: 4)
-      expect(game_1.attack_1(player_1, player_2, hit)).to be_falsey
+      expect(game_1.attack_unknown_vert(player_1, player_2, hit)).to be_falsey
     end
   end
 
@@ -102,22 +104,24 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
       expect(result).to_not be
     end
 
-    it 'calls attack_2' do
+    it 'calls attack_known_vert' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
                                x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
       moves = layout.moves
-      expect(game_1).to receive(:attack_2).with(player_1, player_2, moves)
+      expect(game_1).to receive(:attack_known_vert).with(player_1, player_2,
+                                                         moves)
       game_1.attack_sinking_ship(player_1, player_2)
     end
 
-    it 'calls attack_1' do
+    it 'calls attack_unknown_vert' do
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
                                x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       moves = layout.moves
-      expect(game_1).to receive(:attack_1).with(player_1, player_2, moves.first)
+      expect(game_1).to receive(:attack_unknown_vert).with(player_1, player_2,
+                                                           moves.first)
       game_1.attack_sinking_ship(player_1, player_2)
     end
   end
@@ -131,7 +135,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
     it 'attacks a random ship using get_random_move_spacing' do
       layout = double('layout')
-      allow(layout).to receive(:nil?).once { true }
+      allow(layout).to receive(:nil?).once.and_return(true)
       allow(game_1).to receive(:again?).with(player_1) { true }
       expect(game_1).to receive(:get_random_move_spacing).with(player_1)
       expect do
@@ -226,25 +230,25 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     it 'returns a totally random move instead' do
-      allow(game_1).to receive(:get_possible_spacing_moves).with(player_1) { [] }
+      allow(game_1).to receive(:get_possible_spacing_moves).with(player_1) { [] } # rubocop:disable Metrics/LineLength
       expect(game_1).to receive(:get_totally_random_move).with(player_1)
       game_1.get_random_move_spacing(player_1)
     end
   end
 
-  describe '#get_possible_spacing_moves' do
+  describe '#get_possible_spacing_moves' do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
     it 'returns possible moves based on previous moves spacing' do
       result = game_1.get_possible_spacing_moves(player_1)
-      expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3],
-                  [[1, 0], 5], [[1, 1], 8], [[1, 2], 8], [[1, 3], 8], [[1, 4], 8], [[1, 5], 8], [[1, 6], 8], [[1, 7], 8], [[1, 8], 8], [[1, 9], 5],
-                  [[2, 0], 5], [[2, 1], 8], [[2, 2], 8], [[2, 3], 8], [[2, 4], 8], [[2, 5], 8], [[2, 6], 8], [[2, 7], 8], [[2, 8], 8], [[2, 9], 5],
-                  [[3, 0], 5], [[3, 1], 8], [[3, 2], 8], [[3, 3], 8], [[3, 4], 8], [[3, 5], 8], [[3, 6], 8], [[3, 7], 8], [[3, 8], 8], [[3, 9], 5],
-                  [[4, 0], 5], [[4, 1], 8], [[4, 2], 8], [[4, 3], 8], [[4, 4], 8], [[4, 5], 8], [[4, 6], 8], [[4, 7], 8], [[4, 8], 8], [[4, 9], 5],
-                  [[5, 0], 5], [[5, 1], 8], [[5, 2], 8], [[5, 3], 8], [[5, 4], 8], [[5, 5], 8], [[5, 6], 8], [[5, 7], 8], [[5, 8], 8], [[5, 9], 5],
-                  [[6, 0], 5], [[6, 1], 8], [[6, 2], 8], [[6, 3], 8], [[6, 4], 8], [[6, 5], 8], [[6, 6], 8], [[6, 7], 8], [[6, 8], 8], [[6, 9], 5],
-                  [[7, 0], 5], [[7, 1], 8], [[7, 2], 8], [[7, 3], 8], [[7, 4], 8], [[7, 5], 8], [[7, 6], 8], [[7, 7], 8], [[7, 8], 8], [[7, 9], 5],
-                  [[8, 0], 5], [[8, 1], 8], [[8, 2], 8], [[8, 3], 8], [[8, 4], 8], [[8, 5], 8], [[8, 6], 8], [[8, 7], 8], [[8, 8], 8], [[8, 9], 5],
-                  [[9, 0], 3], [[9, 1], 5], [[9, 2], 5], [[9, 3], 5], [[9, 4], 5], [[9, 5], 5], [[9, 6], 5], [[9, 7], 5], [[9, 8], 5], [[9, 9], 3]]
+      expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3], # rubocop:disable Metrics/LineLength
+                  [[1, 0], 5], [[1, 1], 8], [[1, 2], 8], [[1, 3], 8], [[1, 4], 8], [[1, 5], 8], [[1, 6], 8], [[1, 7], 8], [[1, 8], 8], [[1, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[2, 0], 5], [[2, 1], 8], [[2, 2], 8], [[2, 3], 8], [[2, 4], 8], [[2, 5], 8], [[2, 6], 8], [[2, 7], 8], [[2, 8], 8], [[2, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[3, 0], 5], [[3, 1], 8], [[3, 2], 8], [[3, 3], 8], [[3, 4], 8], [[3, 5], 8], [[3, 6], 8], [[3, 7], 8], [[3, 8], 8], [[3, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[4, 0], 5], [[4, 1], 8], [[4, 2], 8], [[4, 3], 8], [[4, 4], 8], [[4, 5], 8], [[4, 6], 8], [[4, 7], 8], [[4, 8], 8], [[4, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[5, 0], 5], [[5, 1], 8], [[5, 2], 8], [[5, 3], 8], [[5, 4], 8], [[5, 5], 8], [[5, 6], 8], [[5, 7], 8], [[5, 8], 8], [[5, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[6, 0], 5], [[6, 1], 8], [[6, 2], 8], [[6, 3], 8], [[6, 4], 8], [[6, 5], 8], [[6, 6], 8], [[6, 7], 8], [[6, 8], 8], [[6, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[7, 0], 5], [[7, 1], 8], [[7, 2], 8], [[7, 3], 8], [[7, 4], 8], [[7, 5], 8], [[7, 6], 8], [[7, 7], 8], [[7, 8], 8], [[7, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[8, 0], 5], [[8, 1], 8], [[8, 2], 8], [[8, 3], 8], [[8, 4], 8], [[8, 5], 8], [[8, 6], 8], [[8, 7], 8], [[8, 8], 8], [[8, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[9, 0], 3], [[9, 1], 5], [[9, 2], 5], [[9, 3], 5], [[9, 4], 5], [[9, 5], 5], [[9, 6], 5], [[9, 7], 5], [[9, 8], 5], [[9, 9], 3]] # rubocop:disable Metrics/LineLength
       expect(result).to eq(expected)
     end
 
@@ -253,16 +257,16 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
                                x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
       result = game_1.get_possible_spacing_moves(player_1)
-      expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3],
-                  [[1, 0], 5], [[1, 1], 8], [[1, 2], 8], [[1, 3], 8], [[1, 4], 8], [[1, 5], 8], [[1, 6], 8], [[1, 7], 8], [[1, 8], 8], [[1, 9], 5],
-                  [[2, 0], 5], [[2, 1], 8], [[2, 2], 8], [[2, 3], 8], [[2, 4], 7], [[2, 5], 7], [[2, 6], 7], [[2, 7], 8], [[2, 8], 8], [[2, 9], 5],
-                  [[3, 0], 5], [[3, 1], 8], [[3, 2], 8], [[3, 3], 8], [[3, 4], 7],              [[3, 6], 7], [[3, 7], 8], [[3, 8], 8], [[3, 9], 5],
-                  [[4, 0], 5], [[4, 1], 8], [[4, 2], 8], [[4, 3], 8], [[4, 4], 7], [[4, 5], 7], [[4, 6], 7], [[4, 7], 8], [[4, 8], 8], [[4, 9], 5],
-                  [[5, 0], 5], [[5, 1], 8], [[5, 2], 8], [[5, 3], 8], [[5, 4], 8], [[5, 5], 8], [[5, 6], 8], [[5, 7], 8], [[5, 8], 8], [[5, 9], 5],
-                  [[6, 0], 5], [[6, 1], 8], [[6, 2], 8], [[6, 3], 8], [[6, 4], 8], [[6, 5], 8], [[6, 6], 8], [[6, 7], 8], [[6, 8], 8], [[6, 9], 5],
-                  [[7, 0], 5], [[7, 1], 8], [[7, 2], 8], [[7, 3], 8], [[7, 4], 8], [[7, 5], 8], [[7, 6], 8], [[7, 7], 8], [[7, 8], 8], [[7, 9], 5],
-                  [[8, 0], 5], [[8, 1], 8], [[8, 2], 8], [[8, 3], 8], [[8, 4], 8], [[8, 5], 8], [[8, 6], 8], [[8, 7], 8], [[8, 8], 8], [[8, 9], 5],
-                  [[9, 0], 3], [[9, 1], 5], [[9, 2], 5], [[9, 3], 5], [[9, 4], 5], [[9, 5], 5], [[9, 6], 5], [[9, 7], 5], [[9, 8], 5], [[9, 9], 3]]
+      expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3], # rubocop:disable Metrics/LineLength
+                  [[1, 0], 5], [[1, 1], 8], [[1, 2], 8], [[1, 3], 8], [[1, 4], 8], [[1, 5], 8], [[1, 6], 8], [[1, 7], 8], [[1, 8], 8], [[1, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[2, 0], 5], [[2, 1], 8], [[2, 2], 8], [[2, 3], 8], [[2, 4], 7], [[2, 5], 7], [[2, 6], 7], [[2, 7], 8], [[2, 8], 8], [[2, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[3, 0], 5], [[3, 1], 8], [[3, 2], 8], [[3, 3], 8], [[3, 4], 7],              [[3, 6], 7], [[3, 7], 8], [[3, 8], 8], [[3, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[4, 0], 5], [[4, 1], 8], [[4, 2], 8], [[4, 3], 8], [[4, 4], 7], [[4, 5], 7], [[4, 6], 7], [[4, 7], 8], [[4, 8], 8], [[4, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[5, 0], 5], [[5, 1], 8], [[5, 2], 8], [[5, 3], 8], [[5, 4], 8], [[5, 5], 8], [[5, 6], 8], [[5, 7], 8], [[5, 8], 8], [[5, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[6, 0], 5], [[6, 1], 8], [[6, 2], 8], [[6, 3], 8], [[6, 4], 8], [[6, 5], 8], [[6, 6], 8], [[6, 7], 8], [[6, 8], 8], [[6, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[7, 0], 5], [[7, 1], 8], [[7, 2], 8], [[7, 3], 8], [[7, 4], 8], [[7, 5], 8], [[7, 6], 8], [[7, 7], 8], [[7, 8], 8], [[7, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[8, 0], 5], [[8, 1], 8], [[8, 2], 8], [[8, 3], 8], [[8, 4], 8], [[8, 5], 8], [[8, 6], 8], [[8, 7], 8], [[8, 8], 8], [[8, 9], 5], # rubocop:disable Metrics/LineLength
+                  [[9, 0], 3], [[9, 1], 5], [[9, 2], 5], [[9, 3], 5], [[9, 4], 5], [[9, 5], 5], [[9, 6], 5], [[9, 7], 5], [[9, 8], 5], [[9, 9], 3]] # rubocop:disable Metrics/LineLength
       expect(result).to eq(expected)
     end
   end
@@ -279,7 +283,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#hit_miss_grid' do
+  describe '#hit_miss_grid' do # rubocop:disable Metrics/BlockLength
     it 'returns a grid of hits and misses' do
       result = game_1.hit_miss_grid(player_1)
       expected = [['', '', '', '', '', '', '', '', '', ''],

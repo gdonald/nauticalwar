@@ -98,9 +98,9 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     player.save!
   end
 
-  def score_variance(player_1, player_2)
-    p1 = player_1.rating
-    p2 = player_2.rating
+  def score_variance(player1, player2)
+    p1 = player1.rating
+    p2 = player2.rating
     p12 = p1 + p2
     [(32 * p1.to_f / p12).to_i, (32 * p2.to_f / p12).to_i]
   end
@@ -164,8 +164,22 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     grid
   end
 
-  def in_grid?(n)
-    n.between?(0, 9)
+  def in_grid?(pos)
+    pos.between?(0, 9)
+  end
+
+  def spacing_moves_count(x_pos, y_pos, grid)
+    count = 0
+    ((x_pos - 1)..(x_pos + 1)).each do |c|
+      next unless in_grid?(c)
+
+      ((y_pos - 1)..(y_pos + 1)).each do |r|
+        next if x_pos == c && y_pos == r || !in_grid?(r)
+
+        count += 1 if grid[c][r].empty?
+      end
+    end
+    count
   end
 
   def get_possible_spacing_moves(player)
@@ -175,17 +189,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
       10.times do |y|
         next if grid[x][y].size == 1
 
-        count = 0
-        ((x - 1)..(x + 1)).each do |c|
-          next unless in_grid?(c)
-
-          ((y - 1)..(y + 1)).each do |r|
-            next unless in_grid?(r)
-            next if x == c && y == r
-
-            count += 1 if grid[c][r].empty?
-          end
-        end
+        count = spacing_moves_count(x, y, grid)
         possibles << [[x, y], count] if count.positive?
       end
     end
@@ -194,16 +198,15 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def get_random_move_spacing(player)
     possibles = get_possible_spacing_moves(player)
-    if possibles.any?
-      possibles.sort_by! { |p| p[1] }.reverse
-      high = possibles[0][1]
-      best = []
-      possibles.each do |p|
-        best << p if p[1] == high
-      end
-      return best.sample[0]
+    return get_totally_random_move(player) if possibles.blank?
+
+    possibles.sort_by! { |p| p[1] }.reverse
+    high = possibles[0][1]
+    best = []
+    possibles.each do |p|
+      best << p if p[1] == high
     end
-    get_totally_random_move(player)
+    best.sample[0]
   end
 
   def rand_xy
@@ -253,9 +256,9 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     nil
   end
 
-  def empty_neighbor?(player, x, y)
-    x.between?(0, 9) && y.between?(0, 9) &&
-      moves.for_player(player).for_xy(x, y).empty?
+  def empty_neighbor?(player, x_pos, y_pos)
+    x_pos.between?(0, 9) && y_pos.between?(0, 9) &&
+      moves.for_player(player).for_xy(x_pos, y_pos).empty?
   end
 
   def empty_neighbors(player, hit)
@@ -272,7 +275,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [cols, rows]
   end
 
-  def attack_1(player, opponent, hit)
+  def attack_unknown_vert(player, opponent, hit)
     cols, rows = empty_neighbors(player, hit)
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample
@@ -288,7 +291,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     ((min.negative? ? 0 : min)..(max > 9 ? 9 : max))
   end
 
-  def attack_2_vertical(player, hits)
+  def attack_vertical(player, hits)
     cols_rows = [[], []]
     hit_rows = hits.collect(&:y)
     normal_range(hit_rows.min - 1, hit_rows.max + 1).each do |r|
@@ -301,7 +304,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     cols_rows
   end
 
-  def attack_2_horizontal(player, hits)
+  def attack_horizontal(player, hits)
     cols_rows = [[], []]
     hit_cols = hits.collect(&:x)
     normal_range(hit_cols.min - 1, hit_cols.max + 1).each do |c|
@@ -314,20 +317,17 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     cols_rows
   end
 
-  def attack_2(player, opponent, hits)
+  def attack_known_vert(player, opponent, hits)
     if hits[0].x == hits[1].x
-      cols, rows = attack_2_vertical(player, hits)
+      cols, rows = attack_vertical(player, hits)
     else
-      cols, rows = attack_2_horizontal(player, hits)
+      cols, rows = attack_horizontal(player, hits)
     end
-    return false if cols.empty?
+    return if cols.empty?
 
     r = (0..(cols.size - 1)).to_a.sample
     layout = hit?(opponent, cols[r], rows[r])
-    move = moves.create!(player: player, layout: layout, x: cols[r], y: rows[r])
-    return move if move.persisted?
-
-    false
+    moves.create!(player: player, layout: layout, x: cols[r], y: rows[r])
   end
 
   def attack_sinking_ship(player, opponent)
@@ -335,9 +335,9 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     return nil unless layout
 
     if layout.moves.count == 1
-      attack_1(player, opponent, layout.moves.first)
+      attack_unknown_vert(player, opponent, layout.moves.first)
     else
-      attack_2(player, opponent, layout.moves)
+      attack_known_vert(player, opponent, layout.moves)
     end
   end
 end
