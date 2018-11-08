@@ -25,35 +25,11 @@ class Layout < ApplicationRecord
   scope :sunk_for_player, ->(player) { where(sunk: true, player: player) }
   scope :unsunk_for_player, ->(player) { where(sunk: false, player: player) }
 
-  def self.sample_col_row(col_max, row_max)
-    [(0..col_max).to_a.sample, (0..row_max).to_a.sample]
-  end
-
-  def self.vertical_location(game, player, ship)
-    c, r = Layout.sample_col_row(9, 10 - ship.size)
-    (r...(r + ship.size)).each do |y|
-      if game.hit?(player, c, y).present?
-        return Layout.vertical_location(game, player, ship)
-      end
-    end
-    [c, r]
-  end
-
-  def self.horizontal_location(game, player, ship)
-    c, r = Layout.sample_col_row(10 - ship.size, 9)
-    (c...(c + ship.size)).each do |x|
-      if game.hit?(player, x, r).present?
-        return Layout.horizontal_location(game, player, ship)
-      end
-    end
-    [c, r]
-  end
-
   def self.set_location(game, player, ship, vertical)
     c, r = if vertical
-             Layout.vertical_location(game, player, ship)
+             game.vertical_location(player, ship)
            else
-             Layout.horizontal_location(game, player, ship)
+             game.horizontal_location(player, ship)
            end
     args = { player: player, ship: ship, vertical: vertical, x: c, y: r }
     game.layouts.create!(args)

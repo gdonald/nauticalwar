@@ -15,16 +15,16 @@ RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
     create(:layout, :horizontal, game: game, ship: ship_2, player: player_1)
   end
 
-  describe '.sample_col_row' do
+  describe '.rand_col_row' do
     it 'returns an array of integers' do
-      result = Layout.sample_col_row(9, 9)
+      result = game.rand_col_row(9, 9)
       expect(result).to be_a(Array)
       expect(result[0]).to be_between(0, 9)
       expect(result[1]).to be_between(0, 9)
     end
 
     it 'returns an array of integers between 0 and 5' do
-      result = Layout.sample_col_row(5, 5)
+      result = game.rand_col_row(5, 5)
       expect(result).to be_a(Array)
       expect(result[0]).to be_between(0, 5)
       expect(result[1]).to be_between(0, 5)
@@ -47,7 +47,7 @@ RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '.vertical_location' do
     it 'returns a row and col' do
-      result = Layout.vertical_location(game, player_1, ship_1)
+      result = game.vertical_location(player_1, ship_1)
       expect(result).to be_a(Array)
       expect(result[0]).to be_between(0, 9)
       expect(result[1]).to be_between(0, 9)
@@ -56,7 +56,7 @@ RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '.horizontal_location' do
     it 'returns a row and col' do
-      result = Layout.horizontal_location(game, player_1, ship_1)
+      result = game.horizontal_location(player_1, ship_1)
       expect(result).to be_a(Array)
       expect(result[0]).to be_between(0, 9)
       expect(result[1]).to be_between(0, 9)

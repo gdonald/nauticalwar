@@ -184,16 +184,6 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#rand_xy' do
-    it 'returns a random x, y coordinate' do
-      result = game_1.rand_xy
-      expect(result[0]).to be_a(Integer)
-      expect(result[1]).to be_a(Integer)
-      expect(result[0]).to be_between(0, 9)
-      expect(result[1]).to be_between(0, 9)
-    end
-  end
-
   describe '#rand_n' do
     it 'returns a random number' do
       result = game_1.rand_n(0, 9)
@@ -215,7 +205,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
       layout = create(:layout, game: game_1, player: player_2, ship: ship,
                                x: 3, y: 5, vertical: true)
       create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      allow(game_1).to receive(:rand_xy).and_return([3, 5], [0, 0])
+      allow(game_1).to receive(:rand_col_row).and_return([3, 5], [0, 0])
       game_1.get_totally_random_move(player_1)
     end
   end

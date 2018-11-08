@@ -37,6 +37,38 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     game && [game.player_1, game.player_2].include?(player) ? game : nil
   end
 
+  def rand_n(low, high)
+    (low..high).to_a.sample
+  end
+
+  def rand_col_row(col_max, row_max)
+    [rand_n(0, col_max), rand_n(0, row_max)]
+  end
+
+  def in_grid?(pos)
+    pos.between?(0, 9)
+  end
+
+  def normal_range(min, max)
+    ((min.negative? ? 0 : min)..(max > 9 ? 9 : max))
+  end
+
+  def vertical_location(player, ship)
+    c, r = rand_col_row(9, 10 - ship.size)
+    (r...(r + ship.size)).each do |y|
+      return vertical_location(player, ship) if hit?(player, c, y).present?
+    end
+    [c, r]
+  end
+
+  def horizontal_location(player, ship)
+    c, r = rand_col_row(10 - ship.size, 9)
+    (c...(c + ship.size)).each do |x|
+      return horizontal_location(player, ship) if hit?(player, x, r).present?
+    end
+    [c, r]
+  end
+
   def t_limit
     (updated_at + time_limit.seconds - Time.current).seconds.to_i
   end
@@ -164,10 +196,6 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     grid
   end
 
-  def in_grid?(pos)
-    pos.between?(0, 9)
-  end
-
   def spacing_moves_count(x_pos, y_pos, grid)
     count = 0
     ((x_pos - 1)..(x_pos + 1)).each do |c|
@@ -209,17 +237,8 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     best.sample[0]
   end
 
-  def rand_xy
-    a = (0..9).to_a
-    [a.sample, a.sample]
-  end
-
-  def rand_n(low, high)
-    (low..high).to_a.sample
-  end
-
   def get_totally_random_move(player)
-    x, y = rand_xy
+    x, y = rand_col_row(0, 9)
     move = moves.for_player(player).where(x: x, y: y).first
     return [x, y] unless move
 
@@ -285,10 +304,6 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
       return true if move.persisted?
     end
     false
-  end
-
-  def normal_range(min, max)
-    ((min.negative? ? 0 : min)..(max > 9 ? 9 : max))
   end
 
   def attack_vertical(player, hits)
