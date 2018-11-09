@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::SessionsController < Devise::SessionsController
+class Api::SessionsController < Devise::SessionsController # rubocop:disable Style/ClassAndModuleChildren, Metrics/LineLength
   skip_before_action :verify_authenticity_token
   # skip_before_action :authenticate_player!
   # skip_before_action :authenticate_api_player!

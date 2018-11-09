@@ -31,3 +31,4 @@
 coverage
 vendor/bundle
 .idea/*
+.DS_Store

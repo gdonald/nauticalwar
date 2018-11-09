@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::OmniauthCallbacksController < Devise::OmniauthCallbacksController
+class Api::OmniauthCallbacksController < Devise::OmniauthCallbacksController # rubocop:disable Style/ClassAndModuleChildren, Metrics/LineLength
   # You should configure your model like this:
   # devise :omniauthable, omniauth_providers: [:twitter]
 

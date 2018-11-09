@@ -137,7 +137,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [(32 * p1.to_f / p12).to_i, (32 * p2.to_f / p12).to_i]
   end
 
-  def calculate_scores(cancel = false)
+  def calculate_scores(cancel = false) # rubocop:disable Metrics/AbcSize
     p1_p, p2_p = cancel ? [1, 1] : score_variance(player_1, player_2)
     if winner == player_1
       update_winner(player_1, p2_p)
@@ -178,7 +178,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [x, y]
   end
 
-  def hit_miss_grid(player)
+  def hit_miss_grid(player) # rubocop:disable Metrics/MethodLength
     mvs = moves.for_player(player)
     grid = Array.new(10) { Array.new(10, '') }
     10.times do |x|
@@ -196,7 +196,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     grid
   end
 
-  def spacing_moves_count(x_pos, y_pos, grid)
+  def spacing_moves_count(x_pos, y_pos, grid) # rubocop:disable Metrics/AbcSize
     count = 0
     ((x_pos - 1)..(x_pos + 1)).each do |c|
       next unless in_grid?(c)
@@ -253,7 +253,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     false
   end
 
-  def attack_random_ship(player, opponent)
+  def attack_random_ship(player, opponent) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/LineLength
     x, y = get_random_move_lines(player)
     layout = hit?(opponent, x, y)
     if layout.nil? && again?(player)
@@ -294,7 +294,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [cols, rows]
   end
 
-  def attack_unknown_vert(player, opponent, hit)
+  def attack_unknown_vert(player, opponent, hit) # rubocop:disable Metrics/AbcSize, Metrics/LineLength
     cols, rows = empty_neighbors(player, hit)
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample
@@ -306,7 +306,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     false
   end
 
-  def attack_vertical(player, hits)
+  def attack_vertical(player, hits) # rubocop:disable Metrics/AbcSize
     cols_rows = [[], []]
     hit_rows = hits.collect(&:y)
     normal_range(hit_rows.min - 1, hit_rows.max + 1).each do |r|
@@ -319,7 +319,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     cols_rows
   end
 
-  def attack_horizontal(player, hits)
+  def attack_horizontal(player, hits) # rubocop:disable Metrics/AbcSize
     cols_rows = [[], []]
     hit_cols = hits.collect(&:x)
     normal_range(hit_cols.min - 1, hit_cols.max + 1).each do |c|
@@ -332,17 +332,19 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     cols_rows
   end
 
+  def create_known_vert_move(cols, rows, player, opponent)
+    r = rand_n(0, cols.size - 1)
+    layout = hit?(opponent, cols[r], rows[r])
+    moves.create!(player: player, layout: layout, x: cols[r], y: rows[r])
+  end
+
   def attack_known_vert(player, opponent, hits)
     if hits[0].x == hits[1].x
       cols, rows = attack_vertical(player, hits)
     else
       cols, rows = attack_horizontal(player, hits)
     end
-    return if cols.empty?
-
-    r = (0..(cols.size - 1)).to_a.sample
-    layout = hit?(opponent, cols[r], rows[r])
-    moves.create!(player: player, layout: layout, x: cols[r], y: rows[r])
+    create_known_vert_move(cols, rows, player, opponent) if cols.any?
   end
 
   def attack_sinking_ship(player, opponent)

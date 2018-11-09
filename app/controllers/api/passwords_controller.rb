@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::PasswordsController < Devise::PasswordsController
+class Api::PasswordsController < Devise::PasswordsController # rubocop:disable Style/ClassAndModuleChildren, Metrics/LineLength
   # GET /resource/password/new
   # def new
   #   super

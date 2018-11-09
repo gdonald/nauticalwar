@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::UnlocksController < Devise::UnlocksController
+class Api::UnlocksController < Devise::UnlocksController # rubocop:disable Style/ClassAndModuleChildren, Metrics/LineLength
   # GET /resource/unlock/new
   # def new
   #   super

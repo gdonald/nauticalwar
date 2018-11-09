@@ -18,6 +18,24 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     Game.create_ships
   end
 
+  describe '#vertical_location' do
+    it 'returns a row and col' do
+      result = game_1.vertical_location(player_1, ship)
+      expect(result).to be_a(Array)
+      expect(result[0]).to be_between(0, 9)
+      expect(result[1]).to be_between(0, 9)
+    end
+  end
+
+  describe '#horizontal_location' do
+    it 'returns a row and col' do
+      result = game_1.horizontal_location(player_1, ship)
+      expect(result).to be_a(Array)
+      expect(result[0]).to be_between(0, 9)
+      expect(result[1]).to be_between(0, 9)
+    end
+  end
+
   describe '#attack_known_vert' do
     it 'creates and returns a move on a vertical layout' do
       layout = create(:layout, game: game_1, player: player_2, ship: Ship.last,

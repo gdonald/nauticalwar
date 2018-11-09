@@ -45,24 +45,6 @@ RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '.vertical_location' do
-    it 'returns a row and col' do
-      result = game.vertical_location(player_1, ship_1)
-      expect(result).to be_a(Array)
-      expect(result[0]).to be_between(0, 9)
-      expect(result[1]).to be_between(0, 9)
-    end
-  end
-
-  describe '.horizontal_location' do
-    it 'returns a row and col' do
-      result = game.horizontal_location(player_1, ship_1)
-      expect(result).to be_a(Array)
-      expect(result[0]).to be_between(0, 9)
-      expect(result[1]).to be_between(0, 9)
-    end
-  end
-
   describe '#to_s' do
     it 'returns a string' do
       expected = "Layout(player: #{player_1.name} ship: Ship(name: #{ship_1.name}, size: 2) x: 0 y: 0 vertical: true)" # rubocop:disable Metrics/LineLength

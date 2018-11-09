@@ -7,6 +7,12 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   let(:player_2) { create(:player) }
   let(:player_3) { create(:player) }
 
+  describe '#to_s' do
+    it 'returns a string' do
+      expect(player_1.to_s).to eq(player_1.name)
+    end
+  end
+
   describe '#active_games' do
     let!(:game_1) do
       create(:game, player_1: player_1, player_2: player_2, turn: player_1)
