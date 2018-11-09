@@ -238,7 +238,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def get_totally_random_move(player)
-    x, y = rand_col_row(0, 9)
+    x, y = rand_col_row(9, 9)
     move = moves.for_player(player).where(x: x, y: y).first
     return [x, y] unless move
 
