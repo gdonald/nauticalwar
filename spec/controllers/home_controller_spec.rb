@@ -9,4 +9,12 @@ RSpec.describe HomeController, type: :controller do
       expect(response).to be_successful
     end
   end
+
+  describe 'GET #android' do
+    it 'returns http success' do
+      get :android
+      expect(response).to be_successful
+      expect(response).to render_template(layout: nil)
+    end
+  end
 end

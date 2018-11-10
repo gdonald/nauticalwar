@@ -59,6 +59,7 @@ group :test do
   gem 'capybara-webkit'
   gem 'chromedriver-helper'
   gem 'database_cleaner'
+  gem 'rails-controller-testing'
   gem 'selenium-webdriver'
 end
 
