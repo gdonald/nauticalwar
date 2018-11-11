@@ -3,10 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
-  let(:player) { create(:player) }
+  let(:player) { create(:player, :confirmed) }
 
   before do
-    player.confirm
     login(player)
   end
 

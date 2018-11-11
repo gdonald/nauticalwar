@@ -85,6 +85,22 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     nil
   end
 
+  def create_ship_layout(player, hash)
+    ship = Ship.find_by(name: hash['name'])
+    return unless ship
+
+    vertical = hash['vertical'] == '1'
+    Layout.create!(player: player, game: self, ship: ship,
+                   x: hash['x'], y: hash['y'], vertical: vertical)
+  end
+
+  def create_ship_layouts(player, params)
+    ships = JSON.parse(params[:layout])['ships']
+    ships.each { |s| create_ship_layout(player, s) }
+    player = player == player_1 ? 1 : 2
+    update_attributes("player_#{player}_layed_out": true)
+  end
+
   def bot_layout
     Ship.ordered.each do |ship|
       Layout.set_location(self, player_2, ship, [0, 1].sample.zero?)
