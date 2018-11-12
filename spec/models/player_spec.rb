@@ -13,6 +13,74 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '#next_game' do # rubocop:disable Metrics/BlockLength
+    describe 'with no player turn games' do
+      let!(:game_1) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                      player_1_layed_out: true, player_2_layed_out: true)
+      end
+      let!(:game_2) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                      player_1_layed_out: true, player_2_layed_out: true)
+      end
+
+      it 'returns recent opponent turn game with no time left' do
+        travel_to(2.days.from_now) do
+          expect(player_1.next_game).to eq(game_2)
+        end
+      end
+    end
+
+    describe 'with player turn games' do
+      let!(:game_1) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                      player_1_layed_out: true, player_2_layed_out: true)
+      end
+      let!(:game_2) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                      player_1_layed_out: true, player_2_layed_out: true)
+      end
+      let!(:game_3) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                      player_1_layed_out: true, player_2_layed_out: true)
+      end
+
+      it 'returns recent player turn game' do
+        expect(player_1.next_game).to eq(game_2)
+      end
+    end
+
+    describe 'with no games' do
+      it 'returns nil' do
+        expect(player_1.next_game).to be_nil
+      end
+    end
+  end
+
+  describe '#layed_out_and_no_winner' do
+    let!(:game_1) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                    player_1_layed_out: true)
+    end
+    let!(:game_2) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                    player_1_layed_out: false)
+    end
+    let!(:game_3) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                    player_1_layed_out: true, player_2_layed_out: true,
+                    winner: player_1)
+    end
+    let!(:game_4) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                    player_1_layed_out: true, player_2_layed_out: true)
+    end
+
+    it 'returns layed out games with no winner' do
+      expect(player_1.layed_out_and_no_winner).to eq([game_4])
+    end
+  end
+
   describe '#active_games' do
     let!(:game_1) do
       create(:game, player_1: player_1, player_2: player_2, turn: player_1)

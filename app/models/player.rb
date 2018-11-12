@@ -27,6 +27,24 @@ class Player < ApplicationRecord
     name
   end
 
+  def next_game
+    games = layed_out_and_no_winner
+    game = games.where(turn: self).first
+    return game if game
+
+    games.each do |g|
+      return g if g.turn != self && g.t_limit <= 0
+    end
+
+    nil
+  end
+
+  def layed_out_and_no_winner
+    active_games.where(winner: nil,
+                       player_1_layed_out: true,
+                       player_2_layed_out: true).order(updated_at: :desc)
+  end
+
   def active_games
     games_1.includes(%i[player_1 player_2])
            .where(del_player_1: false)

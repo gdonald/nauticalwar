@@ -89,9 +89,8 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     ship = Ship.find_by(name: hash['name'])
     return unless ship
 
-    vertical = hash['vertical'] == '1'
-    Layout.create!(player: player, game: self, ship: ship,
-                   x: hash['x'], y: hash['y'], vertical: vertical)
+    layouts.create!(player: player, ship: ship, x: hash['x'], y: hash['y'],
+                    vertical: hash['vertical'] == '1')
   end
 
   def create_ship_layouts(player, params)

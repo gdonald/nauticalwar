@@ -18,6 +18,32 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     Game.create_ships
   end
 
+  describe '#create_ship_layout' do
+    it 'creates ship layout' do
+      hash = { 'name' => 'Carrier', 'x' => 1, 'y' => 1, 'vertical' => 1 }
+      expect do
+        game_1.create_ship_layout(player_1, hash)
+      end.to change(Layout, :count).by(1)
+    end
+  end
+
+  describe '#create_ship_layouts' do
+    it 'creates ship layouts' do
+      layout = { ships: [
+        { name: 'Carrier', x: 1, y: 1, vertical: 1 },
+        { name: 'Battleship',  x: 2, y: 7, vertical: 0 },
+        { name: 'Destroyer',   x: 5, y: 3, vertical: 1 },
+        { name: 'Submarine',   x: 7, y: 6, vertical: 1 },
+        { name: 'Patrol Boat', x: 6, y: 1, vertical: 0 }
+      ] }.to_json
+      params = { game_id: game_1.id, layout: layout }
+      expect do
+        game_1.create_ship_layouts(player_1, params)
+      end.to change(Layout, :count).by(5)
+      expect(game_1.player_1_layed_out).to be_truthy
+    end
+  end
+
   describe '#vertical_location' do
     it 'returns a row and col' do
       result = game_1.vertical_location(player_1, ship)

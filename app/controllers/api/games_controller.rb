@@ -15,30 +15,9 @@ class Api::GamesController < Api::ApiController
     render json: { count: current_api_player.active_games.count }
   end
 
-  def next # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-    status = -1
-    game = current_api_player.active_games
-                             .where(winner: nil,
-                                    turn: current_api_player,
-                                    player_1_layed_out: true,
-                                    player_2_layed_out: true)
-                             .order(updated_at: :desc).first
-    if game
-      status = game.id
-    else
-      current_api_player.active_games
-                        .where(winner: nil,
-                               player_1_layed_out: true,
-                               player_2_layed_out: true)
-                        .order(updated_at: :desc).each do |g|
-        if g.turn != current_api_player && g.t_limit <= 0
-          status = g.id
-          break
-        end
-      end
-    end
-
-    render json: { status: status }
+  def next
+    game = current_api_player.next_game
+    render json: { status: game.nil? ? -1 : game.id }
   end
 
   def skip
