@@ -111,21 +111,25 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     player == player_1 ? player_2 : player_1
   end
 
-  def next_player_turn
-    turn == player_1 ? player_2 : player_1
-  end
-
   def all_ships_sunk?(player)
     layouts.unsunk_for_player(player).empty?
   end
 
+  def make_winner!(player)
+    update_attributes(winner: player)
+  end
+
   def declare_winner
     [player_1, player_2].each do |player|
-      update_attributes(winner: player) if all_ships_sunk?(opponent(player))
+      make_winner!(player) if all_ships_sunk?(opponent(player))
     end
   end
 
-  def next_turn
+  def next_player_turn
+    turn == player_1 ? player_2 : player_1
+  end
+
+  def next_turn!
     update_attributes(turn: next_player_turn)
     layouts.unsunk.each(&:sunk?)
     declare_winner

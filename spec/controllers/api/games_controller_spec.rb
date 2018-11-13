@@ -39,8 +39,52 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
   end
 
   describe 'GET #next' do
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                    player_1_layed_out: true, player_2_layed_out: true)
+    end
+
     it 'returns http success' do
       get :next
+      expect(json['status']).to eq(game.id)
+    end
+  end
+
+  describe 'POST #skip' do
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                    player_1_layed_out: true, player_2_layed_out: true)
+    end
+
+    it 'returns http success' do
+      travel_to(2.days.from_now) do
+        post :skip, params: { id: game.id }
+        expect(json['status']).to eq(game.id)
+      end
+    end
+  end
+
+  describe 'POST #destroy' do
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                    winner: player_1)
+    end
+
+    it 'returns http success' do
+      post :destroy, params: { id: game.id }
+      expect(json['status']).to eq(game.id)
+    end
+  end
+
+  describe 'POST #cancel' do
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                    winner: player_1)
+    end
+
+    it 'returns http success' do
+      post :cancel, params: { id: game.id }
+      expect(json['status']).to eq(game.id)
     end
   end
 end

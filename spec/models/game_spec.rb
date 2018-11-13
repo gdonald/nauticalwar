@@ -448,9 +448,9 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#next_turn' do
+  describe '#next_turn!' do
     it 'advances to next player turn' do
-      game_1.next_turn
+      game_1.next_turn!
       expect(game_1.turn).to eq(player_2)
     end
   end

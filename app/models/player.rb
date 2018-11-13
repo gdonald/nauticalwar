@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Player < ApplicationRecord
+class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   # Include default devise modules. Others available are:
   # :confirmable, :lockable, :timeoutable and :omniauthable
   devise :database_authenticatable,
@@ -25,6 +25,70 @@ class Player < ApplicationRecord
 
   def to_s
     name
+  end
+
+  def cancel_game!(id) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/LineLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+    game = Game.find_game(self, id)
+    if game
+      if game.t_limit.negative?
+        # layouts
+        if self == game.player_1
+          if game.player_1_layed_out && !game.player_2_layed_out # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
+            game.make_winner!(game.player_1)
+          elsif !game.player_1_layed_out # rubocop:disable Metrics/BlockNesting
+            game.make_winner!(game.player_2)
+          end
+        elsif self == game.player_2
+          if game.player_2_layed_out && !game.player_1_layed_out # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
+            game.make_winner!(game.player_2)
+          elsif !game.player_2_layed_out # rubocop:disable Metrics/BlockNesting
+            game.make_winner!(game.player_1)
+          end
+        end
+
+        if game.winner.nil? && self == game.turn # player is giving up
+          winner = self == game.player_1 ? game.player_2 : game.player_1 # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
+          game.make_winner!(winner)
+        end
+
+        if game.winner.nil? && self != game.turn # opponent won't play
+          winner = self == game.player_1 ? game.player_1 : game.player_2 # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
+          game.make_winner!(winner)
+        end
+      else
+        winner = self == game.player_1 ? game.player_2 : game.player_1
+        game.make_winner!(winner)
+      end
+      game.calculate_scores(true)
+    end
+    game
+  end
+
+  def destroy_game!(id) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/LineLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+    game = Game.find_game(self, id)
+    if game&.winner
+      if game.player_2.bot
+        game.destroy
+      else
+        if game.player_1 == self
+          game.update_attributes(del_player_1: true)
+        elsif game.player_2 == self
+          game.update_attributes(del_player_2: true)
+        end
+        game.destroy if game.del_player_1 && game.del_player_2
+      end
+    end
+    game
+  end
+
+  def can_skip?(game)
+    game && game.winner.nil? && game.turn != self && game.t_limit <= 0
+  end
+
+  def skip_game!(id)
+    game = Game.find_game(self, id)
+    game.next_turn! if can_skip?(game)
+    game
   end
 
   def next_game

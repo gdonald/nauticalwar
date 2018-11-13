@@ -6,10 +6,278 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   let(:player_1) { create(:player) }
   let(:player_2) { create(:player) }
   let(:player_3) { create(:player) }
+  let(:bot) { create(:player, :bot) }
 
   describe '#to_s' do
     it 'returns a string' do
       expect(player_1.to_s).to eq(player_1.name)
+    end
+  end
+
+  describe '#cancel_game!' do # rubocop:disable Metrics/BlockLength
+    it 'returns nil when game is not found' do
+      expect(player_1.cancel_game!(nil)).to be_nil
+    end
+
+    describe 'with enough time' do
+      let!(:game) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+      end
+
+      it 'player_1 gives up, player_2 wins' do
+        result = player_1.cancel_game!(game.id)
+        expect(result).to eq(game)
+        expect(result.winner).to eq(player_2)
+        expect(result.player_1.rating).to eq(1199)
+        expect(result.player_2.rating).to eq(1201)
+      end
+
+      it 'player_2 gives up, player_1 wins' do
+        result = player_2.cancel_game!(game.id)
+        expect(result).to eq(game)
+        expect(result.winner).to eq(player_1)
+        expect(result.player_1.rating).to eq(1201)
+        expect(result.player_2.rating).to eq(1199)
+      end
+    end
+
+    describe 'time has expired' do # rubocop:disable Metrics/BlockLength
+      describe 'player_2 has not layed out' do
+        let!(:game) do
+          create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                        player_1_layed_out: true, player_2_layed_out: false)
+        end
+
+        it 'player_1 cancels, player_1 wins' do
+          travel_to(2.days.from_now) do
+            result = player_1.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player_1)
+            expect(result.player_1.rating).to eq(1201)
+            expect(result.player_2.rating).to eq(1199)
+          end
+        end
+
+        it 'player_2 cancels, player_1 wins' do
+          travel_to(2.days.from_now) do
+            result = player_2.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player_1)
+            expect(result.player_1.rating).to eq(1201)
+            expect(result.player_2.rating).to eq(1199)
+          end
+        end
+      end
+
+      describe 'player_1 has not layed out' do
+        let!(:game) do
+          create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                        player_1_layed_out: false, player_2_layed_out: true)
+        end
+
+        it 'player_2 cancels, player_2 wins' do
+          travel_to(2.days.from_now) do
+            result = player_2.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player_2)
+            expect(result.player_1.rating).to eq(1199)
+            expect(result.player_2.rating).to eq(1201)
+          end
+        end
+
+        it 'player_1 cancels, player_2 wins' do
+          travel_to(2.days.from_now) do
+            result = player_1.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player_2)
+            expect(result.player_1.rating).to eq(1199)
+            expect(result.player_2.rating).to eq(1201)
+          end
+        end
+      end
+
+      describe 'player_1 gives up on player_1 turn' do
+        let!(:game) do
+          create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                        player_1_layed_out: true, player_2_layed_out: true)
+        end
+
+        it 'player_2 wins' do
+          travel_to(2.days.from_now) do
+            result = player_1.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player_2)
+            expect(result.player_1.rating).to eq(1199)
+            expect(result.player_2.rating).to eq(1201)
+          end
+        end
+      end
+
+      describe 'player_1 gives up on player_2 turn' do
+        let!(:game) do
+          create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                        player_1_layed_out: true, player_2_layed_out: true)
+        end
+
+        it 'player_1 wins' do
+          travel_to(2.days.from_now) do
+            result = player_1.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player_1)
+            expect(result.player_1.rating).to eq(1201)
+            expect(result.player_2.rating).to eq(1199)
+          end
+        end
+      end
+
+      describe 'player_2 gives up on player_2 turn' do
+        let!(:game) do
+          create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                        player_1_layed_out: true, player_2_layed_out: true)
+        end
+
+        it 'player_1 wins' do
+          travel_to(2.days.from_now) do
+            result = player_2.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player_1)
+            expect(result.player_1.rating).to eq(1201)
+            expect(result.player_2.rating).to eq(1199)
+          end
+        end
+      end
+
+      describe 'player_2 gives up on player_1 turn' do
+        let!(:game) do
+          create(:game, player_1: player_1, player_2: player_2, turn: player_1,
+                        player_1_layed_out: true, player_2_layed_out: true)
+        end
+
+        it 'player_2 wins' do
+          travel_to(2.days.from_now) do
+            result = player_2.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player_2)
+            expect(result.player_1.rating).to eq(1199)
+            expect(result.player_2.rating).to eq(1201)
+          end
+        end
+      end
+    end
+  end
+
+  describe '#destroy_game!' do # rubocop:disable Metrics/BlockLength
+    it 'returns nil when game is not found' do
+      expect(player_1.destroy_game!(nil)).to be_nil
+    end
+
+    describe 'with no winner' do
+      let!(:game) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+      end
+
+      it 'fails to set player_1 deleted' do
+        expect do
+          result = player_1.destroy_game!(game.id)
+          expect(result.del_player_1).to be_falsey
+        end.to change(Game, :count).by(0)
+      end
+    end
+
+    describe 'with a winner' do # rubocop:disable Metrics/BlockLength
+      let!(:game) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2,
+                      winner: player_1)
+      end
+
+      it 'sets player_1 deleted' do
+        expect do
+          result = player_1.destroy_game!(game.id)
+          expect(result.del_player_1).to be_truthy
+        end.to change(Game, :count).by(0)
+      end
+
+      it 'sets player_2 deleted' do
+        expect do
+          result = player_2.destroy_game!(game.id)
+          expect(result.del_player_2).to be_truthy
+        end.to change(Game, :count).by(0)
+      end
+
+      it 'deletes game player_2 already deleted' do
+        game.update_attributes(del_player_2: true)
+        expect do
+          player_1.destroy_game!(game.id)
+        end.to change(Game, :count).by(-1)
+      end
+
+      it 'deletes game player_1 already deleted' do
+        game.update_attributes(del_player_1: true)
+        expect do
+          player_2.destroy_game!(game.id)
+        end.to change(Game, :count).by(-1)
+      end
+    end
+
+    describe 'bot game' do
+      let!(:game) do
+        create(:game, player_1: player_1, player_2: bot, turn: player_2,
+                      winner: player_1)
+      end
+
+      it 'deletes the game' do
+        expect do
+          player_1.destroy_game!(game.id)
+        end.to change(Game, :count).by(-1)
+      end
+    end
+  end
+
+  describe '#skip_game!' do
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+    end
+
+    it 'skips inactive opponent' do
+      travel_to(2.days.from_now) do
+        result = player_1.skip_game!(game.id)
+        expect(result).to eq(game)
+        expect(result.turn).to eq(player_1)
+      end
+    end
+  end
+
+  describe '#can_skip?' do # rubocop:disable Metrics/BlockLength
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    end
+
+    it 'returns false when game is null' do
+      expect(player_1.can_skip?(nil)).to be_falsey
+    end
+
+    it 'returns false when time limit is not up' do
+      expect(player_1.can_skip?(game)).to be_falsey
+    end
+
+    it 'returns false if player turn' do
+      travel_to(2.days.from_now) do
+        expect(player_1.can_skip?(game)).to be_falsey
+      end
+    end
+
+    it 'returns false if winner' do
+      game.update_attributes(turn: player_2, winner: player_1)
+      travel_to(2.days.from_now) do
+        expect(player_1.can_skip?(game)).to be_falsey
+      end
+    end
+
+    it 'returns true if opponent turn' do
+      game.update_attributes(turn: player_2)
+      travel_to(2.days.from_now) do
+        expect(player_1.can_skip?(game)).to be_truthy
+      end
     end
   end
 

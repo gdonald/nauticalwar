@@ -21,72 +21,18 @@ class Api::GamesController < Api::ApiController
   end
 
   def skip
-    status = -1
-    game = Game.find_game(current_api_player, params[:id])
-    if game && game.winner.nil? &&
-       game.turn != current_api_player &&
-       game.t_limit <= 0
-      game.next_turn
-      status = 1
-    end
-    render json: { status: status }
+    game = current_api_player.skip_game!(params[:id])
+    render json: { status: game.nil? ? -1 : game.id }
   end
 
-  def destroy # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/LineLength
-    status = -1
-    game = Game.find_game(current_api_player, params[:id])
-    if game&.winner
-      status = game.id
-      if game.player_1 == current_api_player
-        if game.player_2.bot
-          game.destroy
-        else
-          game.update_attributes(del_player_1: true)
-        end
-      elsif game.player_2 == current_api_player
-        game.update_attributes(del_player_2: true)
-      end
-      game.destroy if game.del_player_1 && game.del_player_2
-    end
-    render json: { status: status }
+  def destroy
+    game = current_api_player.destroy_game!(params[:id])
+    render json: { status: game.nil? ? -1 : game.id }
   end
 
-  def cancel # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/LineLength
-    game = Game.find_game(current_api_player, params[:id])
-    if game
-      if game.t_limit.negative?
-        # opponent won't layout
-        if current_api_player == game.player_1 && game.player_1_layed_out && !game.player_2_layed_out # rubocop:disable Metrics/LineLength
-          game.update_attributes(winner: game.player_1)
-        elsif current_api_player == game.player_2 && game.player_2_layed_out && !game.player_1_layed_out # rubocop:disable Metrics/LineLength
-          game.update_attributes(winner: game.player_2)
-
-        # opponent won't play
-        elsif current_api_player != game.turn
-          if current_api_player == game.player_1 # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
-            game.update_attributes(winner: game.player_1)
-          else
-            game.update_attributes(winner: game.player_2)
-          end
-
-        # i'm giving up
-        elsif current_api_player == game.turn
-          if current_api_player == game.player_1 # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
-            game.update_attributes(winner: game.player_2)
-          else
-            game.update_attributes(winner: game.player_1)
-          end
-        end
-      else
-        if current_api_player == game.player_1 # rubocop:disable Style/IfInsideElse, Metrics/LineLength
-          game.update_attributes(winner: game.player_2)
-        else
-          game.update_attributes(winner: game.player_1)
-        end
-      end
-      game.calculate_scores(true)
-    end
-    render json: game
+  def cancel
+    game = current_api_player.cancel_game!(params[:id])
+    render json: { status: game.nil? ? -1 : game.id }
   end
 
   def my_turn
