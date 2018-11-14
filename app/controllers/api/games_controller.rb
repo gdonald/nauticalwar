@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-# rubocop:disable Style/ClassAndModuleChildren, Metrics/ClassLength
+# rubocop:disable Style/ClassAndModuleChildren
 class Api::GamesController < Api::ApiController
   skip_before_action :verify_authenticity_token,
                      only: %i[destroy cancel attack skip]
@@ -17,66 +17,36 @@ class Api::GamesController < Api::ApiController
 
   def next
     game = current_api_player.next_game
-    render json: { status: game.nil? ? -1 : game.id }
+    render json: { status: status(game) }
   end
 
   def skip
     game = current_api_player.skip_game!(params[:id])
-    render json: { status: game.nil? ? -1 : game.id }
+    render json: { status: status(game) }
   end
 
   def destroy
     game = current_api_player.destroy_game!(params[:id])
-    render json: { status: game.nil? ? -1 : game.id }
+    render json: { status: status(game) }
   end
 
   def cancel
     game = current_api_player.cancel_game!(params[:id])
-    render json: { status: game.nil? ? -1 : game.id }
+    render json: { status: status(game) }
   end
 
   def my_turn
-    game = Game.find_game(current_api_player, params[:id])
-    status = game && game.turn == current_api_player ? 1 : -1
-    render json: { status: status }
+    render json: { status: current_api_player.my_turn(params[:id]) }
   end
 
-  def show # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-    game = Game.find_game(current_api_player, params[:id])
-    if game
-      klass = ActiveModelSerializers::SerializableResource
-      moves_player = current_api_player == game.player_1 ? game.player_2 : game.player_1 # rubocop:disable Metrics/LineLength
-      layouts_player = current_api_player == game.player_1 ? game.player_1 : game.player_2 # rubocop:disable Metrics/LineLength
-      render json: {
-        game: klass.new(game, {}).as_json,
-        layouts: klass.new(game.layouts
-                               .where(player: layouts_player).ordered,
-                           {}).as_json,
-        moves: klass.new(game.moves_for_player(moves_player).ordered,
-                         {}).as_json
-      }
-    else
-      render json: { error: 'game not found' }, status: :not_found
-    end
+  def show
+    result = current_api_player.find_game(params[:id])
+    render_game(result)
   end
 
-  def opponent # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-    game = Game.find_game(current_api_player, params[:id])
-    if game
-      klass = ActiveModelSerializers::SerializableResource
-      moves_player = current_api_player == game.player_1 ? game.player_1 : game.player_2 # rubocop:disable Metrics/LineLength
-      layouts_player = current_api_player == game.player_1 ? game.player_2 : game.player_1 # rubocop:disable Metrics/LineLength
-      render json: {
-        game: klass.new(game, {}).as_json,
-        layouts: klass.new(game.layouts.where(player: layouts_player,
-                                              sunk: true).ordered,
-                           {}).as_json,
-        moves: klass.new(game.moves_for_player(moves_player).ordered,
-                         {}).as_json
-      }
-    else
-      render json: { error: 'game not found' }, status: :not_found
-    end
+  def opponent
+    result = current_api_player.find_game(params[:id], true)
+    render_game(result)
   end
 
   def attack # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/LineLength
@@ -128,5 +98,22 @@ class Api::GamesController < Api::ApiController
       render json: { error: 'game not found' }, status: :not_found
     end
   end
+
+  def status(game)
+    game.nil? ? -1 : game.id
+  end
+
+  def render_game(result)
+    if result
+      klass = ActiveModelSerializers::SerializableResource
+      render json: {
+        game: klass.new(result[:game], {}).as_json,
+        layouts: klass.new(result[:layouts], {}).as_json,
+        moves: klass.new(result[:moves], {}).as_json
+      }
+    else
+      render json: { error: 'game not found' }, status: :not_found
+    end
+  end
 end
-# rubocop:enable Style/ClassAndModuleChildren, Metrics/ClassLength
+# rubocop:enable Style/ClassAndModuleChildren

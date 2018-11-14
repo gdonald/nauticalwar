@@ -27,6 +27,22 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     name
   end
 
+  def find_game(id, opponent = false)
+    game = Game.find_game(self, id)
+    return nil unless game
+
+    player = self == game.player_1 ? game.player_1 : game.player_2
+    player = game.opponent(player) if opponent
+    layouts = game.layouts.where(player: player).ordered
+    moves = game.moves_for_player(game.opponent(player)).ordered
+    { game: game, layouts: layouts, moves: moves }
+  end
+
+  def my_turn(id)
+    game = Game.find_game(self, id)
+    game && game.turn == self ? 1 : -1
+  end
+
   def cancel_game!(id) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/LineLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
     game = Game.find_game(self, id)
     if game

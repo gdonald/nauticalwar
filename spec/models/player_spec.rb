@@ -14,6 +14,72 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '#find_game' do # rubocop:disable Metrics/BlockLength
+    describe 'player' do
+      describe 'game exists' do
+        let(:game) do
+          create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+        end
+        let(:layout) do
+          create(:layout, game: game, player: player_1, ship: create(:ship),
+                          x: 3, y: 5)
+        end
+        let!(:move) do
+          create(:move, game: game, player: player_2, x: 3, y: 5,
+                        layout: layout)
+        end
+
+        it 'returns a game hash' do
+          expected = { game: game, layouts: [layout], moves: [move] }
+          expect(player_1.find_game(game.id)).to eq(expected)
+        end
+      end
+
+      it 'returns nil' do
+        expect(player_1.find_game(0)).to be_nil
+      end
+    end
+
+    describe 'opponent' do
+      describe 'game exists' do
+        let(:game) do
+          create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+        end
+        let(:layout) do
+          create(:layout, game: game, player: player_2, ship: create(:ship),
+                          x: 3, y: 5)
+        end
+        let!(:move) do
+          create(:move, game: game, player: player_1, x: 3, y: 5,
+                        layout: layout)
+        end
+
+        it 'returns a game hash' do
+          expected = { game: game, layouts: [layout], moves: [move] }
+          expect(player_1.find_game(game.id, true)).to eq(expected)
+        end
+      end
+
+      it 'returns nil' do
+        expect(player_1.find_game(0, true)).to be_nil
+      end
+    end
+  end
+
+  describe '#my_turn' do
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    end
+
+    it 'returns true' do
+      expect(player_1.my_turn(game.id)).to eq(1)
+    end
+
+    it 'returns false' do
+      expect(player_2.my_turn(game.id)).to eq(-1)
+    end
+  end
+
   describe '#cancel_game!' do # rubocop:disable Metrics/BlockLength
     it 'returns nil when game is not found' do
       expect(player_1.cancel_game!(nil)).to be_nil

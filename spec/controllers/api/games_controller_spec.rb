@@ -87,4 +87,119 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
       expect(json['status']).to eq(game.id)
     end
   end
+
+  describe 'GET #my_turn' do
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    end
+
+    it 'returns http success' do
+      get :my_turn, params: { id: game.id }
+      expect(json['status']).to eq(1)
+    end
+  end
+
+  describe 'GET #show' do # rubocop:disable Metrics/BlockLength
+    describe 'game exists' do # rubocop:disable Metrics/BlockLength
+      let(:game) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+      end
+      let(:layout) do
+        create(:layout, game: game, player: player_1, ship: create(:ship),
+                        x: 3, y: 5)
+      end
+      let!(:move) do
+        create(:move, game: game, player: player_2, x: 3, y: 5,
+                      layout: layout)
+      end
+
+      it 'returns a game' do # rubocop:disable Metrics/BlockLength
+        travel_to(1.day.from_now) do # rubocop:disable Metrics/BlockLength
+          get :show, params: { id: game.id }
+          expected = {
+            'game' =>
+              { 'id' => game.id,
+                'player_1_id' => player_1.id,
+                'player_2_id' => player_2.id,
+                'player_1_name' => player_1.name,
+                'player_2_name' => player_2.name,
+                'turn_id' => player_2.id,
+                'winner_id' => '0',
+                'updated_at' => game.updated_at.iso8601,
+                'player_1_layed_out' => '0',
+                'player_2_layed_out' => '0',
+                'rated' => '1',
+                'five_shot' => '1',
+                't_limit' => 0 },
+            'layouts' => [{ 'id' => layout.id,
+                            'game_id' => game.id,
+                            'player_id' => player_1.id,
+                            'ship_id' => layout.ship_id - 1,
+                            'x' => 3,
+                            'y' => 5,
+                            'vertical' => 1 }],
+            'moves' => [{ 'x' => 3, 'y' => 5, 'hit' => 'H' }]
+          }
+          expect(json).to eq(expected)
+        end
+      end
+    end
+
+    it 'returns an error' do
+      get :show, params: { id: 0 }
+      expect(json['error']).to eq('game not found')
+    end
+  end
+
+  describe 'GET #opponent' do # rubocop:disable Metrics/BlockLength
+    describe 'game exists' do # rubocop:disable Metrics/BlockLength
+      let(:game) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+      end
+      let(:layout) do
+        create(:layout, game: game, player: player_2, ship: create(:ship),
+                        x: 3, y: 5)
+      end
+      let!(:move) do
+        create(:move, game: game, player: player_1, x: 3, y: 5,
+                      layout: layout)
+      end
+
+      it 'returns a game' do # rubocop:disable Metrics/BlockLength
+        travel_to(1.day.from_now) do # rubocop:disable Metrics/BlockLength
+          get :opponent, params: { id: game.id }
+          expected = {
+            'game' =>
+                { 'id' => game.id,
+                  'player_1_id' => player_1.id,
+                  'player_2_id' => player_2.id,
+                  'player_1_name' => player_1.name,
+                  'player_2_name' => player_2.name,
+                  'turn_id' => player_2.id,
+                  'winner_id' => '0',
+                  'updated_at' => game.updated_at.iso8601,
+                  'player_1_layed_out' => '0',
+                  'player_2_layed_out' => '0',
+                  'rated' => '1',
+                  'five_shot' => '1',
+                  't_limit' => 0 },
+            'layouts' => [{ 'id' => layout.id,
+                            'game_id' => game.id,
+                            'player_id' => player_2.id,
+                            'ship_id' => layout.ship_id - 1,
+                            'x' => 3,
+                            'y' => 5,
+                            'vertical' => 1 }],
+            'moves' => [{ 'x' => 3, 'y' => 5, 'hit' => 'H' }]
+          }
+          expect(json).to eq(expected)
+        end
+      end
+    end
+
+    it 'returns an error' do
+      get :opponent, params: { id: 0 }
+      expect(json['error']).to eq('game not found')
+    end
+  end
 end
