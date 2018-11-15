@@ -49,55 +49,19 @@ class Api::GamesController < Api::ApiController
     render_game(result)
   end
 
-  def attack # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/CyclomaticComplexity, Metrics/AbcSize, Metrics/LineLength
-    status = -1
+  def attack
     game = Game.find_game(current_api_player, params[:id])
     if game
       if game.winner.nil? && game.turn == current_api_player
-        opponent = game.opponent(current_api_player)
-        shots = JSON.parse(params[:s]).slice(0, game.five_shot ? 5 : 1)
-        shots.each do |s|
-          move = game.moves.for_player(current_api_player)
-                     .where(x: s['x'], y: s['y']).first
-          next unless move.nil?
-
-          layout_player = game.player_1 == current_api_player ? game.player_2 : game.player_1 # rubocop:disable Metrics/LineLength
-          layout = game.hit?(layout_player, s['x'], s['y'])
-          Move.create!(game: game,
-                       player: current_api_player,
-                       x: s['x'], y: s['y'],
-                       layout: layout)
-          layout&.sunk?
-        end
-        status = 1
-        game.next_turn
-        if game.winner.nil?
-          if opponent.bot # rubocop:disable Metrics/BlockNesting
-            if game.five_shot # rubocop:disable Metrics/BlockNesting
-              opponent.strength.times do
-                move = game.attack_sinking_ship(opponent, current_api_player) # rubocop:disable Metrics/LineLength
-                game.attack_random_ship(opponent, current_api_player) if move.nil? # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
-              end
-              (5 - opponent.strength).times do
-                game.attack_random_ship(opponent, current_api_player)
-              end
-            else
-              move = game.attack_sinking_ship(opponent, current_api_player) # rubocop:disable Metrics/LineLength
-              game.attack_random_ship(opponent, current_api_player) if move.nil? # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
-            end
-            game.next_turn if game.winner.nil? # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
-            opponent.update_attributes(activity: opponent.activity + 1)
-          else
-            new_activity = current_api_player.activity + 1
-            current_api_player.update_attributes(activity: new_activity)
-          end
-        end
+        current_api_player.attack!
       end
-      render json: { status: status }
+      render json: { status: 1 }
     else
       render json: { error: 'game not found' }, status: :not_found
     end
   end
+
+  private
 
   def status(game)
     game.nil? ? -1 : game.id

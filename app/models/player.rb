@@ -16,6 +16,8 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   has_many :games_1, foreign_key: :player_1_id, class_name: 'Game'
   has_many :games_2, foreign_key: :player_2_id, class_name: 'Game'
 
+  has_many :moves
+
   has_many :invites_1, foreign_key: :player_1_id, class_name: 'Invite'
   has_many :invites_2, foreign_key: :player_2_id, class_name: 'Invite'
 
@@ -25,6 +27,35 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def to_s
     name
+  end
+
+  def new_activity!
+    new_activity = activity + 1
+    update_attributes(activity: new_activity)
+  end
+
+  def record_shot!(game, shot) # rubocop:disable Metrics/AbcSize
+    move = game.moves.for_player(self).where(x: shot['x'], y: shot['y']).first
+    return unless move.nil?
+
+    layout_player = game.player_1 == self ? game.player_2 : game.player_1
+    layout = game.hit?(layout_player, shot['x'], shot['y'])
+    moves.create!(game: game, x: shot['x'], y: shot['y'], layout: layout)
+    layout&.sunk?
+  end
+
+  def record_shots!(game, params)
+    shots = JSON.parse(params[:s]).slice(0, game.five_shot ? 5 : 1)
+    shots.each { |shot| record_shot!(game, shot) }
+    game.next_turn!
+  end
+
+  def attack!(game, params)
+    new_activity!
+    record_shots!(game, params)
+    return if game.winner
+
+    game.bot_attack if game.opponent(self).bot
   end
 
   def find_game(id, opponent = false)

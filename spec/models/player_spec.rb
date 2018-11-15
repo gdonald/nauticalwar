@@ -14,6 +14,14 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '#new_activity' do
+    it 'increments player activity' do
+      expect do
+        player_1.new_activity!
+      end.to change { player_1.activity }.by(1)
+    end
+  end
+
   describe '#find_game' do # rubocop:disable Metrics/BlockLength
     describe 'player' do
       describe 'game exists' do
