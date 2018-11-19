@@ -18,6 +18,99 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     Game.create_ships
   end
 
+  describe '#bot_attack_1!' do # rubocop:disable Metrics/BlockLength
+    let(:bot) { create(:player, :bot, strength: 3) }
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: bot, turn: player_1)
+    end
+
+    describe 'with a sinking ship' do
+      let(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+                        x: 3, y: 5, vertical: true)
+      end
+      let!(:move) do
+        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      end
+
+      it 'creates 1 bot move' do
+        expect do
+          game.bot_attack_1!
+        end.to change(Move, :count).by(1)
+      end
+    end
+
+    describe 'with a non-sinking ship' do
+      let!(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+                        x: 3, y: 5, vertical: true)
+      end
+
+      it 'creates 1 bot move' do
+        expect do
+          game.bot_attack_1!
+        end.to change(Move, :count).by(1)
+      end
+    end
+  end
+
+  describe '#bot_attack_5!' do # rubocop:disable Metrics/BlockLength
+    let(:bot) { create(:player, :bot, strength: 3) }
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: bot, turn: player_1)
+    end
+
+    describe 'with a sinking ship' do
+      let(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+                        x: 3, y: 5, vertical: true)
+      end
+      let!(:move) do
+        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      end
+
+      it 'creates 5 bot moves' do
+        expect do
+          game.bot_attack_5!
+        end.to change(Move, :count).by(5)
+      end
+    end
+
+    describe 'with a non-sinking ship' do
+      let!(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+                        x: 3, y: 5, vertical: true)
+      end
+
+      it 'creates 5 bot moves' do
+        expect do
+          game.bot_attack_5!
+        end.to change(Move, :count).by(5)
+      end
+    end
+  end
+
+  describe '#move_exists?' do
+    it 'returns false' do
+      expect(game_1.move_exists?(player_1, 0, 0)).to be_falsey
+    end
+
+    describe 'when there is a move' do
+      let(:layout) do
+        create(:layout, game: game_1, player: player_1, ship: Ship.last,
+                        x: 3, y: 5, vertical: true)
+      end
+      let!(:move) do
+        create(:move, game: game_1, player: player_2, x: 3, y: 5,
+                      layout: layout)
+      end
+
+      it 'returns true' do
+        expect(game_1.move_exists?(player_2, 3, 5)).to be_truthy
+      end
+    end
+  end
+
   describe '#create_ship_layout' do
     it 'creates ship layout' do
       hash = { 'name' => 'Carrier', 'x' => 1, 'y' => 1, 'vertical' => 1 }

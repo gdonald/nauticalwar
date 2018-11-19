@@ -34,19 +34,16 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     update_attributes(activity: new_activity)
   end
 
-  def record_shot!(game, shot) # rubocop:disable Metrics/AbcSize
-    move = game.moves.for_player(self).where(x: shot['x'], y: shot['y']).first
-    return unless move.nil?
+  def record_shot!(game, col, row)
+    return if game.move_exists?(self, col, row)
 
-    layout_player = game.player_1 == self ? game.player_2 : game.player_1
-    layout = game.hit?(layout_player, shot['x'], shot['y'])
-    moves.create!(game: game, x: shot['x'], y: shot['y'], layout: layout)
-    layout&.sunk?
+    layout = game.hit?(game.opponent(self), col, row)
+    moves.create!(game: game, x: col, y: row, layout: layout)
   end
 
   def record_shots!(game, params)
     shots = JSON.parse(params[:s]).slice(0, game.five_shot ? 5 : 1)
-    shots.each { |shot| record_shot!(game, shot) }
+    shots.each { |s| record_shot!(game, s['x'], s['y']).layout&.sunk? }
     game.next_turn!
   end
 
@@ -55,14 +52,14 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     record_shots!(game, params)
     return if game.winner
 
-    game.bot_attack if game.opponent(self).bot
+    game.bot_attack! if game.opponent(self).bot
   end
 
   def find_game(id, opponent = false)
     game = Game.find_game(self, id)
     return nil unless game
 
-    player = self == game.player_1 ? game.player_1 : game.player_2
+    player = game.player(self)
     player = game.opponent(player) if opponent
     layouts = game.layouts.where(player: player).ordered
     moves = game.moves_for_player(game.opponent(player)).ordered

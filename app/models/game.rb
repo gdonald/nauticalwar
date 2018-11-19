@@ -77,6 +77,10 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     moves.where(player: player)
   end
 
+  def move_exists?(player, col, row)
+    moves_for_player(player).where(x: col, y: row).first.present?
+  end
+
   def hit?(player, col, row)
     reload
     layouts.for_player(player).each do |layout|
@@ -100,21 +104,25 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     update_attributes("player_#{player}_layed_out": true)
   end
 
-  def bot_attack # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-    if five_shot
-      player_2.strength.times do
-        move = attack_sinking_ship(player_2, player_1)
-        attack_random_ship(player_2, player_1) if move.nil?
-      end
-      (5 - player_2.strength).times do
-        attack_random_ship(player_2, player_1)
-      end
-    else
+  def bot_attack_5! # rubocop:disable Metrics/AbcSize
+    player_2.strength.times do
       move = attack_sinking_ship(player_2, player_1)
       attack_random_ship(player_2, player_1) if move.nil?
     end
+    (5 - player_2.strength).times do
+      attack_random_ship(player_2, player_1)
+    end
+  end
+
+  def bot_attack_1!
+    move = attack_sinking_ship(player_2, player_1)
+    attack_random_ship(player_2, player_1) if move.nil?
+  end
+
+  def bot_attack!
+    player_2.new_activity!
+    five_shot ? bot_attack_5! : bot_attack_1!
     next_turn! if winner.nil?
-    player_2.update_attributes(activity: player_2.activity + 1)
   end
 
   def bot_layout
@@ -122,6 +130,10 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
       Layout.set_location(self, player_2, ship, [0, 1].sample.zero?)
     end
     update_attributes(player_2_layed_out: true)
+  end
+
+  def player(player)
+    player == player_1 ? player_1 : player_2
   end
 
   def opponent(player)
