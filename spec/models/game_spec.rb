@@ -19,52 +19,59 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#can_attack?' do
-
-    it 'returns true' do
-
+    it 'returns false when there is a winner' do
+      game_1.winner = player_1
+      expect(game_1.can_attack?(player_1)).to be_falsey
     end
 
-    it 'returns false' do
+    it 'returns false when not player_1 turn' do
+      game_1.turn = player_2
+      expect(game_1.can_attack?(player_1)).to be_falsey
+    end
 
+    it 'returns true when no winner and is player turn' do
+      expect(game_1.can_attack?(player_1)).to be_truthy
     end
   end
 
   describe '#parse_shots' do
     let(:json) do
-      [{'x': 5, 'y': 5},
-       {'x': 4, 'y': 6},
-       {'x': 6, 'y': 6},
-       {'x': 3, 'y': 7},
-       {'x': 2, 'y': 8},
-       {'x': 7, 'y': 9}].to_json
+      [{ 'x': 5, 'y': 5 },
+       { 'x': 4, 'y': 6 },
+       { 'x': 6, 'y': 6 },
+       { 'x': 3, 'y': 7 },
+       { 'x': 2, 'y': 8 },
+       { 'x': 7, 'y': 9 }].to_json
     end
 
     it 'parses json shots' do
-      expected = [{"x" => 5, "y" => 5},
-                  {"x" => 4, "y" => 6},
-                  {"x" => 6, "y" => 6},
-                  {"x" => 3, "y" => 7},
-                  {"x" => 2, "y" => 8}]
+      expected = [{ 'x' => 5, 'y' => 5 },
+                  { 'x' => 4, 'y' => 6 },
+                  { 'x' => 6, 'y' => 6 },
+                  { 'x' => 3, 'y' => 7 },
+                  { 'x' => 2, 'y' => 8 }]
       expect(game_1.parse_shots(json)).to eq(expected)
     end
   end
 
   describe '#parse_ships' do
-    let(:json) { { ships: [
-      { name: 'Carrier',     x: 1, y: 1, vertical: 1 },
-      { name: 'Battleship',  x: 2, y: 7, vertical: 0 },
-      { name: 'Destroyer',   x: 5, y: 3, vertical: 1 },
-      { name: 'Submarine',   x: 7, y: 6, vertical: 1 },
-      { name: 'Patrol Boat', x: 6, y: 1, vertical: 0 }
-    ] }.to_json }
+    let(:json) do
+      { ships: [
+        { name: 'Carrier', x: 1, y: 1, vertical: 1 },
+        { name: 'Battleship',  x: 2, y: 7, vertical: 0 },
+        { name: 'Destroyer',   x: 5, y: 3, vertical: 1 },
+        { name: 'Submarine',   x: 7, y: 6, vertical: 1 },
+        { name: 'Patrol Boat', x: 6, y: 1, vertical: 0 }
+      ] }.to_json
+    end
 
     it 'returns an array of ships' do
       expected = [
-          { 'name' => 'Carrier',     'x' => 1, 'y' => 1, 'vertical' => 1 },
-          { 'name' => 'Battleship',  'x' => 2, 'y' => 7, 'vertical' => 0 },
-          { 'name' => 'Destroyer',   'x' => 5, 'y' => 3, 'vertical' => 1 },
-          { 'name' => 'Submarine',   'x' => 7, 'y' => 6, 'vertical' => 1 },
-          { 'name' => 'Patrol Boat', 'x' => 6, 'y' => 1, 'vertical' => 0 }
+        { 'name' => 'Carrier', 'x' => 1, 'y' => 1, 'vertical' => 1 },
+        { 'name' => 'Battleship',  'x' => 2, 'y' => 7, 'vertical' => 0 },
+        { 'name' => 'Destroyer',   'x' => 5, 'y' => 3, 'vertical' => 1 },
+        { 'name' => 'Submarine',   'x' => 7, 'y' => 6, 'vertical' => 1 },
+        { 'name' => 'Patrol Boat', 'x' => 6, 'y' => 1, 'vertical' => 0 }
       ]
       expect(game_1.parse_ships(json)).to eq(expected)
     end
@@ -81,7 +88,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#bot_attack!' do
+  describe '#bot_attack!' do # rubocop:disable Metrics/BlockLength
     let(:bot) { create(:player, :bot, strength: 3) }
     let(:game) do
       create(:game, player_1: player_1, player_2: bot, turn: bot)
@@ -100,7 +107,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
         expect do
           game.bot_attack!
         end.to change(Move, :count).by(5)
-                   .and change { bot.reload.activity }.by(1)
+                                   .and change { bot.reload.activity }.by(1)
         expect(game.winner).to be_nil
         expect(game.turn).to eq(player_1)
       end
@@ -108,14 +115,15 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
     describe 'with a 1-shot game' do
       let(:game) do
-        create(:game, player_1: player_1, player_2: bot, turn: bot, five_shot: false)
+        create(:game, player_1: player_1, player_2: bot, turn: bot,
+                      five_shot: false)
       end
 
       it 'creates 1 bot move' do
         expect do
           game.bot_attack!
         end.to change(Move, :count).by(1)
-                           .and change { bot.reload.activity }.by(1)
+                                   .and change { bot.reload.activity }.by(1)
         expect(game.turn).to eq(player_1)
       end
     end

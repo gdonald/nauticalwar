@@ -14,7 +14,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#attack!' do
+  describe '#attack!' do # rubocop:disable Metrics/BlockLength
     let(:game) do
       create(:game, player_1: player_1, player_2: bot, turn: player_1)
     end
@@ -38,11 +38,11 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       create(:layout, game: game, player: bot, ship: ship, x: 0, y: 0)
     end
     let(:json) do
-      [{'x': 5, 'y': 5},
-       {'x': 4, 'y': 6},
-       {'x': 6, 'y': 6},
-       {'x': 3, 'y': 7},
-       {'x': 2, 'y': 8}].to_json
+      [{ 'x': 5, 'y': 5 },
+       { 'x': 4, 'y': 6 },
+       { 'x': 6, 'y': 6 },
+       { 'x': 3, 'y': 7 },
+       { 'x': 2, 'y': 8 }].to_json
     end
     let(:params) { { s: json } }
 
@@ -60,11 +60,11 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       create(:game, player_1: player_1, player_2: player_2, turn: player_1)
     end
     let(:json) do
-      [{'x': 5, 'y': 5},
-       {'x': 4, 'y': 6},
-       {'x': 6, 'y': 6},
-       {'x': 3, 'y': 7},
-       {'x': 2, 'y': 8}].to_json
+      [{ 'x': 5, 'y': 5 },
+       { 'x': 4, 'y': 6 },
+       { 'x': 6, 'y': 6 },
+       { 'x': 3, 'y': 7 },
+       { 'x': 2, 'y': 8 }].to_json
     end
 
     it 'records shots' do
@@ -75,19 +75,19 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#record_shot!' do
+  describe '#record_shot!' do # rubocop:disable Metrics/BlockLength
     let(:game) do
       create(:game, player_1: player_1, player_2: player_2, turn: player_1)
     end
     let!(:layout) do
       create(:layout, game: game, player: player_2, ship: create(:ship),
-             x: 3, y: 5)
+                      x: 3, y: 5)
     end
 
     describe 'when shot already exists' do
       let!(:move) do
         create(:move, game: game, player: player_1, x: 3, y: 5,
-               layout: layout)
+                      layout: layout)
       end
 
       it 'does not record a shot' do

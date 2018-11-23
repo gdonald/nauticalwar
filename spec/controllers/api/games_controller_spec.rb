@@ -165,8 +165,8 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
                       layout: layout)
       end
 
-      it 'returns a game' do # rubocop:disable Metrics/BlockLength
-        travel_to(1.day.from_now) do # rubocop:disable Metrics/BlockLength
+      it 'returns a game' do
+        travel_to(1.day.from_now) do
           get :opponent, params: { id: game.id }
           expected = {
             'game' =>
@@ -193,6 +193,39 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
 
     it 'returns an error' do
       get :opponent, params: { id: 0 }
+      expect(json['error']).to eq('game not found')
+    end
+  end
+
+  describe 'POST #attack' do # rubocop:disable Metrics/BlockLength
+    let!(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    end
+    let(:s) do
+      [{ 'x': 5, 'y': 5 },
+       { 'x': 4, 'y': 6 },
+       { 'x': 6, 'y': 6 },
+       { 'x': 3, 'y': 7 },
+       { 'x': 2, 'y': 8 },
+       { 'x': 7, 'y': 9 }].to_json
+    end
+
+    it 'returns status of 1' do
+      post :attack, params: { id: game.id, s: s }
+      expect(json['status']).to eq(1)
+      expect(json['error']).to eq(nil)
+    end
+
+    it 'returns status of -1' do
+      game.update_attributes(turn: player_2)
+      post :attack, params: { id: game.id, s: s }
+      expect(json['status']).to eq(-1)
+      expect(json['error']).to eq(nil)
+    end
+
+    it 'returns not found' do
+      post :attack, params: { id: 0, s: s }
+      expect(json['status']).to eq(nil)
       expect(json['error']).to eq('game not found')
     end
   end

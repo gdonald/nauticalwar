@@ -49,11 +49,15 @@ class Api::GamesController < Api::ApiController
     render_game(result)
   end
 
-  def attack
+  def attack # rubocop:disable Metrics/MethodLength
     game = Game.find_game(current_api_player, params[:id])
     if game
-      current_api_player.attack!(game, params)
-      render json: { status: 1 }
+      if game.can_attack?(current_api_player)
+        current_api_player.attack!(game, params)
+        render json: { status: 1 }
+      else
+        render json: { status: -1 }
+      end
     else
       render json: { error: 'game not found' }, status: :not_found
     end

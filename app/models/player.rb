@@ -48,8 +48,6 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def attack!(game, params)
-    return unless game.can_attack?(self)
-
     new_activity!
     record_shots!(game, params[:s])
     return if game.winner
@@ -60,6 +58,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def find_game(id, opponent = false)
     game = Game.find_game(self, id)
     return nil unless game
+
     player = game.player(self)
     player = game.opponent(player) if opponent
     layouts = game.layouts_for_player(player, opponent)
