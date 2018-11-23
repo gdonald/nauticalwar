@@ -183,13 +183,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
                   'rated' => '1',
                   'five_shot' => '1',
                   't_limit' => 0 },
-            'layouts' => [{ 'id' => layout.id,
-                            'game_id' => game.id,
-                            'player_id' => player_2.id,
-                            'ship_id' => layout.ship_id - 1,
-                            'x' => 3,
-                            'y' => 5,
-                            'vertical' => 1 }],
+            'layouts' => [],
             'moves' => [{ 'x' => 3, 'y' => 5, 'hit' => 'H' }]
           }
           expect(json).to eq(expected)

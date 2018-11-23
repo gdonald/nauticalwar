@@ -77,6 +77,12 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     moves.where(player: player)
   end
 
+  def layouts_for_player(player, opponent)
+    ls = layouts.where(player: player)
+    ls = ls.where(sunk: true) if opponent
+    ls.ordered
+  end
+
   def move_exists?(player, col, row)
     moves_for_player(player).where(x: col, y: row).first.present?
   end
@@ -97,11 +103,23 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
                     vertical: hash['vertical'] == '1')
   end
 
-  def create_ship_layouts(player, params)
-    ships = JSON.parse(params[:layout])['ships']
+  def create_ship_layouts(player, json)
+    ships = parse_ships(json)
     ships.each { |s| create_ship_layout(player, s) }
     player = player == player_1 ? 1 : 2
     update_attributes("player_#{player}_layed_out": true)
+  end
+
+  def parse_ships(json)
+    JSON.parse(json)['ships']
+  end
+
+  def parse_shots(json)
+    JSON.parse(json).slice(0, five_shot_int)
+  end
+
+  def five_shot_int
+    five_shot ? 5 : 1
   end
 
   def bot_attack_5! # rubocop:disable Metrics/AbcSize
@@ -121,7 +139,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def bot_attack!
     player_2.new_activity!
-    five_shot ? bot_attack_5! : bot_attack_1!
+    send("bot_attack_#{five_shot_int}!")
     next_turn! if winner.nil?
   end
 
@@ -156,6 +174,10 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def next_player_turn
     turn == player_1 ? player_2 : player_1
+  end
+
+  def can_attack?(player)
+    winner.nil? && turn == player
   end
 
   def next_turn!

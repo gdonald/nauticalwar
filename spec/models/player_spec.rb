@@ -14,6 +14,106 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '#attack!' do
+    let(:game) do
+      create(:game, player_1: player_1, player_2: bot, turn: player_1)
+    end
+    let(:ship) { create(:ship, size: 3) }
+    let!(:layout_1) do
+      create(:layout, game: game, player: player_1, ship: ship, x: 0, y: 0)
+    end
+    let!(:layout_2) do
+      create(:layout, game: game, player: player_1, ship: ship, x: 1, y: 1)
+    end
+    let!(:layout_3) do
+      create(:layout, game: game, player: player_1, ship: ship, x: 2, y: 2)
+    end
+    let!(:layout_4) do
+      create(:layout, game: game, player: player_1, ship: ship, x: 3, y: 3)
+    end
+    let!(:layout_5) do
+      create(:layout, game: game, player: player_1, ship: ship, x: 4, y: 4)
+    end
+    let!(:layout) do
+      create(:layout, game: game, player: bot, ship: ship, x: 0, y: 0)
+    end
+    let(:json) do
+      [{'x': 5, 'y': 5},
+       {'x': 4, 'y': 6},
+       {'x': 6, 'y': 6},
+       {'x': 3, 'y': 7},
+       {'x': 2, 'y': 8}].to_json
+    end
+    let(:params) { { s: json } }
+
+    it 'saves an attack' do
+      expect do
+        player_1.attack!(game, params)
+      end.to change(Move, :count).by(10)
+      expect(game.winner).to be_nil
+      expect(game.turn).to eq(player_1)
+    end
+  end
+
+  describe '#record_shots!' do
+    let(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    end
+    let(:json) do
+      [{'x': 5, 'y': 5},
+       {'x': 4, 'y': 6},
+       {'x': 6, 'y': 6},
+       {'x': 3, 'y': 7},
+       {'x': 2, 'y': 8}].to_json
+    end
+
+    it 'records shots' do
+      expect do
+        player_1.record_shots!(game, json)
+      end.to change(Move, :count).by(5)
+      expect(game.turn).to eq(player_2)
+    end
+  end
+
+  describe '#record_shot!' do
+    let(:game) do
+      create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    end
+    let!(:layout) do
+      create(:layout, game: game, player: player_2, ship: create(:ship),
+             x: 3, y: 5)
+    end
+
+    describe 'when shot already exists' do
+      let!(:move) do
+        create(:move, game: game, player: player_1, x: 3, y: 5,
+               layout: layout)
+      end
+
+      it 'does not record a shot' do
+        expect do
+          player_1.record_shot!(game, 3, 5)
+        end.to_not change(Move, :count)
+      end
+    end
+
+    describe 'when shot does not already exists' do
+      it 'records a hit' do
+        expect do
+          player_1.record_shot!(game, 3, 5)
+        end.to change(Move, :count).by(1)
+        expect(Move.last.layout).to eq(layout)
+      end
+
+      it 'records a miss' do
+        expect do
+          player_1.record_shot!(game, 5, 6)
+        end.to change(Move, :count).by(1)
+        expect(Move.last.layout).to be_nil
+      end
+    end
+  end
+
   describe '#new_activity' do
     it 'increments player activity' do
       expect do
@@ -63,7 +163,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
         end
 
         it 'returns a game hash' do
-          expected = { game: game, layouts: [layout], moves: [move] }
+          expected = { game: game, layouts: [], moves: [move] }
           expect(player_1.find_game(game.id, true)).to eq(expected)
         end
       end

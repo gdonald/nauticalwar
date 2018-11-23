@@ -6,7 +6,7 @@ class Api::LayoutsController < Api::ApiController # rubocop:disable Style/ClassA
   def create
     game = current_api_player.active_games.where(id: params[:game_id]).first
     if game
-      game.create_ship_layouts(current_api_player, params)
+      game.create_ship_layouts(current_api_player, params[:layout])
       render json: game
     else
       render json: { errors: 'game not found' }

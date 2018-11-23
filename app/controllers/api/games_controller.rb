@@ -52,9 +52,7 @@ class Api::GamesController < Api::ApiController
   def attack
     game = Game.find_game(current_api_player, params[:id])
     if game
-      if game.winner.nil? && game.turn == current_api_player
-        current_api_player.attack!
-      end
+      current_api_player.attack!(game, params)
       render json: { status: 1 }
     else
       render json: { error: 'game not found' }, status: :not_found

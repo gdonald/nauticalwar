@@ -41,15 +41,17 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     moves.create!(game: game, x: col, y: row, layout: layout)
   end
 
-  def record_shots!(game, params)
-    shots = JSON.parse(params[:s]).slice(0, game.five_shot ? 5 : 1)
+  def record_shots!(game, json)
+    shots = game.parse_shots(json)
     shots.each { |s| record_shot!(game, s['x'], s['y']).layout&.sunk? }
     game.next_turn!
   end
 
   def attack!(game, params)
+    return unless game.can_attack?(self)
+
     new_activity!
-    record_shots!(game, params)
+    record_shots!(game, params[:s])
     return if game.winner
 
     game.bot_attack! if game.opponent(self).bot
@@ -58,10 +60,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def find_game(id, opponent = false)
     game = Game.find_game(self, id)
     return nil unless game
-
     player = game.player(self)
     player = game.opponent(player) if opponent
-    layouts = game.layouts.where(player: player).ordered
+    layouts = game.layouts_for_player(player, opponent)
     moves = game.moves_for_player(game.opponent(player)).ordered
     { game: game, layouts: layouts, moves: moves }
   end
