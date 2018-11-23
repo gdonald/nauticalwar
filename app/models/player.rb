@@ -29,6 +29,29 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     name
   end
 
+  def destroy_friend!(id)
+    friend = friends.where(player_2_id: id).first
+    if friend
+      player_2_id = friend.player_2_id
+      friend.destroy
+      return player_2_id
+    end
+    -1
+  end
+
+  def create_friend!(id)
+    player = Player.active.find_by(id: id)
+    if player && !friends.include?(player)
+      friends.create!(player_2: player)
+      return player.id
+    end
+    -1
+  end
+
+  def friend_ids
+    friends.collect(&:player_2_id)
+  end
+
   def new_activity!
     new_activity = activity + 1
     update_attributes(activity: new_activity)

@@ -14,6 +14,53 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '#destroy_friend!' do
+    let!(:friend) { create(:friend, player_1: player_1, player_2: player_2) }
+
+    it 'destroys a friend' do
+      expect do
+        player_1.destroy_friend!(player_2.id)
+      end.to change(Friend, :count).by(-1)
+      expect(player_1.friends).to eq([])
+    end
+
+    it 'fails to destroy a friend' do
+      expect do
+        result = player_1.destroy_friend!(0)
+        expect(result).to eq(-1)
+      end.to change(Friend, :count).by(0)
+    end
+  end
+
+  describe '#create_friend!' do
+    let(:player) { create(:player, :confirmed) }
+
+    it 'creates a friend' do
+      expect do
+        player_1.create_friend!(player.id)
+      end.to change(Friend, :count).by(1)
+      expect(player_1.friends.first.player_2).to eq(player)
+    end
+
+    it 'fails to create a friend' do
+      expect do
+        result = player_1.create_friend!(0)
+        expect(result).to eq(-1)
+      end.to change(Friend, :count).by(0)
+    end
+  end
+
+  describe '#friend_ids' do
+    let!(:friend_1) { create(:friend, player_1: player_1, player_2: player_2) }
+    let!(:friend_2) { create(:friend, player_1: player_2, player_2: player_3) }
+    let!(:friend_3) { create(:friend, player_1: player_2, player_2: player_1) }
+
+    it 'returns friend ids' do
+      expect(Friend.count).to eq(3)
+      expect(player_1.friend_ids).to eq([player_2.id])
+    end
+  end
+
   describe '#attack!' do # rubocop:disable Metrics/BlockLength
     let(:game) do
       create(:game, player_1: player_1, player_2: bot, turn: player_1)
