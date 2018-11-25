@@ -5,7 +5,7 @@ FactoryBot.define do
     association :player_1
     association :player_2
     time_limit { 1.day.to_i }
-    rated true
-    five_shot true
+    rated { true }
+    five_shot { true }
   end
 end

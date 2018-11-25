@@ -17,7 +17,7 @@ FactoryBot.define do
     end
 
     trait :bot do
-      bot true
+      bot { true }
       confirmed
     end
   end
