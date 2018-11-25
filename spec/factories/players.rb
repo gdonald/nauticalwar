@@ -12,12 +12,13 @@ FactoryBot.define do
     password_confirmation { 'changeme' }
     last_sign_in_at { Time.current }
 
-    trait :bot do
-      bot true
-    end
-
     trait :confirmed do
       confirmed_at { Time.current }
+    end
+
+    trait :bot do
+      bot true
+      confirmed
     end
   end
 end

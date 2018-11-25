@@ -29,6 +29,64 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     name
   end
 
+  def cancel_invite!(id)
+    invite_id = nil
+    invite = invites_1.find_by(id: id)
+    if invite
+      invite_id = invite.id
+      invite.destroy
+    end
+    invite_id
+  end
+
+  def decline_invite!(id)
+    invite_id = nil
+    invite = invites_2.find_by(id: id)
+    if invite
+      invite_id = invite.id
+      invite.destroy
+    end
+    invite_id
+  end
+
+  def accept_invite!(id)
+    invite = invites_2.find_by(id: id)
+    if invite
+      game = invite.create_game
+      invite.destroy
+    end
+    game
+  end
+
+  def invite_args(params)
+    { player_2: Player.active.where(id: params[:id]).first,
+      rated: params[:r] == '1',
+      five_shot: params[:m] == '0',
+      time_limit: (params[:t] == '1' ? 3.days : 1.day).to_i }
+  end
+
+  def create_opponent_invite!(args)
+    invites_1.create(args)
+  end
+
+  def create_bot_game!(args)
+    args[:turn] = self
+    game = games_1.create(args)
+    game.bot_layout if game.persisted?
+    game
+  end
+
+  def create_invite!(params)
+    args = invite_args(params)
+    return unless args[:player_2]
+
+    if args[:player_2].bot
+      create_bot_game!(args)
+    else
+      create_opponent_invite!(args)
+    end
+  end
+
   def destroy_friend!(id)
     friend = friends.where(player_2_id: id).first
     if friend

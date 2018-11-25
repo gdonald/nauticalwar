@@ -4,13 +4,125 @@ require 'rails_helper'
 
 RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   let(:player_1) { create(:player) }
-  let(:player_2) { create(:player) }
+  let(:player_2) { create(:player, :confirmed) }
   let(:player_3) { create(:player) }
   let(:bot) { create(:player, :bot) }
 
   describe '#to_s' do
     it 'returns a string' do
       expect(player_1.to_s).to eq(player_1.name)
+    end
+  end
+
+  describe '#cancel_invite!' do
+    let(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
+    let(:id) { invite.id }
+
+    it 'accepts an invite' do
+      expect do
+        player_1.cancel_invite!(id)
+      end.to change(Game, :count).by(0)
+      expect(Invite.find_by(id: id)).to be_nil
+    end
+  end
+
+  describe '#decline_invite!' do
+    let(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
+    let(:id) { invite.id }
+
+    it 'accepts an invite' do
+      expect do
+        player_2.decline_invite!(id)
+      end.to change(Game, :count).by(0)
+      expect(Invite.find_by(id: id)).to be_nil
+    end
+  end
+
+  describe '#accept_invite!' do
+    let(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
+    let(:id) { invite.id }
+
+    it 'accepts an invite' do
+      expect do
+        player_2.accept_invite!(id)
+      end.to change(Game, :count).by(1)
+      expect(Invite.find_by(id: id)).to be_nil
+    end
+  end
+
+  describe '#create_invite!' do
+    let(:params) { { id: 0, r: '1', m: '0', t: '0' } }
+
+    it 'fails to create an invite' do
+      expect do
+        player_1.create_invite!(params)
+      end.to change(Invite, :count).by(0)
+    end
+
+    it 'creates an invite' do
+      params[:id] = player_2.id
+      expect do
+        player_1.create_invite!(params)
+      end.to change(Invite, :count).by(1)
+    end
+
+    it 'creates a game' do
+      params[:id] = bot.id
+      expect do
+        player_1.create_invite!(params)
+      end.to change(Game, :count).by(1)
+    end
+  end
+
+  describe '#create_bot_game!' do
+    let(:args) do
+      { player_2: bot,
+        rated: true,
+        five_shot: true,
+        time_limit: 86_400 }
+    end
+
+    it 'creates a bot game' do
+      expect do
+        game = player_1.create_bot_game!(args)
+        expect(game.player_1).to eq(player_1)
+        expect(game.player_2).to eq(bot)
+        expect(game.rated).to be_truthy
+        expect(game.five_shot).to be_truthy
+        expect(game.time_limit).to eq(86_400)
+      end.to change(Game, :count).by(1)
+    end
+  end
+
+  describe '#create_opponent_invite!' do
+    let(:args) do
+      { player_2: player_2,
+        rated: true,
+        five_shot: true,
+        time_limit: 86_400 }
+    end
+
+    it 'creates an opponent invite' do
+      expect do
+        invite = player_1.create_opponent_invite!(args)
+        expect(invite.player_1).to eq(player_1)
+        expect(invite.player_2).to eq(player_2)
+        expect(invite.rated).to be_truthy
+        expect(invite.five_shot).to be_truthy
+        expect(invite.time_limit).to eq(86_400)
+      end.to change(Invite, :count).by(1)
+    end
+  end
+
+  describe '#invite_args' do
+    let(:params) { { id: player_2.id, r: '1', m: '0', t: '0' } }
+
+    it 'returns a hash of invite args' do
+      args = player_1.invite_args(params)
+      expect(args[:player_2]).to eq(player_2)
+      expect(args[:rated]).to be_truthy
+      expect(args[:five_shot]).to be_truthy
+      expect(args[:time_limit]).to eq(86_400)
     end
   end
 

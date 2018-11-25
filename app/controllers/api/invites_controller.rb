@@ -15,57 +15,30 @@ class Api::InvitesController < Api::ApiController
     render json: { count: current_api_player.invites.count }
   end
 
-  def create # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/AbcSize, Metrics/LineLength
-    rated = params[:r] == '1'
-    five_shot = params[:m] == '0'
-    time_limit = (params[:t] == '1' ? 3.days : 1.day).to_i
-
-    player = Player.find_by(id: params[:p])
-    args = { player_1: current_api_player,
-             player_2: player,
-             rated: rated,
-             five_shot: five_shot,
-             time_limit: time_limit }
-
-    if player.bot
-      args[:turn] = current_api_player
-      game = Game.create!(args)
-      if game.persisted?
-        game.bot_layout
-        render json: game
-      else
-        render json: { errors: game.errors }
-      end
+  def create
+    result = current_api_player.create_invite!(params)
+    if result&.persisted?
+      render json: result
     else
-      invite = Invite.create(args)
-      if invite.persisted?
-        render json: invite
-      else
-        render json: { errors: invite.errors }
-      end
+      render json: { errors: 'An error occured' }
     end
   end
 
-  def accept # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
-    invite = current_api_player.invites_2.find_by(id: params[:id])
-    if invite
-      game = invite.create_game
-      invite_id = invite.id
-      invite.destroy
+  def accept
+    game = current_api_player.accept_invite!(params[:id])
+    if game.persisted?
       klass = ActiveModelSerializers::SerializableResource
-      render json: { invite_id: invite_id,
+      render json: { invite_id: params[:id],
                      game: klass.new(game, {}).as_json,
                      player: klass.new(game.player_1, {}).as_json }
     else
-      render json: { error: 'Invite not found' }, status: :not_found
+      render json: { error: 'Invite not accepted' }
     end
   end
 
   def decline
-    invite = current_api_player.invites_2.find_by(id: params[:id])
-    if invite
-      id = invite.id
-      invite.destroy
+    id = current_api_player.decline_invite!(params[:id])
+    if id
       render json: { id: id }, status: :ok
     else
       render json: { error: 'Invite not found' }, status: :not_found
@@ -73,10 +46,8 @@ class Api::InvitesController < Api::ApiController
   end
 
   def cancel
-    invite = current_api_player.invites_1.find_by(id: params[:id])
-    if invite
-      id = invite.id
-      invite.destroy
+    id = current_api_player.cancel_invite!(params[:id])
+    if id
       render json: { id: id }, status: :ok
     else
       render json: { error: 'Invite not found' }, status: :not_found
