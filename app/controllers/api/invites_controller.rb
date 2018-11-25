@@ -26,7 +26,7 @@ class Api::InvitesController < Api::ApiController
 
   def accept
     game = current_api_player.accept_invite!(params[:id])
-    if game.persisted?
+    if game&.persisted?
       klass = ActiveModelSerializers::SerializableResource
       render json: { invite_id: params[:id],
                      game: klass.new(game, {}).as_json,
