@@ -44,6 +44,9 @@ class CreatePlayers < ActiveRecord::Migration[5.2]
       t.integer :activity, null: false, default: 0
       t.integer :rating,   null: false, default: 1200
 
+      # Admin
+      t.boolean :admin,    null: false, default: false
+
       t.timestamps null: false
     end
 

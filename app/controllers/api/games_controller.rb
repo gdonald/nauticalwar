@@ -4,7 +4,6 @@
 class Api::GamesController < Api::ApiController
   skip_before_action :verify_authenticity_token,
                      only: %i[destroy cancel attack skip]
-
   respond_to :json
 
   def index
@@ -40,12 +39,12 @@ class Api::GamesController < Api::ApiController
   end
 
   def show
-    result = current_api_player.find_game(params[:id])
+    result = current_api_player.player_game(params[:id])
     render_game(result)
   end
 
   def opponent
-    result = current_api_player.find_game(params[:id], true)
+    result = current_api_player.opponent_game(params[:id])
     render_game(result)
   end
 

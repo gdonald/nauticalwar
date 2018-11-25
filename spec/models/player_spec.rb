@@ -14,6 +14,19 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '#admin?' do
+    let(:player) { create(:player) }
+
+    it 'returns false' do
+      expect(player.admin?).to be_falsey
+    end
+
+    it 'returns true' do
+      player.admin = true
+      expect(player.admin?).to be_truthy
+    end
+  end
+
   describe '#cancel_invite!' do
     let(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
     let(:id) { invite.id }
@@ -281,55 +294,53 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#find_game' do # rubocop:disable Metrics/BlockLength
-    describe 'player' do
-      describe 'game exists' do
-        let(:game) do
-          create(:game, player_1: player_1, player_2: player_2, turn: player_2)
-        end
-        let(:layout) do
-          create(:layout, game: game, player: player_1, ship: create(:ship),
-                          x: 3, y: 5)
-        end
-        let!(:move) do
-          create(:move, game: game, player: player_2, x: 3, y: 5,
-                        layout: layout)
-        end
-
-        it 'returns a game hash' do
-          expected = { game: game, layouts: [layout], moves: [move] }
-          expect(player_1.find_game(game.id)).to eq(expected)
-        end
+  describe '#player_game' do # rubocop:disable Metrics/BlockLength
+    describe 'game exists' do
+      let(:game) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+      end
+      let(:layout) do
+        create(:layout, game: game, player: player_1, ship: create(:ship),
+                        x: 3, y: 5)
+      end
+      let!(:move) do
+        create(:move, game: game, player: player_2, x: 3, y: 5,
+                      layout: layout)
       end
 
-      it 'returns nil' do
-        expect(player_1.find_game(0)).to be_nil
+      it 'returns a game hash' do
+        expected = { game: game, layouts: [layout], moves: [move] }
+        expect(player_1.player_game(game.id)).to eq(expected)
       end
     end
 
-    describe 'opponent' do
-      describe 'game exists' do
-        let(:game) do
-          create(:game, player_1: player_1, player_2: player_2, turn: player_2)
-        end
-        let(:layout) do
-          create(:layout, game: game, player: player_2, ship: create(:ship),
-                          x: 3, y: 5)
-        end
-        let!(:move) do
-          create(:move, game: game, player: player_1, x: 3, y: 5,
-                        layout: layout)
-        end
+    it 'returns nil' do
+      expect(player_1.player_game(0)).to be_nil
+    end
+  end
 
-        it 'returns a game hash' do
-          expected = { game: game, layouts: [], moves: [move] }
-          expect(player_1.find_game(game.id, true)).to eq(expected)
-        end
+  describe '#opponent_game' do # rubocop:disable Metrics/BlockLength
+    describe 'game exists' do
+      let(:game) do
+        create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+      end
+      let(:layout) do
+        create(:layout, game: game, player: player_2, ship: create(:ship),
+               x: 3, y: 5)
+      end
+      let!(:move) do
+        create(:move, game: game, player: player_1, x: 3, y: 5,
+               layout: layout)
       end
 
-      it 'returns nil' do
-        expect(player_1.find_game(0, true)).to be_nil
+      it 'returns a game hash' do
+        expected = { game: game, layouts: [], moves: [move] }
+        expect(player_1.opponent_game(game.id)).to eq(expected)
       end
+    end
+
+    it 'returns nil' do
+      expect(player_1.opponent_game(0)).to be_nil
     end
   end
 

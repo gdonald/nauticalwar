@@ -7,13 +7,16 @@ ActiveAdmin.register Player do # rubocop:disable Metrics/BlockLength
     selectable_column
     id_column
     column :email
-    column 'Created', :created_at
-    column 'Confirmed', :confirmed_at
-    column 'Logins', :sign_in_count
-    column 'Last', :current_sign_in_at
+    column :admin
+    column :bot
+    column :strength
     column :wins
     column :losses
     column :rating
+    column 'Logins', :sign_in_count
+    column 'Last', :current_sign_in_at
+    column 'Created', :created_at
+    column 'Confirmed', :confirmed_at
     actions
   end
 

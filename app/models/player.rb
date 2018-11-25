@@ -29,6 +29,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     name
   end
 
+  def admin?
+    admin
+  end
+
   def cancel_invite!(id)
     invite_id = nil
     invite = invites_1.find_by(id: id)
@@ -136,14 +140,21 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     game.bot_attack! if game.opponent(self).bot
   end
 
-  def find_game(id, opponent = false)
+  def player_game(id)
     game = Game.find_game(self, id)
     return nil unless game
 
-    player = game.player(self)
-    player = game.opponent(player) if opponent
-    layouts = game.layouts_for_player(player, opponent)
-    moves = game.moves_for_player(game.opponent(player)).ordered
+    layouts = game.layouts_for_player(self)
+    moves = game.moves_for_player(game.opponent(self)).ordered
+    { game: game, layouts: layouts, moves: moves }
+  end
+
+  def opponent_game(id)
+    game = Game.find_game(self, id)
+    return nil unless game
+
+    layouts = game.layouts_for_opponent(game.opponent(self))
+    moves = game.moves_for_player(self).ordered
     { game: game, layouts: layouts, moves: moves }
   end
 

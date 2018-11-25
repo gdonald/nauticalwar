@@ -3,8 +3,7 @@
 # rubocop:disable Style/ClassAndModuleChildren
 class Api::InvitesController < Api::ApiController
   skip_before_action :verify_authenticity_token,
-                     only: %i[create cancel accept cancel]
-
+                     only: %i[create cancel accept cancel decline]
   respond_to :json
 
   def index

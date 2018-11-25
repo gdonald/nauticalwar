@@ -25,11 +25,11 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   scope :ordered, -> { order(created_at: :asc) }
 
   def self.create_ships
-    Ship.create!(name: 'Patrol Boat', size: 2)
+    Ship.create!(name: 'Carrier',     size: 5)
+    Ship.create!(name: 'Battleship',  size: 4)
     Ship.create!(name: 'Destroyer',   size: 3)
     Ship.create!(name: 'Submarine',   size: 3)
-    Ship.create!(name: 'Battleship',  size: 4)
-    Ship.create!(name: 'Carrier',     size: 5)
+    Ship.create!(name: 'Patrol Boat', size: 2)
   end
 
   def self.find_game(player, id)
@@ -77,10 +77,12 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     moves.where(player: player)
   end
 
-  def layouts_for_player(player, opponent)
-    ls = layouts.where(player: player)
-    ls = ls.where(sunk: true) if opponent
-    ls.ordered
+  def layouts_for_player(player)
+    layouts.where(player: player).ordered
+  end
+
+  def layouts_for_opponent(opponent)
+    layouts.where(player: opponent, sunk: true).ordered
   end
 
   def move_exists?(player, col, row)

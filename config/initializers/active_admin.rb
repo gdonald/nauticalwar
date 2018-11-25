@@ -65,6 +65,7 @@ ActiveAdmin.setup do |config|
   # ensure that there is a user with proper rights. You can use
   # CanCanAdapter or make your own. Please refer to documentation.
   # config.authorization_adapter = ActiveAdmin::CanCanAdapter
+  config.authorization_adapter = AdminAdapter
 
   # In case you prefer Pundit over other solutions you can here pass
   # the name of default policy class. This policy will be used in every
@@ -141,7 +142,7 @@ ActiveAdmin.setup do |config|
   #
   # Enable and disable Batch Actions
   #
-  config.batch_actions = true
+  config.batch_actions = false
 
   # == Controller Filters
   #
