@@ -12,6 +12,4 @@ class Api::LayoutsController < Api::ApiController # rubocop:disable Style/ClassA
       render json: { errors: 'game not found' }
     end
   end
-
-  # def show; end
 end

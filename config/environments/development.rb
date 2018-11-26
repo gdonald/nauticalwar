@@ -39,7 +39,7 @@ Rails.application.configure do
 
   config.action_mailer.perform_caching = false
 
-  config.action_mailer.default_url_options = { host: '10.0.0.23', port: 3000 }
+  config.action_mailer.default_url_options = { host: '10.0.0.25', port: 3000 }
 
   # Print deprecation notices to the Rails logger.
   config.active_support.deprecation = :log
@@ -66,4 +66,4 @@ Rails.application.configure do
   config.file_watcher = ActiveSupport::EventedFileUpdateChecker
 end
 
-ANDROID_URL = 'nauticalwar://10.0.0.23'
+ANDROID_URL = 'nauticalwar://10.0.0.25'

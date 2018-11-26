@@ -50,4 +50,4 @@ Rails.application.configure do
   # config.action_view.raise_on_missing_translations = true
 end
 
-ANDROID_URL = 'nauticalwar://10.0.0.23'
+ANDROID_URL = 'nauticalwar://10.0.0.25'
