@@ -23,6 +23,7 @@ FactoryBot.define do
 
     trait :admin do
       admin { true }
+      confirmed
     end
   end
 end
