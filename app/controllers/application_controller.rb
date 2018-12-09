@@ -1,10 +1,14 @@
 # frozen_string_literal: true
 
 class ApplicationController < ActionController::Base
+  def current_admin
+    @current_admin
+  end
+
   def authenticate_admin!
     return nil if session[:admin_id].nil?
     @current_admin = Player.find_by(id: session[:admin_id])
-    raise 'Admin session not found' unless @current_admin
+    redirect_to new_admin_session_path unless @current_admin
   end
 
   def authenticate_player!

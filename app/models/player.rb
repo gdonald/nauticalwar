@@ -304,6 +304,17 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     end
   end
 
+  def self.authenticate_admin(params)
+    admin = Player.find_by(admin: true, email: params[:email])
+    return { error: 'Admin not found' } if admin.nil?
+
+    if Player.hash_password(params[:password], admin.p_salt) == admin.p_hash
+      { id: admin.id }
+    else
+      { error: 'Login failed' }
+    end
+  end
+
   def self.authenticate(params)
     player = Player.find_by(email: params[:email])
     return { error: 'Player not found' } if player.nil?

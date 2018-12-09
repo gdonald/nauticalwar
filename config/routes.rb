@@ -51,7 +51,11 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   ActiveAdmin.routes(self)
   namespace :admin do
-    resources :sessions, only: %i[new create destroy]
+    resources :sessions, only: %i[new create] do
+      collection do
+        get :logout
+      end
+    end
   end
 
   root to: 'home#index'
