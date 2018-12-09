@@ -1,10 +1,6 @@
 # frozen_string_literal: true
 
 class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
-  devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :trackable, :validatable,
-         :confirmable, :lockable, :timeoutable
-
   validates :email, presence: true, uniqueness: true
   validates :name, presence: true, uniqueness: true, length: { maximum: 12 }
   validates :bot, inclusion: [true, false]

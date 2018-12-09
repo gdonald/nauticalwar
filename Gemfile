@@ -17,7 +17,6 @@ gem 'active_model_serializers'
 gem 'activeadmin'
 gem 'activerecord-session_store'
 gem 'acts_as_list'
-gem 'devise'
 gem 'factory_bot_rails'
 gem 'figaro'
 gem 'haml-rails'
@@ -48,6 +47,5 @@ group :test do
   gem 'chromedriver-helper'
   gem 'database_cleaner'
   gem 'rails-controller-testing'
+  gem 'simplecov', require: false
 end
-
-gem 'simplecov', require: false, group: :test
