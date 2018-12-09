@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 def admin_login(admin)
-  visit new_player_session_path
+  visit new_admin_session_path
   fill_in 'Email', with: admin.email
   fill_in 'Password', with: 'changeme'
   click_button 'Login'

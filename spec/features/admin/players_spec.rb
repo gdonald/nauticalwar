@@ -13,23 +13,6 @@ RSpec.feature 'Players', type: :feature do
     end
   end
 
-  scenario 'Modified admin needs to login again', js: true do
-    admin_login(admin)
-    visit admin_players_path
-    within('table#index_table_players tbody tr') do
-      click_link('Edit')
-    end
-
-    within 'li#player_password_input' do
-      fill_in 'Password', with: 'changeme'
-    end
-
-    fill_in 'Password confirmation', with: 'changeme'
-    click_button 'Update Player'
-
-    expect(page).to have_css('div.flash', text: 'You need to sign in or sign up before continuing')
-  end
-
   scenario 'Admin can edit player', js: true do
     player = create(:player)
 
@@ -49,5 +32,4 @@ RSpec.feature 'Players', type: :feature do
 
     expect(page).to have_css('div.flash', text: 'Player was successfully updated')
   end
-
 end

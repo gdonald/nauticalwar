@@ -2,7 +2,6 @@
 
 # rubocop:disable Style/ClassAndModuleChildren
 class Admin::SessionsController < Admin::AdminController
-  # skip_before_action :verify_authenticity_token, only: %i[create destroy]
   skip_before_action :authenticate_admin!
 
   layout 'admin'
@@ -16,6 +15,7 @@ class Admin::SessionsController < Admin::AdminController
       render :new
     else
       session[:admin_id] = admin[:id]
+      flash[:notice] = 'Signed in successfully'
       redirect_to admin_root_path
     end
   end
