@@ -1,8 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
-  ActiveAdmin.routes(self)
-
   namespace :api do # rubocop:disable Metrics/BlockLength
     resources :ping, only: [:index]
 
@@ -22,7 +20,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :layouts, only: %i[create show]
 
-    resources :players, only: [:index] do
+    resources :players, only: %i[index create] do
       collection do
         get :activity
       end
@@ -41,9 +39,20 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :friends, only: %i[index create destroy]
     resources :enemies, only: %i[create]
+    resources :sessions, only: %i[create] do
+      collection do
+        delete :destroy
+      end
+    end
   end
 
   get '/android', to: 'home#android'
+  get '/confirm/:token', to: 'home#confirm', as: :confirm
+
+  ActiveAdmin.routes(self)
+  namespace :admin do
+    resources :sessions, only: %i[new create destroy]
+  end
 
   root to: 'home#index'
 end

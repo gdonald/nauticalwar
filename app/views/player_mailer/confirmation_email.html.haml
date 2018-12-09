@@ -1,0 +1,9 @@
+%h1
+  Welcome to Nautical War, #{@player.name}
+%p
+  Click here to confirm your email:
+  %br/
+  %br/
+  = confirm_url(token: @player.confirmation_token)
+  %br/
+  %br/

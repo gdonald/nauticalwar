@@ -1,0 +1,5 @@
+Welcome to Nautical War, <%= @player.name %>
+
+Click here to confirm your email:
+
+<%= confirm_url(token: @player.confirmation_token) %>

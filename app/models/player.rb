@@ -23,6 +23,8 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   validates :p_hash, length: { maximum: 80 }
 
   before_save :downcase_email
+  before_save :set_confirmation_token
+  after_create :send_confirmation_email
 
   has_many :games_1, foreign_key: :player_1_id, class_name: 'Game'
   has_many :games_2, foreign_key: :player_2_id, class_name: 'Game'
@@ -293,12 +295,30 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     3
   end
 
-  def self.authenticate(email, password)
-    @player = Player.find_by(email: email)
-    return nil if @player.nil?
-    return @player if Player.hash_password(password, @player.p_salt) == @player.p_hash
+  def self.create_player(params)
+    player = Player.create(params)
+    if player.valid?
+      { id: player.id }
+    else
+      { errors: player.errors }
+    end
+  end
 
-    nil
+  def self.authenticate(params)
+    player = Player.find_by(email: params[:email])
+    return { error: 'Player not found' } if player.nil?
+
+    if Player.hash_password(params[:password], player.p_salt) == player.p_hash
+      { id: player.id }
+    else
+      { error: 'Login failed' }
+    end
+  end
+
+  def self.confirm_email(token)
+    player = Player.find_by(confirmation_token: token)
+    return unless player
+    player.update_attributes(confirmed_at: Time.zone.now)
   end
 
   attr_reader :password
@@ -327,5 +347,13 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def downcase_email
     self.email = email.downcase
+  end
+
+  def set_confirmation_token
+    self.confirmation_token = Player.generate_unique_secure_token
+  end
+
+  def send_confirmation_email
+    PlayerMailer.with(player: self).confirmation_email.deliver_now
   end
 end
