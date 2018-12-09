@@ -1,9 +1,28 @@
 # frozen_string_literal: true
 
+require 'bcrypt'
+
+class EmailValidator < ActiveModel::EachValidator
+  def validate_each(record, attribute, value)
+    unless /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i.match?(value)
+      record.errors[attribute] << (options[:message] || 'is not valid')
+    end
+  end
+end
+
 class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
+  include BCrypt
+
   validates :email, presence: true, uniqueness: true
   validates :name, presence: true, uniqueness: true, length: { maximum: 12 }
   validates :bot, inclusion: [true, false]
+
+  validates :password, confirmation: true, presence: true, length: { maximum: 16 }, if: :pass_req?
+  validates :password_confirmation, presence: true, if: :pass_req?
+  validates :p_salt, length: { maximum: 80 }
+  validates :p_hash, length: { maximum: 80 }
+
+  before_save :downcase_email
 
   has_many :games_1, foreign_key: :player_1_id, class_name: 'Game'
   has_many :games_2, foreign_key: :player_2_id, class_name: 'Game'
@@ -15,7 +34,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   has_many :friends, foreign_key: :player_1_id, class_name: 'Friend'
 
-  scope :active, -> { where.not(confirmed_at: nil).where(locked_at: nil) }
+  scope :active, -> { where.not(confirmed_at: nil) }
 
   def to_s
     name
@@ -272,5 +291,41 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
       return 2 if last_sign_in_at > 3.days.ago
     end
     3
+  end
+
+  def self.authenticate(email, password)
+    @player = Player.find_by(email: email)
+    return nil if @player.nil?
+    return @player if Player.hash_password(password, @player.p_salt) == @player.p_hash
+
+    nil
+  end
+
+  attr_reader :password
+
+  def password=(passwd)
+    @password = passwd
+    return if passwd.blank?
+
+    self.p_salt = Player.salt
+    self.p_hash = Player.hash_password(@password, p_salt)
+  end
+
+  def self.salt
+    BCrypt::Engine.generate_salt
+  end
+
+  def self.hash_password(password, salt)
+    BCrypt::Engine.hash_secret(password, salt)
+  end
+
+  private
+
+  def pass_req?
+    p_hash.blank? || password
+  end
+
+  def downcase_email
+    self.email = email.downcase
   end
 end

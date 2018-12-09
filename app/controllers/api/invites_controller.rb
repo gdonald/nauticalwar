@@ -7,15 +7,15 @@ class Api::InvitesController < Api::ApiController
   respond_to :json
 
   def index
-    render json: current_api_player.invites.ordered
+    render json: @current_player.invites.ordered
   end
 
   def count
-    render json: { count: current_api_player.invites.count }
+    render json: { count: @current_player.invites.count }
   end
 
   def create
-    result = current_api_player.create_invite!(params)
+    result = @current_player.create_invite!(params)
     if result&.persisted?
       render json: result
     else
@@ -24,7 +24,7 @@ class Api::InvitesController < Api::ApiController
   end
 
   def accept
-    game = current_api_player.accept_invite!(params[:id])
+    game = @current_player.accept_invite!(params[:id])
     if game&.persisted?
       klass = ActiveModelSerializers::SerializableResource
       render json: { invite_id: params[:id],
@@ -36,7 +36,7 @@ class Api::InvitesController < Api::ApiController
   end
 
   def decline
-    id = current_api_player.decline_invite!(params[:id])
+    id = @current_player.decline_invite!(params[:id])
     if id
       render json: { id: id }, status: :ok
     else
@@ -45,7 +45,7 @@ class Api::InvitesController < Api::ApiController
   end
 
   def cancel
-    id = current_api_player.cancel_invite!(params[:id])
+    id = @current_player.cancel_invite!(params[:id])
     if id
       render json: { id: id }, status: :ok
     else

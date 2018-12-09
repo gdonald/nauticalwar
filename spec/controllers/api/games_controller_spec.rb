@@ -19,12 +19,11 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
 
   before do
     Game.create_ships
-    login(player_1)
   end
 
   describe 'GET #index' do
     it 'returns http success' do
-      get :index
+      get :index, params: {}, session: { player_id: player_1.id }
       expect(json.size).to eq(2)
       expect(json[0]['id']).to eq(game_2.id)
       expect(json[1]['id']).to eq(game_3.id)
@@ -33,7 +32,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
 
   describe 'GET #count' do
     it 'returns http success' do
-      get :count
+      get :count, params: {}, session: { player_id: player_1.id }
       expect(json['count']).to eq(2)
     end
   end
@@ -45,7 +44,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns http success' do
-      get :next
+      get :next, params: {}, session: { player_id: player_1.id }
       expect(json['status']).to eq(game.id)
     end
   end
@@ -58,7 +57,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
 
     it 'returns http success' do
       travel_to(2.days.from_now) do
-        post :skip, params: { id: game.id }
+        post :skip, params: { id: game.id }, session: { player_id: player_1.id }
         expect(json['status']).to eq(game.id)
       end
     end
@@ -71,7 +70,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns http success' do
-      post :destroy, params: { id: game.id }
+      post :destroy, params: { id: game.id }, session: { player_id: player_1.id }
       expect(json['status']).to eq(game.id)
     end
   end
@@ -83,7 +82,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns http success' do
-      post :cancel, params: { id: game.id }
+      post :cancel, params: { id: game.id }, session: { player_id: player_1.id }
       expect(json['status']).to eq(game.id)
     end
   end
@@ -94,7 +93,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns http success' do
-      get :my_turn, params: { id: game.id }
+      get :my_turn, params: { id: game.id }, session: { player_id: player_1.id }
       expect(json['status']).to eq(1)
     end
   end
@@ -115,7 +114,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
 
       it 'returns a game' do # rubocop:disable Metrics/BlockLength
         travel_to(1.day.from_now) do # rubocop:disable Metrics/BlockLength
-          get :show, params: { id: game.id }
+          get :show, params: { id: game.id }, session: { player_id: player_1.id }
           expected = {
             'game' =>
               { 'id' => game.id,
@@ -146,7 +145,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns an error' do
-      get :show, params: { id: 0 }
+      get :show, params: { id: 0 }, session: { player_id: player_1.id }
       expect(json['error']).to eq('game not found')
     end
   end
@@ -167,7 +166,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
 
       it 'returns a game' do
         travel_to(1.day.from_now) do
-          get :opponent, params: { id: game.id }
+          get :opponent, params: { id: game.id }, session: { player_id: player_1.id }
           expected = {
             'game' =>
                 { 'id' => game.id,
@@ -192,7 +191,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns an error' do
-      get :opponent, params: { id: 0 }
+      get :opponent, params: { id: 0 }, session: { player_id: player_1.id }
       expect(json['error']).to eq('game not found')
     end
   end
@@ -211,20 +210,20 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns status of 1' do
-      post :attack, params: { id: game.id, s: s }
+      post :attack, params: { id: game.id, s: s }, session: { player_id: player_1.id }
       expect(json['status']).to eq(1)
       expect(json['error']).to eq(nil)
     end
 
     it 'returns status of -1' do
       game.update_attributes(turn: player_2)
-      post :attack, params: { id: game.id, s: s }
+      post :attack, params: { id: game.id, s: s }, session: { player_id: player_1.id }
       expect(json['status']).to eq(-1)
       expect(json['error']).to eq(nil)
     end
 
     it 'returns not found' do
-      post :attack, params: { id: 0, s: s }
+      post :attack, params: { id: 0, s: s }, session: { player_id: player_1.id }
       expect(json['status']).to eq(nil)
       expect(json['error']).to eq('game not found')
     end

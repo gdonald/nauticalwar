@@ -5,15 +5,11 @@ require 'rails_helper'
 RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
   let(:player) { create(:player, :confirmed) }
 
-  before do
-    login(player)
-  end
-
   describe 'GET #index' do
     let(:json) { JSON.parse(response.body) }
 
     it 'returns http success' do
-      get :index, params: { format: :json }
+      get :index, params: { format: :json }, session: { player_id: player.id }
       expect(response).to be_successful
       expected = [{ 'id' => player.id,
                     'name' => player.name,
@@ -29,7 +25,7 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Me
     let(:json) { JSON.parse(response.body) }
 
     it 'returns http success' do
-      get :activity, params: { format: :json }
+      get :activity, params: { format: :json }, session: { player_id: player.id }
       expect(response).to be_successful
       expected = { 'activity' => 0 }
       expect(json).to eq(expected)

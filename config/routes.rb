@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
-  devise_for :players, ActiveAdmin::Devise.config
   ActiveAdmin.routes(self)
 
   namespace :api do # rubocop:disable Metrics/BlockLength
@@ -42,13 +41,6 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :friends, only: %i[index create destroy]
     resources :enemies, only: %i[create]
-
-    devise_for :players, controllers: { sessions: 'api/sessions' }
-
-    devise_scope :player do
-      get 'confirm/:confirmation_token', to: 'confirmations#show', as: 'player_confirm', only_path: false
-    end
-
   end
 
   get '/android', to: 'home#android'

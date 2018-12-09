@@ -7,7 +7,6 @@ RSpec.describe Api::LayoutsController, type: :controller do # rubocop:disable Me
 
   before do
     Game.create_ships
-    login(player)
   end
 
   describe 'GET #create' do
@@ -18,7 +17,7 @@ RSpec.describe Api::LayoutsController, type: :controller do # rubocop:disable Me
     end
 
     it 'game not found' do
-      post :create
+      post :create, params: {}, session: { player_id: player.id }
       expect(json['errors']).to eq('game not found')
     end
 
@@ -32,7 +31,7 @@ RSpec.describe Api::LayoutsController, type: :controller do # rubocop:disable Me
       ] }.to_json
       params = { game_id: game.id, layout: layout }
       expect do
-        post :create, params: params, format: :json
+        post :create, params: params, session: { player_id: player.id }
       end.to change(Layout, :count).by(5)
       expect(json['player_1_layed_out']).to eq('1')
     end

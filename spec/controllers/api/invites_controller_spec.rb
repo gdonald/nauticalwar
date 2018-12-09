@@ -7,15 +7,11 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
   let(:player_2) { create(:player, :confirmed) }
   let(:json) { JSON.parse(response.body) }
 
-  before do
-    login(player_1)
-  end
-
   describe 'GET #index' do
     let!(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
 
     it 'returns invites' do
-      get :index
+      get :index, params: {}, session: { player_id: player_1.id }
       expected = [{ 'id' => invite.id,
                     'player_1_id' => player_1.id,
                     'player_2_id' => player_2.id,
@@ -32,7 +28,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
     let!(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
 
     it 'returns invites' do
-      get :count
+      get :count, params: {}, session: { player_id: player_1.id }
       expect(json['count']).to eq(1)
     end
   end
@@ -42,7 +38,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'creates an invite' do
       expect do
-        post :create, params: { id: player_2.id, r: '1', m: '0', t: '0' }
+        post :create, params: { id: player_2.id, r: '1', m: '0', t: '0' }, session: { player_id: player_1.id }
       end.to change(Invite, :count).by(1)
       expected = { 'id' => invite.id,
                    'player_1_id' => player_1.id,
@@ -57,7 +53,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'fails to create an invite when player not found' do
       expect do
-        post :create, params: { id: 0, r: '1', m: '0', t: '0' }
+        post :create, params: { id: 0, r: '1', m: '0', t: '0' }, session: { player_id: player_1.id }
       end.to change(Invite, :count).by(0)
       expect(json['errors']).to eq('An error occured')
     end
@@ -70,7 +66,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'accepts an invite' do
       expect do
-        post :accept, params: { id: invite_id }
+        post :accept, params: { id: invite_id }, session: { player_id: player_1.id }
       end.to change(Game, :count).by(1)
       expect(json['game']['id']).to eq(game.id)
       expect(json['game']['player_1_id']).to eq(game.player_1_id)
@@ -97,7 +93,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'fails to accept an invite' do
       expect do
-        post :accept, params: { id: 0 }
+        post :accept, params: { id: 0 }, session: { player_id: player_1.id }
       end.to change(Game, :count).by(0)
       expect(json['error']).to eq('Invite not accepted')
       expect(Invite.find_by(id: invite_id)).to be
@@ -110,7 +106,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'declines an invite' do
       expect do
-        post :decline, params: { id: invite_id }
+        post :decline, params: { id: invite_id }, session: { player_id: player_1.id }
       end.to change(Game, :count).by(0)
       expect(json['id']).to eq(invite_id)
       expect(Invite.find_by(id: invite_id)).to be_nil
@@ -118,7 +114,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'fails to decline an invite' do
       expect do
-        post :decline, params: { id: 0 }
+        post :decline, params: { id: 0 }, session: { player_id: player_1.id }
       end.to change(Game, :count).by(0)
       expect(json['error']).to eq('Invite not found')
       expect(Invite.find_by(id: invite_id)).to be
@@ -131,7 +127,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'declines an invite' do
       expect do
-        post :cancel, params: { id: invite_id }
+        post :cancel, params: { id: invite_id }, session: { player_id: player_1.id }
       end.to change(Game, :count).by(0)
       expect(json['id']).to eq(invite_id)
       expect(Invite.find_by(id: invite_id)).to be_nil
@@ -139,7 +135,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'fails to decline an invite' do
       expect do
-        post :cancel, params: { id: 0 }
+        post :cancel, params: { id: 0 }, session: { player_id: player_1.id }
       end.to change(Game, :count).by(0)
       expect(json['error']).to eq('Invite not found')
       expect(Invite.find_by(id: invite_id)).to be
