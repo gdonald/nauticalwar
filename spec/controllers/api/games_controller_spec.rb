@@ -70,7 +70,8 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns http success' do
-      post :destroy, params: { id: game.id }, session: { player_id: player_1.id }
+      post :destroy, params: { id: game.id },
+                     session: { player_id: player_1.id }
       expect(json['status']).to eq(game.id)
     end
   end
@@ -114,7 +115,8 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
 
       it 'returns a game' do # rubocop:disable Metrics/BlockLength
         travel_to(1.day.from_now) do # rubocop:disable Metrics/BlockLength
-          get :show, params: { id: game.id }, session: { player_id: player_1.id }
+          get :show, params: { id: game.id },
+                     session: { player_id: player_1.id }
           expected = {
             'game' =>
               { 'id' => game.id,
@@ -166,7 +168,8 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
 
       it 'returns a game' do
         travel_to(1.day.from_now) do
-          get :opponent, params: { id: game.id }, session: { player_id: player_1.id }
+          get :opponent, params: { id: game.id },
+                         session: { player_id: player_1.id }
           expected = {
             'game' =>
                 { 'id' => game.id,
@@ -210,14 +213,16 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns status of 1' do
-      post :attack, params: { id: game.id, s: s }, session: { player_id: player_1.id }
+      post :attack, params: { id: game.id, s: s },
+                    session: { player_id: player_1.id }
       expect(json['status']).to eq(1)
       expect(json['error']).to eq(nil)
     end
 
     it 'returns status of -1' do
       game.update_attributes(turn: player_2)
-      post :attack, params: { id: game.id, s: s }, session: { player_id: player_1.id }
+      post :attack, params: { id: game.id, s: s },
+                    session: { player_id: player_1.id }
       expect(json['status']).to eq(-1)
       expect(json['error']).to eq(nil)
     end

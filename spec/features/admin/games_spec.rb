@@ -1,10 +1,15 @@
-require "rails_helper"
+# frozen_string_literal: true
 
-RSpec.feature 'Games', type: :feature do
+require 'rails_helper'
+
+RSpec.feature 'Games', type: :feature do # rubocop:disable Metrics/BlockLength
   let(:admin) { create(:player, :admin) }
   let(:player_1) { create(:player, :confirmed) }
   let(:player_2) { create(:player, :confirmed) }
-  let!(:game) { create(:game, player_1: player_1, player_2: player_2, turn: player_1) }
+  let!(:game) do
+    create(:game, player_1: player_1, player_2: player_2,
+                  turn: player_1)
+  end
 
   scenario 'Can visit games index', js: true do
     admin_login(admin)

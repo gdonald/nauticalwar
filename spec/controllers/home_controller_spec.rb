@@ -17,4 +17,13 @@ RSpec.describe HomeController, type: :controller do
       expect(response).to render_template(layout: nil)
     end
   end
+
+  describe 'GET #confirm' do
+    let(:player) { create(:player) }
+
+    it 'returns http success' do
+      get :confirm, params: { token: player.confirmation_token }
+      expect(response).to be_redirect
+    end
+  end
 end

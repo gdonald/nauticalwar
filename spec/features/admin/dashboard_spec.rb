@@ -1,4 +1,6 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.feature 'Dashboard', type: :feature do
   let(:admin) { create(:player, :admin) }

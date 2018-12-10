@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::FriendsController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
+RSpec.describe Api::FriendsController, type: :controller do # rubocop:disable Metrics/LineLength, Metrics/BlockLength
   let(:player_1) { create(:player, :confirmed) }
   let(:player_2) { create(:player, :confirmed) }
   let(:json) { JSON.parse(response.body) }
@@ -19,7 +19,8 @@ RSpec.describe Api::FriendsController, type: :controller do # rubocop:disable Me
 
   describe 'POST #create' do
     it 'creates a friend, returns friend id' do
-      post :create, params: { id: player_2.id }, session: { player_id: player_1.id }
+      post :create, params: { id: player_2.id },
+                    session: { player_id: player_1.id }
       expect(json['status']).to eq(player_2.id)
     end
   end
@@ -28,7 +29,8 @@ RSpec.describe Api::FriendsController, type: :controller do # rubocop:disable Me
     let!(:friend) { create(:friend, player_1: player_1, player_2: player_2) }
 
     it 'destroys a friend, returns friend id' do
-      post :destroy, params: { id: player_2.id }, session: { player_id: player_1.id }
+      post :destroy, params: { id: player_2.id },
+                     session: { player_id: player_1.id }
       expect(json['status']).to eq(player_2.id)
     end
   end

@@ -1,4 +1,6 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.feature 'Invites', type: :feature do
   let(:admin) { create(:player, :admin) }
@@ -25,6 +27,7 @@ RSpec.feature 'Invites', type: :feature do
     end
 
     click_button 'Update Invite'
-    expect(page).to have_css('div.flash', text: 'Invite was successfully updated')
+    expect(page).to have_css('div.flash',
+                             text: 'Invite was successfully updated')
   end
 end

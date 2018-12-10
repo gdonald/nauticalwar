@@ -21,7 +21,7 @@ class CreatePlayers < ActiveRecord::Migration[5.2]
       # Admin
       t.boolean :admin,    null: false, default: false
 
-      t.string   :confirmation_token
+      t.string :confirmation_token
       t.timestamp :confirmed_at
       t.timestamp :last_sign_in_at
       t.timestamps null: false

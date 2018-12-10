@@ -1,4 +1,6 @@
-require "rails_helper"
+# frozen_string_literal: true
+
+require 'rails_helper'
 
 RSpec.feature 'Players', type: :feature do
   let(:admin) { create(:player, :admin) }
@@ -30,6 +32,7 @@ RSpec.feature 'Players', type: :feature do
     fill_in 'Password confirmation', with: 'changeme'
     click_button 'Update Player'
 
-    expect(page).to have_css('div.flash', text: 'Player was successfully updated')
+    expect(page).to have_css('div.flash',
+                             text: 'Player was successfully updated')
   end
 end

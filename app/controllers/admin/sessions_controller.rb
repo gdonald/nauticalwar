@@ -1,9 +1,7 @@
 # frozen_string_literal: true
 
 # rubocop:disable Style/ClassAndModuleChildren
-class Admin::SessionsController < Admin::AdminController
-  skip_before_action :authenticate_admin!
-
+class Admin::SessionsController < ApplicationController
   layout 'admin'
 
   def new; end

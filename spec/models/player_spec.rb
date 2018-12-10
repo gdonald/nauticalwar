@@ -14,6 +14,106 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '.authenticate' do
+    let(:result) { Player.authenticate(params) }
+
+    describe 'unknown email' do
+      let(:params) { { email: 'unknown@example.com' } }
+
+      it 'does not find a player' do
+        expect(result).to eq(error: 'Player not found')
+      end
+    end
+
+    describe 'wrong password' do
+      let(:params) { { email: player_2.email, password: 'wrong' } }
+
+      it 'does not authenticate a player' do
+        expect(result).to eq(error: 'Login failed')
+      end
+    end
+
+    describe 'valid params' do
+      let(:params) { { email: player_2.email, password: 'changeme' } }
+
+      it 'authenticates a player' do
+        expect(result).to eq(id: Player.last.id)
+      end
+    end
+  end
+
+  describe '.authenticate_admin' do
+    let!(:admin) { create(:player, :admin) }
+    let(:result) { Player.authenticate_admin(params) }
+
+    describe 'unknown email' do
+      let(:params) { { email: 'unknown@example.com' } }
+
+      it 'does not find a player' do
+        expect(result).to eq(error: 'Admin not found')
+      end
+    end
+
+    describe 'wrong password' do
+      let(:params) { { email: admin.email, password: 'wrong' } }
+
+      it 'does not authenticate a player' do
+        expect(result).to eq(error: 'Login failed')
+      end
+    end
+
+    describe 'valid params' do
+      let(:params) { { email: admin.email, password: 'changeme' } }
+
+      it 'authenticates a player' do
+        expect(result).to eq(id: Player.last.id)
+      end
+    end
+  end
+
+  describe '.confirm_email' do
+    it 'updates confirmed at' do
+      Player.confirm_email(player_1.confirmation_token)
+      player_1.reload
+      expect(player_1.confirmed_at).to be
+    end
+  end
+
+  describe '.create_player' do # rubocop:disable Metrics/BlockLength
+    let(:player) { Player.last }
+    let(:response) { Player.create_player(params) }
+
+    describe 'with valid params' do
+      let(:params) do
+        { email: 'foo@bar.com',
+          name: 'foo',
+          password: 'changeme',
+          password_confirmation: 'changeme' }
+      end
+
+      it 'creates a player' do
+        expect do
+          expect(response[:id]).to eq(player.id)
+        end.to change(Player, :count).by(1)
+      end
+    end
+
+    describe 'with invalid params' do
+      let(:params) { {} }
+      let(:blank) { ["can't be blank"] }
+      let(:invalid) { ["can't be blank", 'is not valid'] }
+
+      it 'returns errors' do
+        expect do
+          expect(response[:errors][:email]).to eq(invalid)
+          expect(response[:errors][:name]).to eq(blank)
+          expect(response[:errors][:password]).to eq(blank)
+          expect(response[:errors][:password_confirmation]).to eq(blank)
+        end.to change(Player, :count).by(0)
+      end
+    end
+  end
+
   describe '#admin?' do
     let(:player) { create(:player) }
 
@@ -294,7 +394,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#player_game' do # rubocop:disable Metrics/BlockLength
+  describe '#player_game' do
     describe 'game exists' do
       let(:game) do
         create(:game, player_1: player_1, player_2: player_2, turn: player_2)
@@ -319,18 +419,18 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#opponent_game' do # rubocop:disable Metrics/BlockLength
+  describe '#opponent_game' do
     describe 'game exists' do
       let(:game) do
         create(:game, player_1: player_1, player_2: player_2, turn: player_2)
       end
       let(:layout) do
         create(:layout, game: game, player: player_2, ship: create(:ship),
-               x: 3, y: 5)
+                        x: 3, y: 5)
       end
       let!(:move) do
         create(:move, game: game, player: player_1, x: 3, y: 5,
-               layout: layout)
+                      layout: layout)
       end
 
       it 'returns a game hash' do

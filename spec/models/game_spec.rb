@@ -18,6 +18,44 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     Game.create_ships
   end
 
+  describe '#layouts_for_player' do
+    let!(:layout_1) do
+      create(:layout, game: game_1, ship: ship,
+                      player: player_1)
+    end
+    let!(:layout_2) do
+      create(:layout, game: game_1, ship: ship,
+                      player: player_2)
+    end
+
+    it 'returns player layouts' do
+      expect(game_1.layouts_for_player(player_1)).to eq([layout_1])
+      expect(game_1.layouts_for_player(player_2)).to eq([layout_2])
+    end
+  end
+
+  describe '#layouts_for_opponent' do
+    let!(:layout_1) do
+      create(:layout,
+             game: game_1,
+             ship: ship,
+             player: player_1,
+             sunk: true)
+    end
+    let!(:layout_2) do
+      create(:layout,
+             game: game_1,
+             ship: ship,
+             player: player_2,
+             sunk: true)
+    end
+
+    it 'returns player layouts' do
+      expect(game_1.layouts_for_opponent(player_1)).to eq([layout_1])
+      expect(game_1.layouts_for_opponent(player_2)).to eq([layout_2])
+    end
+  end
+
   describe '#can_attack?' do
     it 'returns false when there is a winner' do
       game_1.winner = player_1

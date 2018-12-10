@@ -4,20 +4,24 @@ require 'bcrypt'
 
 class EmailValidator < ActiveModel::EachValidator
   def validate_each(record, attribute, value)
-    unless /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i.match?(value)
-      record.errors[attribute] << (options[:message] || 'is not valid')
-    end
+    return if /\A([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})\z/i.match?(value)
+
+    record.errors[attribute] << (options[:message] || 'is not valid')
   end
 end
 
 class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   include BCrypt
 
-  validates :email, presence: true, uniqueness: true
+  validates :email, presence: true, uniqueness: true, email: true
   validates :name, presence: true, uniqueness: true, length: { maximum: 12 }
   validates :bot, inclusion: [true, false]
 
-  validates :password, confirmation: true, presence: true, length: { maximum: 16 }, if: :pass_req?
+  validates :password,
+            confirmation: true,
+            presence: true,
+            length: { maximum: 16 },
+            if: :pass_req?
   validates :password_confirmation, presence: true, if: :pass_req?
   validates :p_salt, length: { maximum: 80 }
   validates :p_hash, length: { maximum: 80 }
@@ -329,6 +333,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def self.confirm_email(token)
     player = Player.find_by(confirmation_token: token)
     return unless player
+
     player.update_attributes(confirmed_at: Time.zone.now)
   end
 
