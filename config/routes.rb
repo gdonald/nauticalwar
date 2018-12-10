@@ -47,6 +47,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   end
 
   get '/android', to: 'home#android'
+  get '/privacy', to: 'home#privacy'
   get '/confirm/:token', to: 'home#confirm', as: :confirm
 
   ActiveAdmin.routes(self)

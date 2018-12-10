@@ -1,7 +1,9 @@
 # frozen_string_literal: true
 
 class HomeController < ApplicationController
-  def index; end
+  def index
+    render layout: 'spa'
+  end
 
   def android
     render layout: nil
