@@ -118,14 +118,14 @@
         %p © Nautical War 2018 &nbsp;&middot; &nbsp;All Rights Reserved.
         %ul.list-inline
           %li.list-inline-item
-            %a{:href => "/privacy", target: :blank} Privacy
+            = link_to 'Privacy', privacy_path, target: '_blank'
           %li.list-inline-item
             &middot;
           %li.list-inline-item
-            %a{:href => "/terms"} Terms
-          %li.list-inline-item
-            &middot;
-          %li.list-inline-item
-            %a{:href => "/faq"} FAQ
+            = link_to 'Terms', terms_path, target: '_blank'
+          -#%li.list-inline-item
+          -#  &middot;
+          -#%li.list-inline-item
+          -#  %a{:href => "/faq"} FAQ
 
     %script{:src => asset_path("new-age.js")}
