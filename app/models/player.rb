@@ -39,8 +39,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   has_many :invites_2, foreign_key: :player_2_id, class_name: 'Invite'
 
   has_many :friends, foreign_key: :player_1_id, class_name: 'Friend'
+  has_many :enemies, foreign_key: :player_1_id, class_name: 'Enemy'
 
   scope :active, -> { where.not(confirmed_at: nil) }
+  scope :not_bot, -> { where(bot: false) }
 
   def to_s
     name
@@ -108,6 +110,21 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     end
   end
 
+  def create_enemy!(id)
+    if !enemies_player_ids.include?(id) && !friends_player_ids.include?(id)
+      player = Player.active.not_bot.find_by(id: id)
+      if player
+        enemies.create!(player_2: player)
+        return player.id
+      end
+    end
+    -1
+  end
+
+  def enemies_player_ids
+    enemies.collect(&:player_2_id)
+  end
+
   def destroy_friend!(id)
     friend = friends.where(player_2_id: id).first
     if friend
@@ -119,15 +136,17 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def create_friend!(id)
-    player = Player.active.find_by(id: id)
-    if player && !friends.include?(player)
-      friends.create!(player_2: player)
-      return player.id
+    if !friends_player_ids.include?(id) && !enemies_player_ids.include?(id)
+      player = Player.active.find_by(id: id)
+      if player
+        friends.create!(player_2: player)
+        return player.id
+      end
     end
     -1
   end
 
-  def friend_ids
+  def friends_player_ids
     friends.collect(&:player_2_id)
   end
 
@@ -275,9 +294,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def self.list(player) # rubocop:disable Metrics/AbcSize
     ids = Player.select(:id).where(bot: true).collect(&:id)
-    ids += Player.select(:id).where(arel_table[:rating].gteq(player.rating))
+    query = Player.select(:id).where.not(id: player.enemies_player_ids)
+    ids += query.where(arel_table[:rating].gteq(player.rating))
                  .order(rating: :asc).limit(15).collect(&:id)
-    ids += Player.select(:id).where(arel_table[:rating].lteq(player.rating))
+    ids += query.where(arel_table[:rating].lteq(player.rating))
                  .order(rating: :desc).limit(15).collect(&:id)
     ids.uniq!
     Player.where(id: ids).order(rating: :desc)

@@ -20,7 +20,7 @@ end
 
 Game.create_ships
 
-# create(:player,
-#        email: 'gdonald+2@gmail.com', name: 'gdonald2',
-#        password: 'changeme17', password_confirmation: 'changeme17',
-#        confirmed_at: Time.current)
+create(:player,
+       email: 'gdonald+2@gmail.com', name: 'gdonald2',
+       password: 'changeme17', password_confirmation: 'changeme17',
+       confirmed_at: Time.current)

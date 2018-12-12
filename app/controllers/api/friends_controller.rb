@@ -5,7 +5,7 @@ class Api::FriendsController < Api::ApiController
   skip_before_action :verify_authenticity_token, only: %i[create destroy]
 
   def index
-    render json: { ids: @current_player.friend_ids }
+    render json: { ids: @current_player.friends_player_ids }
   end
 
   def create

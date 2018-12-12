@@ -239,6 +239,49 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '#create_enemy!' do
+    let(:player) { create(:player, :confirmed) }
+
+    it 'creates a enemy' do
+      expect do
+        player_1.create_enemy!(player.id)
+      end.to change(Enemy, :count).by(1)
+      expect(player_1.enemies.first.player_2).to eq(player)
+    end
+
+
+    describe 'fails to create a enemy' do
+      it 'when player not found' do
+        expect do
+          result = player_1.create_enemy!(0)
+          expect(result).to eq(-1)
+        end.to change(Enemy, :count).by(0)
+      end
+
+      describe 'fails to add enemy' do
+        let(:friend) { create(:friend, player_1: player_1, player_2: player_2) }
+
+        it 'when already a friend' do
+          expect do
+            result = player_1.create_enemy!(friend.id)
+            expect(result).to eq(-1)
+          end.to change(Enemy, :count).by(0)
+        end
+      end
+    end
+  end
+
+  describe '#enemy_ids' do
+    let!(:enemy_1) { create(:enemy, player_1: player_1, player_2: player_2) }
+    let!(:enemy_2) { create(:enemy, player_1: player_2, player_2: player_3) }
+    let!(:enemy_3) { create(:enemy, player_1: player_2, player_2: player_1) }
+
+    it 'returns enemy ids' do
+      expect(Enemy.count).to eq(3)
+      expect(player_1.enemies_player_ids).to eq([player_2.id])
+    end
+  end
+
   describe '#destroy_friend!' do
     let!(:friend) { create(:friend, player_1: player_1, player_2: player_2) }
 
@@ -267,11 +310,24 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       expect(player_1.friends.first.player_2).to eq(player)
     end
 
-    it 'fails to create a friend' do
-      expect do
-        result = player_1.create_friend!(0)
-        expect(result).to eq(-1)
-      end.to change(Friend, :count).by(0)
+    describe 'fails to create a friend' do
+      it 'when other player not found' do
+        expect do
+          result = player_1.create_friend!(0)
+          expect(result).to eq(-1)
+        end.to change(Friend, :count).by(0)
+      end
+
+      describe 'fails to add a friend' do
+        let(:enemy) { create(:enemy, player_1: player_1, player_2: player_2) }
+
+        it 'when already an enemy' do
+          expect do
+            result = player_1.create_friend!(enemy.id)
+            expect(result).to eq(-1)
+          end.to change(Friend, :count).by(0)
+        end
+      end
     end
   end
 
@@ -282,7 +338,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
 
     it 'returns friend ids' do
       expect(Friend.count).to eq(3)
-      expect(player_1.friend_ids).to eq([player_2.id])
+      expect(player_1.friends_player_ids).to eq([player_2.id])
     end
   end
 
@@ -822,8 +878,10 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '.list' do
+    let!(:enemy) { create(:enemy, player_1: player_1, player_2: player_2) }
+
     it 'returns players' do
-      expected = [player_1, player_2, player_3]
+      expected = [player_1, player_3]
       expect(Player.list(player_1)).to eq(expected)
     end
   end

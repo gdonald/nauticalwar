@@ -11,13 +11,13 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Me
     it 'returns http success' do
       get :index, params: { format: :json }, session: { player_id: player.id }
       expect(response).to be_successful
-      expected = [{ 'id' => player.id,
-                    'name' => player.name,
-                    'wins' => 0,
-                    'losses' => 0,
-                    'rating' => 1200,
-                    'last' => 0 }]
-      expect(json).to eq(expected)
+      expect(json[0]['id']).to eq(player.id)
+      expect(json[0]['name']).to eq(player.name)
+      expect(json[0]['wins']).to eq(0)
+      expect(json[0]['losses']).to eq(0)
+      expect(json[0]['rating']).to eq(1200)
+      expect(json[0]['last']).to eq(0)
+      expect(json[0]['bot']).to eq(0)
     end
   end
 
@@ -28,8 +28,7 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Me
       get :activity, params: { format: :json },
                      session: { player_id: player.id }
       expect(response).to be_successful
-      expected = { 'activity' => 0 }
-      expect(json).to eq(expected)
+      expect(json['activity']).to eq(0)
     end
   end
 
@@ -54,11 +53,10 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Me
       expect do
         post :create, params: {}
       end.to change(Player, :count).by(0)
-      expected = { 'email' => ["can't be blank", 'is not valid'],
-                   'name' => ["can't be blank"],
-                   'password' => ["can't be blank"],
-                   'password_confirmation' => ["can't be blank"] }
-      expect(json['errors']).to eq(expected)
+      expect(json['errors']['email']).to eq(["can't be blank", 'is not valid'])
+      expect(json['errors']['name']).to eq(["can't be blank"])
+      expect(json['errors']['password']).to eq(["can't be blank"])
+      expect(json['errors']['password_confirmation']).to eq(["can't be blank"])
     end
   end
 end
