@@ -312,9 +312,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     return 0 if bot
 
     if last_sign_in_at
-      return 0 if last_sign_in_at < 1.hour.ago
-      return 1 if last_sign_in_at < 1.day.ago
-      return 2 if last_sign_in_at < 3.days.ago
+      return 0 if last_sign_in_at > 1.hour.ago
+      return 1 if last_sign_in_at > 1.day.ago
+      return 2 if last_sign_in_at > 3.days.ago
     end
     3
   end

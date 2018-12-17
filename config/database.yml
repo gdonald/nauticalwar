@@ -11,9 +11,3 @@ development:
 test:
   <<: *default
   database: nw_test
-
-production:
-  <<: *default
-  database: nauticalwar
-  username: nauticalwar
-  password: <%= ENV['NAUTICALWAR_DATABASE_PASSWORD'] %>
