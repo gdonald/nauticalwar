@@ -114,6 +114,51 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '.params_with_password' do
+    let(:params) { { foo: 'bar' } }
+
+    it 'adds a random password' do
+      results = Player.params_with_password(params)
+      expect(results[:foo]).to eq('bar')
+      expect(results[:password]).to be
+      expect(results[:password_confirmation]).to be
+      expect(results[:password]).to eq(results[:password_confirmation])
+    end
+  end
+
+  describe '.complete_google_signup' do # rubocop:disable Metrics/BlockLength
+    let(:player) { Player.last }
+    let(:response) { Player.complete_google_signup(params) }
+
+    describe 'with valid params' do
+      let(:params) do
+        { email: 'foo@bar.com',
+          name: 'foo' }
+      end
+
+      it 'creates a player' do
+        expect do
+          expect(response[:id]).to eq(player.id)
+        end.to change(Player, :count).by(1)
+      end
+    end
+
+    describe 'with invalid params' do
+      let(:params) { {} }
+      let(:blank) { ["can't be blank"] }
+      let(:invalid) { ["can't be blank", 'is not valid'] }
+
+      it 'returns errors' do
+        expect do
+          expect(response[:errors][:email]).to eq(invalid)
+          expect(response[:errors][:name]).to eq(blank)
+          expect(response[:errors][:password]).to eq([])
+          expect(response[:errors][:password_confirmation]).to eq([])
+        end.to change(Player, :count).by(0)
+      end
+    end
+  end
+
   describe '#admin?' do
     let(:player) { create(:player) }
 

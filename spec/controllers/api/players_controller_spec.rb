@@ -59,4 +59,46 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Me
       expect(json['errors']['password_confirmation']).to eq(["can't be blank"])
     end
   end
+
+  describe 'POST #account_exists' do
+    let(:player) { create(:player) }
+    let(:params) { { email: player.email } }
+    let(:json) { JSON.parse(response.body) }
+
+    it 'returns a player' do
+      post :account_exists, params: params
+      expect(json['id']).to eq(player.id)
+    end
+
+    it 'does not return a player' do
+      post :account_exists, params: {}
+      expect(json).to be_nil
+    end
+  end
+
+  describe 'POST #complete_google_signup' do
+    let(:params) { { email: 'foo@bar.com', name: 'foo' } }
+    let(:json) { JSON.parse(response.body) }
+    let(:player) { Player.last }
+
+    it 'creates a player' do
+      expect do
+        post :complete_google_signup, params: params
+      end.to change(Player, :count).by(1)
+      expect(json['id']).to eq(player.id)
+    end
+
+    describe 'with an existing player' do
+      let(:player) { create(:player) }
+      let!(:params) { { email: player.email, name: player.name } }
+
+      it 'returns errors' do
+        expect do
+          post :complete_google_signup, params: params
+        end.to change(Player, :count).by(0)
+        expect(json['errors']['email']).to eq(['has already been taken'])
+        expect(json['errors']['name']).to eq(['has already been taken'])
+      end
+    end
+  end
 end

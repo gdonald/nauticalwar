@@ -24,7 +24,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       collection do
         get :activity
         post :complete_google_signup
-        post :google_account_exists
+        post :account_exists
       end
     end
 

@@ -2,7 +2,7 @@
 
 # rubocop:disable Style/ClassAndModuleChildren
 class Api::PlayersController < Api::ApiController
-  skip_before_action :verify_authenticity_token, only: %i[create]
+  skip_before_action :verify_authenticity_token, only: %i[create complete_google_signup account_exists]
 
   respond_to :json
 
@@ -19,20 +19,16 @@ class Api::PlayersController < Api::ApiController
   end
 
   def complete_google_signup
-    render json: Player.complete_google_signup(google_player_params)
+    render json: Player.complete_google_signup(google_params)
   end
 
-  def google_account_exists
-    render json: Player.google_account_exists(google_email_params)
+  def account_exists
+    render json: Player.find_by(email: google_params[:email])
   end
 
   private
 
-  def google_email_params
-    params.permit(:email)
-  end
-
-  def google_player_params
+  def google_params
     params.permit(:name, :email)
   end
 
