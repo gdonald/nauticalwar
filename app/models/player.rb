@@ -319,6 +319,26 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     3
   end
 
+  def self.complete_google_signup(params)
+    binding.pry
+    player = Player.create(params)
+    if player.valid?
+      { id: player.id }
+    else
+      { errors: player.errors }
+    end
+  end
+
+  def self.google_account_exists(params)
+    binding.pry
+    player = Player.create(params)
+    if player.valid?
+      { id: player.id }
+    else
+      { errors: player.errors }
+    end
+  end
+
   def self.create_player(params)
     player = Player.create(params)
     if player.valid?

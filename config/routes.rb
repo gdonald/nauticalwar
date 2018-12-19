@@ -23,6 +23,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :players, only: %i[index create] do
       collection do
         get :activity
+        post :complete_google_signup
+        post :google_account_exists
       end
     end
 

@@ -18,7 +18,23 @@ class Api::PlayersController < Api::ApiController
     render json: Player.create_player(player_params)
   end
 
+  def complete_google_signup
+    render json: Player.complete_google_signup(google_player_params)
+  end
+
+  def google_account_exists
+    render json: Player.google_account_exists(google_email_params)
+  end
+
   private
+
+  def google_email_params
+    params.permit(:email)
+  end
+
+  def google_player_params
+    params.permit(:name, :email)
+  end
 
   def player_params
     params.permit(:name, :email, :password, :password_confirmation)
