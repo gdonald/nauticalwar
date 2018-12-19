@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
-ActiveAdmin.register Friend do # rubocop:disable Metrics/BlockLength
-  actions :all, except: [:show, :new, :edit]
+ActiveAdmin.register Friend do
+  actions :all, except: %i[show new edit]
 
   index do
     selectable_column

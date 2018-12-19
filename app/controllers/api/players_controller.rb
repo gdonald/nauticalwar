@@ -2,7 +2,8 @@
 
 # rubocop:disable Style/ClassAndModuleChildren
 class Api::PlayersController < Api::ApiController
-  skip_before_action :verify_authenticity_token, only: %i[create complete_google_signup account_exists]
+  skip_before_action :verify_authenticity_token,
+                     only: %i[create complete_google_signup account_exists]
 
   respond_to :json
 

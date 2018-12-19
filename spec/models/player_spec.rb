@@ -294,7 +294,6 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       expect(player_1.enemies.first.player_2).to eq(player)
     end
 
-
     describe 'fails to create a enemy' do
       it 'when player not found' do
         expect do

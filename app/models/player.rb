@@ -296,9 +296,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     ids = Player.select(:id).where(bot: true).collect(&:id)
     query = Player.select(:id).where.not(id: player.enemies_player_ids)
     ids += query.where(arel_table[:rating].gteq(player.rating))
-                 .order(rating: :asc).limit(15).collect(&:id)
+                .order(rating: :asc).limit(15).collect(&:id)
     ids += query.where(arel_table[:rating].lteq(player.rating))
-                 .order(rating: :desc).limit(15).collect(&:id)
+                .order(rating: :desc).limit(15).collect(&:id)
     ids.uniq!
     Player.where(id: ids).order(rating: :desc)
   end
