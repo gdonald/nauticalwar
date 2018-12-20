@@ -3,6 +3,7 @@
 # rubocop:disable Style/ClassAndModuleChildren
 class Api::SessionsController < Api::ApiController
   skip_before_action :verify_authenticity_token, only: %i[create destroy]
+  skip_before_action :authenticate_player!
 
   def create
     player = Player.authenticate(create_params)

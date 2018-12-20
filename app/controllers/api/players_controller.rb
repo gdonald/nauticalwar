@@ -5,6 +5,9 @@ class Api::PlayersController < Api::ApiController
   skip_before_action :verify_authenticity_token,
                      only: %i[create complete_google_signup account_exists]
 
+  skip_before_action :authenticate_player!,
+                     only: %i[create complete_google_signup account_exists]
+
   respond_to :json
 
   def index
@@ -20,7 +23,9 @@ class Api::PlayersController < Api::ApiController
   end
 
   def complete_google_signup
-    render json: Player.complete_google_signup(google_params)
+    player = Player.complete_google_signup(google_params)
+    session[:player_id] = player[:id].nil? ? 0 : player[:id]
+    render json: player
   end
 
   def account_exists
