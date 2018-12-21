@@ -21,6 +21,9 @@ class CreatePlayers < ActiveRecord::Migration[5.2]
       # Admin
       t.boolean :admin,    null: false, default: false
 
+      t.string :password_token
+      t.timestamp :password_token_expire
+
       t.string :confirmation_token
       t.timestamp :confirmed_at
       t.timestamp :last_sign_in_at

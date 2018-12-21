@@ -25,6 +25,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
         get :activity
         post :complete_google_signup
         post :account_exists
+        post :locate_account
       end
     end
 
@@ -53,6 +54,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
   get '/terms',   to: 'home#terms'
 
   get '/confirm/:token', to: 'home#confirm', as: :confirm
+  get '/reset/:token',   to: 'home#reset',   as: :reset
 
   ActiveAdmin.routes(self)
   namespace :admin do

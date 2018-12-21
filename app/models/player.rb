@@ -319,6 +319,23 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     3
   end
 
+  def reset_password_token
+    self.password_token = Player.generate_unique_secure_token
+    self.password_token_expire = Time.zone.now
+    save!
+  end
+
+  def self.locate_account(params)
+    player = Player.find_by(email: params[:email])
+    if player
+      player.reset_password_token
+      PlayerMailer.with(player: player).reset_email.deliver_now
+      { id: player.id }
+    else
+      { id: -1 }
+    end
+  end
+
   def self.params_with_password(params)
     pwd = Player.generate_password(16)
     params[:password] = pwd

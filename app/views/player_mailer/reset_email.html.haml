@@ -1,0 +1,9 @@
+%h1
+  #{@player.name},
+%p
+  Click here to reset your Nautical War password:
+  %br/
+  %br/
+  = reset_url(token: @player.password_token)
+  %br/
+  %br/

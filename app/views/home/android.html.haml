@@ -4,4 +4,7 @@
   %p &nbsp;
   NauticalWar Confirmation Complete
   %p
-    %a{ href: ANDROID_URL, style: 'color: #008' } Click To Continue
+    - if params && params[:token]
+      %a{ href: "#{ANDROID_URL}?token=#{params[:token]}", style: 'color: #008' } Click To Reset Password
+    - else
+      %a{ href: ANDROID_URL, style: 'color: #008' } Click To Continue
