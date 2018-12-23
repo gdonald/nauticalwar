@@ -97,6 +97,8 @@ ActiveRecord::Schema.define(version: 9) do
     t.integer "activity", default: 0, null: false
     t.integer "rating", default: 1200, null: false
     t.boolean "admin", default: false, null: false
+    t.string "password_token"
+    t.datetime "password_token_expire"
     t.string "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "last_sign_in_at"

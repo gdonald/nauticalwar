@@ -10,4 +10,9 @@ class PlayerMailer < ApplicationMailer
     @player = params[:player]
     mail(to: @player.email, subject: 'Nautical War Password Reset')
   end
+
+  def reset_complete_email
+    @player = params[:player]
+    mail(to: @player.email, subject: 'Nautical War Password Reset Complete')
+  end
 end

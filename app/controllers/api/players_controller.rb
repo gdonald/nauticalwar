@@ -3,10 +3,10 @@
 # rubocop:disable Style/ClassAndModuleChildren
 class Api::PlayersController < Api::ApiController
   skip_before_action :verify_authenticity_token,
-                     only: %i[create complete_google_signup account_exists locate_account]
+                     only: %i[create complete_google_signup account_exists locate_account reset_password]
 
   skip_before_action :authenticate_player!,
-                     only: %i[create complete_google_signup account_exists locate_account]
+                     only: %i[create complete_google_signup account_exists locate_account reset_password]
 
   respond_to :json
 
@@ -36,6 +36,11 @@ class Api::PlayersController < Api::ApiController
     render json: Player.find_by(email: google_params[:email])
   end
 
+  def reset_password
+    player = Player.reset_password(reset_params)
+    render json: { id: player[:id].nil? ? 0 : player[:id] }
+  end
+
   private
 
   def locate_params
@@ -48,6 +53,10 @@ class Api::PlayersController < Api::ApiController
 
   def player_params
     params.permit(:name, :email, :password, :password_confirmation)
+  end
+
+  def reset_params
+    params.permit(:token, :password, :password_confirmation)
   end
 end
 # rubocop:enable Style/ClassAndModuleChildren

@@ -26,6 +26,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
         post :complete_google_signup
         post :account_exists
         post :locate_account
+        post :reset_password
       end
     end
 
