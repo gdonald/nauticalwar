@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe HomeController, type: :controller do
+RSpec.describe HomeController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
   describe 'GET #index' do
     it 'returns http success' do
       get :index
@@ -14,15 +14,24 @@ RSpec.describe HomeController, type: :controller do
     it 'returns http success' do
       get :android
       expect(response).to be_successful
-      expect(response).to render_template(layout: nil)
+      expect(response).to render_template(layout: 'mobile')
     end
   end
 
   describe 'GET #confirm' do
     let(:player) { create(:player) }
 
-    it 'returns http success' do
+    it 'returns redirect' do
       get :confirm, params: { token: player.confirmation_token }
+      expect(response).to be_redirect
+    end
+  end
+
+  describe 'GET #reset' do
+    let(:player) { create(:player) }
+
+    it 'returns redirect' do
+      get :reset, params: { token: player.confirmation_token }
       expect(response).to be_redirect
     end
   end

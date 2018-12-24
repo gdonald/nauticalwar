@@ -3,10 +3,12 @@
 # rubocop:disable Style/ClassAndModuleChildren
 class Api::PlayersController < Api::ApiController
   skip_before_action :verify_authenticity_token,
-                     only: %i[create complete_google_signup account_exists locate_account reset_password]
+                     only: %i[create complete_google_signup account_exists
+                              locate_account reset_password]
 
   skip_before_action :authenticate_player!,
-                     only: %i[create complete_google_signup account_exists locate_account reset_password]
+                     only: %i[create complete_google_signup account_exists
+                              locate_account reset_password]
 
   respond_to :json
 

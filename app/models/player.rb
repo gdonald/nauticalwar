@@ -321,20 +321,24 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def reset_password_token
     self.password_token = Player.generate_unique_secure_token
-    self.password_token_expire = Time.zone.now
+    self.password_token_expire = Time.zone.now + 1.hour
     save!
   end
 
-  def self.reset_password(params)
+  def self.reset_password(params) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/LineLength
     player = Player.find_by(password_token: params[:token])
-    if player && player.password_token_expire < Time.zone.now
+    if player.nil?
+      { id: -1 }
+    elsif player.password_token_expire < Time.zone.now
+      { id: -2 }
+    elsif params[:password] != params[:password_confirmation]
+      { id: -3 }
+    else
       player.password = params[:password]
       player.password_confirmation = params[:password_confirmation]
       player.save!
       PlayerMailer.with(player: player).reset_complete_email.deliver_now
       { id: player.id }
-    else
-      { id: -1 }
     end
   end
 

@@ -6,7 +6,7 @@ class HomeController < ApplicationController
   end
 
   def android
-    render layout: nil
+    render layout: 'mobile'
   end
 
   def confirm

@@ -21,6 +21,67 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Me
     end
   end
 
+  describe 'POST #reset_password' do # rubocop:disable Metrics/BlockLength
+    let(:json) { JSON.parse(response.body) }
+
+    describe 'cannot find a player' do
+      it 'with an invalid token' do
+        post :reset_password, params: { token: 'foo' }
+        expect(response).to be_successful
+        expect(json['id']).to eq(-1)
+      end
+    end
+
+    describe 'finds a player' do
+      let(:params) do
+        { token: player.password_token, password: 'foo',
+          password_confirmation: 'foo' }
+      end
+
+      before do
+        player.reset_password_token
+      end
+
+      it 'with an expired token' do
+        travel_to 2.hours.from_now do
+          post :reset_password, params: params
+          expect(response).to be_successful
+          expect(json['id']).to eq(-2)
+        end
+      end
+
+      it 'cannot update with different passwords' do
+        params[:password] = 'bar'
+        post :reset_password, params: params
+        expect(response).to be_successful
+        expect(json['id']).to eq(-3)
+      end
+
+      it 'updates a player password' do
+        post :reset_password, params: params
+        expect(response).to be_successful
+        expect(json['id']).to eq(player.id)
+      end
+    end
+  end
+
+  describe 'POST #locate_account' do
+    let(:json) { JSON.parse(response.body) }
+    let(:params) { { email: player.email } }
+
+    it 'finds a player' do
+      post :locate_account, params: params
+      expect(response).to be_successful
+      expect(json['id']).to eq(player.id)
+    end
+
+    it 'fails to find a player' do
+      post :locate_account, params: { email: 'foo@bar.com' }
+      expect(response).to be_successful
+      expect(json['id']).to eq(-1)
+    end
+  end
+
   describe 'GET #activity' do
     let(:json) { JSON.parse(response.body) }
 

@@ -14,6 +14,58 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '.reset_password' do # rubocop:disable Metrics/BlockLength
+    describe 'cannot find a player' do
+      it 'with the wrong token' do
+        result = Player.reset_password(token: 'foo')
+        expect(result).to eq(id: -1)
+      end
+    end
+
+    describe 'finds a player' do
+      let(:params) do
+        { token: player_1.password_token, password: 'foo',
+          password_confirmation: 'foo' }
+      end
+
+      before do
+        player_1.reset_password_token
+      end
+
+      it 'finds a player with an expired token' do
+        travel_to 2.hours.from_now do
+          result = Player.reset_password(params)
+          expect(result).to eq(id: -2)
+        end
+      end
+
+      it 'cannot update with different passwords' do
+        params[:password] = 'bar'
+        result = Player.reset_password(params)
+        expect(result).to eq(id: -3)
+      end
+
+      it 'updates a player password' do
+        result = Player.reset_password(params)
+        expect(result).to eq(id: player_1.id)
+      end
+    end
+  end
+
+  describe '.locate_account' do
+    let(:params) { { email: player_1.email } }
+
+    it 'finds a player' do
+      result = Player.locate_account(params)
+      expect(result).to eq(id: player_1.id)
+    end
+
+    it 'fails to find a player' do
+      result = Player.locate_account(email: 'foo@bar.com')
+      expect(result).to eq(id: -1)
+    end
+  end
+
   describe '.authenticate' do
     let(:result) { Player.authenticate(params) }
 

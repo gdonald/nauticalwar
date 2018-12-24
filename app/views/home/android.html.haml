@@ -1,10 +1,15 @@
 
 %h1{ style: 'text-align: center; font-family: Arial, sans-serif' }
-  %p &nbsp;
-  %p &nbsp;
-  NauticalWar Confirmation Complete
-  %p
+  %p.mobile
+    &nbsp;
+    NauticalWar
+    %br/
     - if params && params[:token]
-      %a{ href: "#{ANDROID_URL}?token=#{params[:token]}", style: 'color: #008' } Click To Reset Password
+      Password Update
     - else
-      %a{ href: ANDROID_URL, style: 'color: #008' } Click To Continue
+      NauticalWar Confirmation Complete
+  %p.mobile
+    - if params && params[:token]
+      %a{ href: "#{ANDROID_URL}?token=#{params[:token]}" } Click To Reset Password
+    - else
+      %a{ href: ANDROID_URL } Click To Continue
