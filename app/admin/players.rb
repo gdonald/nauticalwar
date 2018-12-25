@@ -13,16 +13,14 @@ ActiveAdmin.register Player do # rubocop:disable Metrics/BlockLength
     column :wins
     column :losses
     column :rating
-    column 'Logins', :sign_in_count
-    column 'Last', :current_sign_in_at
+    column 'Last', :last_sign_in_at
     column 'Created', :created_at
     column 'Confirmed', :confirmed_at
     actions
   end
 
   filter :email
-  filter :current_sign_in_at
-  filter :sign_in_count
+  filter :last_sign_in_at
   filter :confirmed_at, as: :date_range
   filter :created_at
 
