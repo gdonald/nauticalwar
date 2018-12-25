@@ -35,7 +35,9 @@ class Api::PlayersController < Api::ApiController
   end
 
   def account_exists
-    render json: Player.find_by(email: google_params[:email])
+    player = Player.find_by(email: google_params[:email])
+    session[:player_id] = player[:id].nil? ? 0 : player[:id]
+    render json: player
   end
 
   def reset_password
