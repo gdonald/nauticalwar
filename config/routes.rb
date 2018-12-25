@@ -56,7 +56,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
   get '/confirm/:token', to: 'home#confirm',        as: :confirm
   get '/reset/:token',   to: 'home#reset',          as: :reset
-  get '/reset_complete', to: 'home#reset_complete', as: :reset_complete
+  get '/reset/complete', to: 'home#reset_complete', as: :reset_complete
 
   ActiveAdmin.routes(self)
   namespace :admin do
