@@ -5,10 +5,14 @@ require 'rails_helper'
 RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
   let(:player) { create(:player, :confirmed) }
 
-  describe 'GET #index' do
+  describe 'GET #index' do # rubocop:disable Metrics/BlockLength
     let(:json) { JSON.parse(response.body) }
+    let(:player_2) { create(:player, :confirmed) }
+    let(:game) do
+      create(:game, player_1: player, player_2: player_2, turn: player)
+    end
 
-    it 'returns http success' do
+    it 'returns player players' do
       get :index, params: { format: :json }, session: { player_id: player.id }
       expect(response).to be_successful
       expect(json[0]['id']).to eq(player.id)
@@ -18,6 +22,27 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Me
       expect(json[0]['rating']).to eq(1200)
       expect(json[0]['last']).to eq(0)
       expect(json[0]['bot']).to eq(0)
+    end
+
+    it 'returns game players' do
+      get :index, params: { format: :json, game_id: game.id },
+                  session: { player_id: player.id }
+      expect(response).to be_successful
+      expect(json.size).to eq(2)
+      expect(json[0]['id']).to eq(player.id)
+      expect(json[0]['name']).to eq(player.name)
+      expect(json[0]['wins']).to eq(0)
+      expect(json[0]['losses']).to eq(0)
+      expect(json[0]['rating']).to eq(1200)
+      expect(json[0]['last']).to eq(0)
+      expect(json[0]['bot']).to eq(0)
+      expect(json[1]['id']).to eq(player_2.id)
+      expect(json[1]['name']).to eq(player_2.name)
+      expect(json[1]['wins']).to eq(0)
+      expect(json[1]['losses']).to eq(0)
+      expect(json[1]['rating']).to eq(1200)
+      expect(json[1]['last']).to eq(0)
+      expect(json[1]['bot']).to eq(0)
     end
   end
 

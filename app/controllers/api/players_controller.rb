@@ -13,7 +13,11 @@ class Api::PlayersController < Api::ApiController
   respond_to :json
 
   def index
-    render json: Player.list(@current_player)
+    if params[:game_id]
+      render json: Player.list_for_game(params[:game_id])
+    else
+      render json: Player.list(@current_player)
+    end
   end
 
   def activity
@@ -36,7 +40,7 @@ class Api::PlayersController < Api::ApiController
 
   def account_exists
     player = Player.find_by(email: google_params[:email])
-    session[:player_id] = player[:id].nil? ? 0 : player[:id]
+    session[:player_id] = player.nil? ? 0 : player.id
     render json: player
   end
 

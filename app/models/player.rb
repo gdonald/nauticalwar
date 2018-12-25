@@ -292,6 +292,12 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     invites_1.or(invites_2)
   end
 
+  def self.list_for_game(game_id)
+    game = Game.find_by(id: game_id)
+    ids = game.nil? ? [] : [game.player_1_id, game.player_2_id]
+    Player.where(id: ids)
+  end
+
   def self.list(player) # rubocop:disable Metrics/AbcSize
     ids = Player.select(:id).where(bot: true).collect(&:id)
     query = Player.select(:id).where.not(id: player.enemies_player_ids)

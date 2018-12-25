@@ -980,6 +980,17 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  describe '.list_for_game' do
+    let(:game) do
+      create(:game, player_1: player_1, player_2: bot, turn: player_1)
+    end
+
+    it 'returns game players' do
+      expected = [player_1, bot]
+      expect(Player.list_for_game(game.id)).to eq(expected)
+    end
+  end
+
   describe '.list' do
     let!(:enemy) { create(:enemy, player_1: player_1, player_2: player_2) }
 
