@@ -65,7 +65,7 @@ RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable Metrics/BlockLen
       expect(mail.body.encoded).to match(expected)
       expected = 'Your password has been reset.'
       expect(mail.body.encoded).to match(expected)
-      expected = 'http://localhost:3000/reset/complete'
+      expected = 'http://localhost:3000/reset_complete'
       expect(mail.body.encoded).to match(expected)
     end
   end
