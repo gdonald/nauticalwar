@@ -35,4 +35,13 @@ RSpec.describe HomeController, type: :controller do # rubocop:disable Metrics/Bl
       expect(response).to be_redirect
     end
   end
+
+  describe 'GET #reset_complete' do
+    let(:player) { create(:player) }
+
+    it 'returns redirect' do
+      get :reset_complete, params: { reset_complete: 1 }
+      expect(response).to be_redirect
+    end
+  end
 end

@@ -1,9 +1,9 @@
 %h1
   Dear #{@player.name},
 %p
-  Your password has been reset.
+  Your password has been reset.  Click to login:
   %br/
   %br/
-  %a{ href: "#{ANDROID_URL}", style: 'color: #008' } Click To Login
+  = reset_complete_url
   %br/
   %br/

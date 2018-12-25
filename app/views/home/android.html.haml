@@ -6,6 +6,8 @@
     %br/
     - if params && params[:token]
       Password Update
+    - elsif params && params[:reset_complete]
+      Password Reset Complete
     - else
       Confirmation Complete
   %p.mobile

@@ -18,6 +18,10 @@ class HomeController < ApplicationController
     redirect_to android_url(token: params[:token])
   end
 
+  def reset_complete
+    redirect_to android_url(reset_complete: 1)
+  end
+
   private
 
   def confirm_params
