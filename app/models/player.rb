@@ -403,6 +403,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     return { error: 'Player not found' } if player.nil?
 
     if Player.hash_password(params[:password], player.p_salt) == player.p_hash
+      player.update_attributes(last_sign_in_at: Time.zone.now)
       { id: player.id }
     else
       { error: 'Login failed' }

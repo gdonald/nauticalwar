@@ -88,8 +88,15 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     describe 'valid params' do
       let(:params) { { email: player_2.email, password: 'changeme' } }
 
+      before do
+        player_2.update_attributes(last_sign_in_at: nil)
+      end
+
       it 'authenticates a player' do
-        expect(result).to eq(id: Player.last.id)
+        expect(player_2.last_sign_in_at).to_not be
+        expect(result).to eq(id: player_2.id)
+        player_2.reload
+        expect(player_2.last_sign_in_at).to be
       end
     end
   end
