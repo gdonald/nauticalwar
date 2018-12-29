@@ -1,4 +1,5 @@
 pipeline {
+    agent {label 'worker'}
     stages {
         stage('rspec') {
             steps {
