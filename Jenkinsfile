@@ -5,7 +5,7 @@ pipeline {
             steps {
                 sh('''
                     {
-                        . .rbenv
+                        . ~/.rbenv
                     } &> /dev/null
                     gem install bundler
                     bundle install
