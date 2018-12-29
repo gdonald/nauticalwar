@@ -1,7 +1,13 @@
 pipeline {
     agent any
     stages {
-        stage('rspec') {
+        stage('Setup') {
+            steps {
+                sh 'gem install bundler'
+                sh 'bundle install'
+            }
+        }
+        stage('Test') {
             steps {
                 sh 'bundle exec rspec'
             }
