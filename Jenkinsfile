@@ -29,7 +29,7 @@ pipeline {
 
         stage('rspec') {
             steps {
-                sh 'bundle exec rspec'
+                sh 'bundle exec rspec spec --format documentation'
             }
         }
     }
