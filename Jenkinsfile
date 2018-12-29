@@ -3,8 +3,13 @@ pipeline {
     stages {
         stage('Setup') {
             steps {
-                sh 'gem install bundler'
-                sh 'bundle install'
+                sh('''
+                    {
+                        . .rbenv
+                    } &> /dev/null
+                    gem install bundler
+                    bundle install
+                ''')
             }
         }
         stage('Test') {
