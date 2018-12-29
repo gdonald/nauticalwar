@@ -9,6 +9,7 @@ pipeline {
     environment {
         PATH = "${JENKINS_HOME}/.rbenv/bin:${JENKINS_HOME}/.rbenv/shims:/usr/local/bin:/sbin:/usr/sbin:/bin:/usr/bin"
         RBENV_VERSION = '2.5.3'
+        BUNDLER_VERSION = '1.17.3'
     }
 
     stages {
@@ -19,14 +20,14 @@ pipeline {
           }
         }
 
-        stage('setup') {
+        stage('bundler') {
             steps {
-                sh 'gem install bundler'
+                sh 'gem list --silent -i bundler -v "$BUNDLER_VERSION" || gem install bundler -v "$BUNDLER_VERSION"'
                 sh 'bundle install'
             }
         }
 
-        stage('test') {
+        stage('rspec') {
             steps {
                 sh 'bundle exec rspec'
             }
