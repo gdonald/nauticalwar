@@ -30,7 +30,6 @@ class Api::PlayersController < Api::ApiController
 
   def complete_google_signup
     player = Player.complete_google_signup(google_params)
-    session[:player_id] = player[:id].nil? ? 0 : player[:id]
     render json: player
   end
 

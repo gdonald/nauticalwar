@@ -992,11 +992,23 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '.list' do
+    let(:player_1) { create(:player, :confirmed) }
+    let(:player_2) { create(:player, :confirmed) }
+    let(:player_3) { create(:player, :confirmed) }
     let!(:enemy) { create(:enemy, player_1: player_1, player_2: player_2) }
 
     it 'returns players' do
       expected = [player_1, player_3]
       expect(Player.list(player_1)).to eq(expected)
+    end
+
+    describe 'non-confirmed' do
+      let!(:player_3) { create(:player) }
+
+      it 'returns players' do
+        expected = [player_1]
+        expect(Player.list(player_1)).to eq(expected)
+      end
     end
   end
 

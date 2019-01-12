@@ -306,7 +306,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     ids += query.where(arel_table[:rating].lteq(player.rating))
                 .order(rating: :desc).limit(15).collect(&:id)
     ids.uniq!
-    Player.where(id: ids).order(rating: :desc)
+    Player.where(id: ids).where.not(confirmed_at: nil).order(rating: :desc)
   end
 
   def self.generate_password(length)
@@ -367,12 +367,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def self.create_google_account(params)
-    player = Player.create(Player.params_with_password(params))
-    if player.valid?
-      now = Time.zone.now
-      player.update_attributes(confirmed_at: now, last_sign_in_at: now)
-    end
-    player
+    Player.create(Player.params_with_password(params))
   end
 
   def self.complete_google_signup(params)
