@@ -27,7 +27,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   validates :p_hash, length: { maximum: 80 }
 
   before_save :downcase_email
-  before_save :set_confirmation_token
+  before_create :set_confirmation_token
   after_create :send_confirmation_email
 
   has_many :games_1, foreign_key: :player_1_id, class_name: 'Game'
