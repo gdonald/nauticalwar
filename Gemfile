@@ -8,7 +8,7 @@ gem 'bootstrap-sass', '~> 3.3.6'
 gem 'coffee-rails', '~> 4.2'
 gem 'pg'
 gem 'puma'
-gem 'rails', '= 5.2.1'
+gem 'rails', '= 5.2.2'
 gem 'sass-rails', '~> 5.0'
 gem 'uglifier', '>= 1.3.0'
 
@@ -40,8 +40,8 @@ end
 
 group :test do
   gem 'capybara-selenium'
-  gem 'chromedriver-helper'
   gem 'database_cleaner'
   gem 'rails-controller-testing'
   gem 'simplecov', require: false
+  gem 'webdrivers'
 end
