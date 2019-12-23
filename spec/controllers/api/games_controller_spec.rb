@@ -220,7 +220,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
     end
 
     it 'returns status of -1' do
-      game.update_attributes(turn: player_2)
+      game.update(turn: player_2)
       post :attack, params: { id: game.id, s: s },
                     session: { player_id: player_1.id }
       expect(json['status']).to eq(-1)

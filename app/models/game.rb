@@ -109,7 +109,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     ships = parse_ships(json)
     ships.each { |s| create_ship_layout(player, s) }
     player = player == player_1 ? 1 : 2
-    update_attributes("player_#{player}_layed_out": true)
+    update("player_#{player}_layed_out": true)
   end
 
   def parse_ships(json)
@@ -149,7 +149,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     Ship.ordered.each do |ship|
       Layout.set_location(self, player_2, ship, [0, 1].sample.zero?)
     end
-    update_attributes(player_2_layed_out: true)
+    update(player_2_layed_out: true)
   end
 
   def player(player)
@@ -165,7 +165,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def make_winner!(player)
-    update_attributes(winner: player)
+    update(winner: player)
   end
 
   def declare_winner
@@ -183,7 +183,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def next_turn!
-    update_attributes(turn: next_player_turn)
+    update(turn: next_player_turn)
     layouts.unsunk.each(&:sunk?)
     declare_winner
     calculate_scores if rated && winner.present?

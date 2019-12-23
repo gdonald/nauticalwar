@@ -89,7 +89,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       let(:params) { { email: player_2.email, password: 'changeme' } }
 
       before do
-        player_2.update_attributes(last_sign_in_at: nil)
+        player_2.update(last_sign_in_at: nil)
       end
 
       it 'authenticates a player' do
@@ -808,14 +808,14 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       end
 
       it 'deletes game player_2 already deleted' do
-        game.update_attributes(del_player_2: true)
+        game.update(del_player_2: true)
         expect do
           player_1.destroy_game!(game.id)
         end.to change(Game, :count).by(-1)
       end
 
       it 'deletes game player_1 already deleted' do
-        game.update_attributes(del_player_1: true)
+        game.update(del_player_1: true)
         expect do
           player_2.destroy_game!(game.id)
         end.to change(Game, :count).by(-1)
@@ -870,14 +870,14 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     it 'returns false if winner' do
-      game.update_attributes(turn: player_2, winner: player_1)
+      game.update(turn: player_2, winner: player_1)
       travel_to(2.days.from_now) do
         expect(player_1.can_skip?(game)).to be_falsey
       end
     end
 
     it 'returns true if opponent turn' do
-      game.update_attributes(turn: player_2)
+      game.update(turn: player_2)
       travel_to(2.days.from_now) do
         expect(player_1.can_skip?(game)).to be_truthy
       end

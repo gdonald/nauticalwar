@@ -152,7 +152,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def new_activity!
     new_activity = activity + 1
-    update_attributes(activity: new_activity)
+    update(activity: new_activity)
   end
 
   def record_shot!(game, col, row)
@@ -243,9 +243,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
         game.destroy
       else
         if game.player_1 == self
-          game.update_attributes(del_player_1: true)
+          game.update(del_player_1: true)
         elsif game.player_2 == self
-          game.update_attributes(del_player_2: true)
+          game.update(del_player_2: true)
         end
         game.destroy if game.del_player_1 && game.del_player_2
       end
@@ -404,7 +404,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     return { error: 'Player not found' } if player.nil?
 
     if Player.hash_password(params[:password], player.p_salt) == player.p_hash
-      player.update_attributes(last_sign_in_at: Time.zone.now)
+      player.update(last_sign_in_at: Time.zone.now)
       { id: player.id }
     else
       { error: 'Login failed' }
@@ -415,7 +415,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     player = Player.find_by(confirmation_token: token)
     return unless player
 
-    player.update_attributes(confirmed_at: Time.zone.now)
+    player.update(confirmed_at: Time.zone.now)
   end
 
   attr_reader :password

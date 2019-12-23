@@ -66,6 +66,6 @@ class Layout < ApplicationRecord
   end
 
   def sunk?
-    update_attributes(sunk: true) if moves.count >= ship.size
+    update(sunk: true) if moves.count >= ship.size
   end
 end

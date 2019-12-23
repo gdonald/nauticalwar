@@ -136,7 +136,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
       Ship.ordered.each do |ship|
         Layout.set_location(game, player_1, ship, [0, 1].sample.zero?)
       end
-      game.update_attributes(player_1_layed_out: true)
+      game.update(player_1_layed_out: true)
       game.bot_layout
     end
 
