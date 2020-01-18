@@ -20,7 +20,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
 
     resources :layouts, only: %i[create show]
 
-    resources :players, only: %i[index create] do
+    resources :players, only: %i[index show create] do
       collection do
         get :activity
         post :complete_google_signup
@@ -41,7 +41,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    resources :friends, only: %i[index create destroy]
+    resources :friends, only: %i[index show create destroy]
     resources :enemies, only: %i[create]
     resources :sessions, only: %i[create] do
       collection do

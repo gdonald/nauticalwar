@@ -17,6 +17,21 @@ RSpec.describe Api::FriendsController, type: :controller do # rubocop:disable Me
     end
   end
 
+  describe 'GET #show' do
+    it 'returns true' do
+      create(:friend, player_1: player_1, player_2: player_2)
+      get :show, params: { id: player_2.id }, session: { player_id: player_1.id }
+      expected = { 'status' => true }
+      expect(json).to eq(expected)
+    end
+
+    it 'returns false' do
+      get :show, params: { id: 0 }, session: { player_id: player_1.id }
+      expected = { 'status' => false }
+      expect(json).to eq(expected)
+    end
+  end
+
   describe 'POST #create' do
     it 'creates a friend, returns friend id' do
       post :create, params: { id: player_2.id },

@@ -46,6 +46,23 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Me
     end
   end
 
+  describe 'GET #show' do
+    let(:json) { JSON.parse(response.body) }
+    let(:player_2) { create(:player, :confirmed) }
+
+    it 'returns a player' do
+      get :show, params: { format: :json, id: player_2.id }, session: { player_id: player.id }
+      expect(response).to be_successful
+      expect(json['id']).to eq(player_2.id)
+      expect(json['name']).to eq(player_2.name)
+      expect(json['wins']).to eq(0)
+      expect(json['losses']).to eq(0)
+      expect(json['rating']).to eq(1200)
+      expect(json['last']).to eq(0)
+      expect(json['bot']).to eq(0)
+    end
+  end
+
   describe 'POST #reset_password' do # rubocop:disable Metrics/BlockLength
     let(:json) { JSON.parse(response.body) }
 

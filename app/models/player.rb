@@ -150,6 +150,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     friends.collect(&:player_2_id)
   end
 
+  def is_friend(player_id)
+    friends.find_by(player_2_id: player_id).present?
+  end
+
   def new_activity!
     new_activity = activity + 1
     update(activity: new_activity)

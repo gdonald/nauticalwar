@@ -20,6 +20,10 @@ class Api::PlayersController < Api::ApiController
     end
   end
 
+  def show
+    render json: Player.find_by(id: params[:id])
+  end
+
   def activity
     render json: { activity: @current_player.activity }
   end
