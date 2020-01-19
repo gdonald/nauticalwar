@@ -8,7 +8,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   let(:player_2) { create(:player) }
   let(:player_3) { create(:player) }
   let!(:game_1) do
-    create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    create(:game, shots_per_turn: 5, player_1: player_1, player_2: player_2, turn: player_1)
   end
   let!(:game_2) do
     create(:game, player_1: player_1, player_2: player_2, turn: player_2)
@@ -115,21 +115,10 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#five_shot_int' do
-    it 'returns 5' do
-      expect(game_1.five_shot_int).to eq(5)
-    end
-
-    it 'returns 1' do
-      game_1.five_shot = false
-      expect(game_1.five_shot_int).to eq(1)
-    end
-  end
-
   describe '#bot_attack!' do # rubocop:disable Metrics/BlockLength
     let(:bot) { create(:player, :bot, strength: 3) }
     let(:game) do
-      create(:game, player_1: player_1, player_2: bot, turn: bot)
+      create(:game, shots_per_turn: 5, player_1: player_1, player_2: bot, turn: bot)
     end
 
     before do
@@ -151,10 +140,51 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
       end
     end
 
+    describe 'with a 4-shot game' do
+      let(:game) do
+        create(:game, shots_per_turn: 4, player_1: player_1, player_2: bot, turn: bot)
+      end
+
+      it 'creates 4 bot moves' do
+        expect do
+          game.bot_attack!
+        end.to change(Move, :count).by(4)
+                   .and change { bot.reload.activity }.by(1)
+        expect(game.turn).to eq(player_1)
+      end
+    end
+
+    describe 'with a 3-shot game' do
+      let(:game) do
+        create(:game, shots_per_turn: 3, player_1: player_1, player_2: bot, turn: bot)
+      end
+
+      it 'creates 3 bot moves' do
+        expect do
+          game.bot_attack!
+        end.to change(Move, :count).by(3)
+                   .and change { bot.reload.activity }.by(1)
+        expect(game.turn).to eq(player_1)
+      end
+    end
+
+    describe 'with a 2-shot game' do
+      let(:game) do
+        create(:game, shots_per_turn: 2, player_1: player_1, player_2: bot, turn: bot)
+      end
+
+      it 'creates 2 bot moves' do
+        expect do
+          game.bot_attack!
+        end.to change(Move, :count).by(2)
+                   .and change { bot.reload.activity }.by(1)
+        expect(game.turn).to eq(player_1)
+      end
+    end
+
     describe 'with a 1-shot game' do
       let(:game) do
-        create(:game, player_1: player_1, player_2: bot, turn: bot,
-                      five_shot: false)
+        create(:game, shots_per_turn: 1, player_1: player_1, player_2: bot, turn: bot)
       end
 
       it 'creates 1 bot move' do
@@ -199,6 +229,114 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
         expect do
           game.bot_attack_1!
         end.to change(Move, :count).by(1)
+      end
+    end
+  end
+
+  describe '#bot_attack_2!' do # rubocop:disable Metrics/BlockLength
+    let(:bot) { create(:player, :bot, strength: 1) }
+    let!(:game) do
+      create(:game, shots_per_turn: 2, player_1: player_1, player_2: bot, turn: player_1)
+    end
+
+    describe 'with a sinking ship' do
+      let(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+               x: 3, y: 5, vertical: true)
+      end
+      let!(:move) do
+        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      end
+
+      it 'creates 2 bot moves' do
+        expect do
+          game.bot_attack_2!
+        end.to change(Move, :count).by(2)
+      end
+    end
+
+    describe 'with a non-sinking ship' do
+      let!(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+               x: 3, y: 5, vertical: true)
+      end
+
+      it 'creates 2 bot moves' do
+        expect do
+          game.bot_attack_2!
+        end.to change(Move, :count).by(2)
+      end
+    end
+  end
+
+  describe '#bot_attack_3!' do # rubocop:disable Metrics/BlockLength
+    let(:bot) { create(:player, :bot, strength: 3) }
+    let!(:game) do
+      create(:game, shots_per_turn: 3, player_1: player_1, player_2: bot, turn: player_1)
+    end
+
+    describe 'with a sinking ship' do
+      let(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+               x: 3, y: 5, vertical: true)
+      end
+      let!(:move) do
+        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      end
+
+      it 'creates 3 bot moves' do
+        expect do
+          game.bot_attack_3!
+        end.to change(Move, :count).by(3)
+      end
+    end
+
+    describe 'with a non-sinking ship' do
+      let!(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+               x: 3, y: 5, vertical: true)
+      end
+
+      it 'creates 3 bot moves' do
+        expect do
+          game.bot_attack_3!
+        end.to change(Move, :count).by(3)
+      end
+    end
+  end
+
+  describe '#bot_attack_4!' do # rubocop:disable Metrics/BlockLength
+    let(:bot) { create(:player, :bot, strength: 3) }
+    let!(:game) do
+      create(:game, shots_per_turn: 4, player_1: player_1, player_2: bot, turn: player_1)
+    end
+
+    describe 'with a sinking ship' do
+      let(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+               x: 3, y: 5, vertical: true)
+      end
+      let!(:move) do
+        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      end
+
+      it 'creates 4 bot moves' do
+        expect do
+          game.bot_attack_4!
+        end.to change(Move, :count).by(4)
+      end
+    end
+
+    describe 'with a non-sinking ship' do
+      let!(:layout) do
+        create(:layout, game: game, player: player_1, ship: Ship.last,
+               x: 3, y: 5, vertical: true)
+      end
+
+      it 'creates 4 bot moves' do
+        expect do
+          game.bot_attack_4!
+        end.to change(Move, :count).by(4)
       end
     end
   end

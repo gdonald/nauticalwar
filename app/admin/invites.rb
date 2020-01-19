@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Invite do
-  permit_params :rated, :five_shot
+  permit_params :rated, :shots_per_turn
 
   index do
     selectable_column
@@ -9,19 +9,19 @@ ActiveAdmin.register Invite do
     column :player_1
     column :player_2
     column :rated
-    column :five_shot
+    column :shots_per_turn
     column :time_limit
     column 'Created', :created_at
     actions
   end
 
   filter :rated
-  filter :five_shot
+  filter :shots_per_turn
 
   form do |f|
     f.inputs do
       f.input :rated
-      f.input :five_shot
+      f.input :shots_per_turn
     end
     f.actions
   end

@@ -268,7 +268,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#create_invite!' do
-    let(:params) { { id: 0, r: '1', m: '0', t: '0' } }
+    let(:params) { { id: 0, r: '1', s: '1', t: '300' } }
 
     it 'fails to create an invite' do
       expect do
@@ -295,7 +295,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     let(:args) do
       { player_2: bot,
         rated: true,
-        five_shot: true,
+        shots_per_turn: 5,
         time_limit: 86_400 }
     end
 
@@ -305,7 +305,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
         expect(game.player_1).to eq(player_1)
         expect(game.player_2).to eq(bot)
         expect(game.rated).to be_truthy
-        expect(game.five_shot).to be_truthy
+        expect(game.shots_per_turn).to eq(5)
         expect(game.time_limit).to eq(86_400)
       end.to change(Game, :count).by(1)
     end
@@ -315,7 +315,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     let(:args) do
       { player_2: player_2,
         rated: true,
-        five_shot: true,
+        shots_per_turn: 5,
         time_limit: 86_400 }
     end
 
@@ -325,20 +325,20 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
         expect(invite.player_1).to eq(player_1)
         expect(invite.player_2).to eq(player_2)
         expect(invite.rated).to be_truthy
-        expect(invite.five_shot).to be_truthy
+        expect(invite.shots_per_turn).to eq(5)
         expect(invite.time_limit).to eq(86_400)
       end.to change(Invite, :count).by(1)
     end
   end
 
   describe '#invite_args' do
-    let(:params) { { id: player_2.id, r: '1', m: '0', t: '0' } }
+    let(:params) { { id: player_2.id, r: '1', s: '5', t: '86400' } }
 
     it 'returns a hash of invite args' do
       args = player_1.invite_args(params)
       expect(args[:player_2]).to eq(player_2)
       expect(args[:rated]).to be_truthy
-      expect(args[:five_shot]).to be_truthy
+      expect(args[:shots_per_turn]).to eq(5)
       expect(args[:time_limit]).to eq(86_400)
     end
   end
@@ -447,7 +447,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#attack!' do # rubocop:disable Metrics/BlockLength
     let(:game) do
-      create(:game, player_1: player_1, player_2: bot, turn: player_1)
+      create(:game, shots_per_turn: 5, player_1: player_1, player_2: bot, turn: player_1)
     end
     let(:ship) { create(:ship, size: 3) }
     let!(:layout_1) do
@@ -488,7 +488,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#record_shots!' do
     let(:game) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+      create(:game, shots_per_turn: 5, player_1: player_1, player_2: player_2, turn: player_1)
     end
     let(:json) do
       [{ 'x': 5, 'y': 5 },

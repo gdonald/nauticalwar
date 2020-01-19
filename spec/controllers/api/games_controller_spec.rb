@@ -130,7 +130,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
                 'player_1_layed_out' => '0',
                 'player_2_layed_out' => '0',
                 'rated' => '1',
-                'five_shot' => '1',
+                'shots_per_turn' => 1,
                 't_limit' => 0 },
             'layouts' => [{ 'id' => layout.id,
                             'game_id' => game.id,
@@ -183,7 +183,7 @@ RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metr
                   'player_1_layed_out' => '0',
                   'player_2_layed_out' => '0',
                   'rated' => '1',
-                  'five_shot' => '1',
+                  'shots_per_turn' => 1,
                   't_limit' => 0 },
             'layouts' => [],
             'moves' => [{ 'x' => 3, 'y' => 5, 'hit' => 'H' }]

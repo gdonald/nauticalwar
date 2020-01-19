@@ -12,7 +12,7 @@ class GameSerializer < ActiveModel::Serializer
              :player_1_layed_out,
              :player_2_layed_out,
              :rated,
-             :five_shot,
+             :shots_per_turn,
              :t_limit
 
   def t_limit
@@ -43,7 +43,7 @@ class GameSerializer < ActiveModel::Serializer
     object.rated ? '1' : '0'
   end
 
-  def five_shot
-    object.five_shot ? '1' : '0'
+  def shots_per_turn
+    object.shots_per_turn
   end
 end
