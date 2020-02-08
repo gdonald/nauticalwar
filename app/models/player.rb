@@ -84,8 +84,8 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def invite_args(params)
     { player_2: Player.active.where(id: params[:id]).first,
       rated: params[:r] == '1',
-      five_shot: params[:m] == '0',
-      time_limit: (params[:t] == '1' ? 3.days : 1.day).to_i }
+      shots_per_turn: params[:s].to_i,
+      time_limit: params[:t].to_i }
   end
 
   def create_opponent_invite!(args)

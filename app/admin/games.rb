@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 ActiveAdmin.register Game do # rubocop:disable Metrics/BlockLength
-  permit_params :rated, :five_shot
+  permit_params :rated, :shots_per_turn
 
   index do
     selectable_column
@@ -11,7 +11,7 @@ ActiveAdmin.register Game do # rubocop:disable Metrics/BlockLength
     column :player_2
     column 'Layout', :player_2_layed_out
     column :rated
-    column 'Five', :five_shot
+    column 'Shots', :shots_per_turn
     column :turn
     column :winner
     column 'Limit', :time_limit
@@ -21,12 +21,12 @@ ActiveAdmin.register Game do # rubocop:disable Metrics/BlockLength
   end
 
   filter :rated
-  filter :five_shot
+  filter :shots_per_turn
 
   form do |f|
     f.inputs do
       f.input :rated
-      f.input :five_shot
+      f.input :shots_per_turn
     end
     f.actions
   end

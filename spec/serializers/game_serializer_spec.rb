@@ -25,7 +25,7 @@ RSpec.describe GameSerializer, type: :serializer do
       expect(json['player_1_layed_out']).to eq('0')
       expect(json['player_2_layed_out']).to eq('0')
       expect(json['rated']).to eq('1')
-      expect(json['five_shot']).to eq('1')
+      expect(json['shots_per_turn']).to eq(1)
       expect(json['t_limit']).to eq(86_400)
     end
   end

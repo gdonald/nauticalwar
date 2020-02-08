@@ -15,7 +15,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   validates :time_limit, presence: true
 
   validates :rated,      inclusion: [true, false]
-  validates :five_shot,  inclusion: [true, false]
+  validates :shots_per_turn, inclusion: 1..5
   validates :del_player_1, inclusion: [true, false]
   validates :del_player_2, inclusion: [true, false]
 
@@ -117,11 +117,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def parse_shots(json)
-    JSON.parse(json).slice(0, five_shot_int)
-  end
-
-  def five_shot_int
-    five_shot ? 5 : 1
+    JSON.parse(json).slice(0, shots_per_turn)
   end
 
   def bot_attack_5! # rubocop:disable Metrics/AbcSize
@@ -134,6 +130,42 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     end
   end
 
+  def bot_attack_4! # rubocop:disable Metrics/AbcSize
+    strength = player_2.strength - 1
+    strength = 0 if strength.negative?
+    strength.times do
+      move = attack_sinking_ship(player_2, player_1)
+      attack_random_ship(player_2, player_1) if move.nil?
+    end
+    (4 - strength).times do
+      attack_random_ship(player_2, player_1)
+    end
+  end
+
+  def bot_attack_3! # rubocop:disable Metrics/AbcSize
+    strength = player_2.strength - 1
+    strength = 0 if strength.negative?
+    strength.times do
+      move = attack_sinking_ship(player_2, player_1)
+      attack_random_ship(player_2, player_1) if move.nil?
+    end
+    (3 - strength).times do
+      attack_random_ship(player_2, player_1)
+    end
+  end
+
+  def bot_attack_2! # rubocop:disable Metrics/AbcSize
+    strength = player_2.strength - 1
+    strength = 0 if strength.negative?
+    strength.times do
+      move = attack_sinking_ship(player_2, player_1)
+      attack_random_ship(player_2, player_1) if move.nil?
+    end
+    (2 - strength).times do
+      attack_random_ship(player_2, player_1)
+    end
+  end
+
   def bot_attack_1!
     move = attack_sinking_ship(player_2, player_1)
     attack_random_ship(player_2, player_1) if move.nil?
@@ -141,7 +173,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def bot_attack!
     player_2.new_activity!
-    send("bot_attack_#{five_shot_int}!")
+    send("bot_attack_#{shots_per_turn}!")
     next_turn! if winner.nil?
   end
 

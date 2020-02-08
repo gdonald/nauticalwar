@@ -14,10 +14,14 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
       get :index, params: {}, session: { player_id: player_1.id }
       expected = [{ 'id' => invite.id,
                     'player_1_id' => player_1.id,
+                    "player_1_name" => player_1.name,
+                    "player_1_rating" => 1200,
                     'player_2_id' => player_2.id,
+                    "player_2_name" => player_2.name,
+                    "player_2_rating" => 1200,
                     'created_at' => invite.created_at.iso8601,
                     'rated' => '1',
-                    'five_shot' => '1',
+                    'shots_per_turn' => 1,
                     'time_limit' => 86_400,
                     'game_id' => nil }]
       expect(json).to eq(expected)
@@ -38,15 +42,19 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'creates an invite' do
       expect do
-        post :create, params: { id: player_2.id, r: '1', m: '0', t: '0' },
+        post :create, params: { id: player_2.id, r: '1', s: '1', t: '86400' },
                       session: { player_id: player_1.id }
       end.to change(Invite, :count).by(1)
       expected = { 'id' => invite.id,
                    'player_1_id' => player_1.id,
+                   "player_1_name" => player_1.name,
+                   "player_1_rating" => 1200,
                    'player_2_id' => player_2.id,
+                   "player_2_name" => player_2.name,
+                   "player_2_rating" => 1200,
                    'created_at' => invite.created_at.iso8601,
                    'rated' => '1',
-                   'five_shot' => '1',
+                   'shots_per_turn' => 1,
                    'time_limit' => 86_400,
                    'game_id' => nil }
       expect(json).to eq(expected)
@@ -54,7 +62,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
 
     it 'fails to create an invite when player not found' do
       expect do
-        post :create, params: { id: 0, r: '1', m: '0', t: '0' },
+        post :create, params: { id: 0, r: '1', s: '1', t: '86400' },
                       session: { player_id: player_1.id }
       end.to change(Invite, :count).by(0)
       expect(json['errors']).to eq('An error occured')
@@ -82,7 +90,7 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
       expect(json['game']['player_1_layed_out']).to eq('0')
       expect(json['game']['player_2_layed_out']).to eq('0')
       expect(json['game']['rated']).to eq('1')
-      expect(json['game']['five_shot']).to eq('1')
+      expect(json['game']['shots_per_turn']).to eq(1)
       expect(json['game']['t_limit']).to eq(game.t_limit)
       expect(json['invite_id']).to eq(invite_id)
       expect(json['player']['id']).to eq(player_2.id)

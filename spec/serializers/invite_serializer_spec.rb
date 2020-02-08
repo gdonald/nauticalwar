@@ -16,7 +16,7 @@ RSpec.describe InviteSerializer, type: :serializer do
     expect(json['player_1_id']).to eq(invite.player_1_id)
     expect(json['player_2_id']).to eq(invite.player_2_id)
     expect(json['rated']).to eq('1')
-    expect(json['five_shot']).to eq('1')
+    expect(json['shots_per_turn']).to eq(1)
     expect(json['time_limit']).to eq(86_400)
   end
 end

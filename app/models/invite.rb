@@ -12,8 +12,8 @@ class Invite < ApplicationRecord
                                      message: 'Invite already exists' }
 
   validates :rated, inclusion: [true, false]
-  validates :five_shot, inclusion: [true, false]
-  validates :time_limit, presence: true
+  validates :shots_per_turn, inclusion: 1..5
+  validates :time_limit, inclusion: [300, 900, 3600, 28_800, 86_400]
 
   validate :cannot_invite_self
 
