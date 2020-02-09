@@ -1,0 +1,116 @@
+%table.buttons#player-buttons
+  %tr
+    %td
+      %button.btn.btn-light{ type: :submit, id: :invite }
+        Invite To Play
+
+    - if @current_player.friend?(player.id)
+      %td
+        %button.btn.btn-light{ type: :submit, id: :unfriend }
+          Un-friend
+    - else
+      %td
+        %button.btn.btn-light{ type: :submit, id: :friend }
+          Add Friend
+
+    - unless player.bot?
+      - if @current_player.enemy?(player.id)
+        %td
+          %button.btn.btn-light{ type: :submit, id: :unblock }
+            Un-block
+      - else
+        %td
+          %button.btn.btn-light{ type: :submit, id: :block }
+            Block
+
+.modal{ role: 'dialog', tabindex: '-1', id: "invite_#{player.id}" }
+  .modal-dialog.modal-dialog-centered{ role: 'document' }
+    .modal-content
+      .modal-header
+        %h5.modal-title Invite #{player.name} To Play
+        %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
+          %span{ 'aria-hidden' => 'true' } ×
+      .modal-body
+        %table.player-invite#player-invite
+          %tr
+            %td
+              .form-group
+                %label{ for: :shots_per_turn } Shots Per Turn
+                %select#shots_per_turn.form-control
+                  - Invite.shot_opts.each do |k|
+                    %option{ value: k } #{k} shot#{k == 1 ?  '' : 's'}
+              .form-group
+                %label{ for: :time_per_turn } Time Per Turn
+                %select#time_per_turn.form-control
+                  - Invite.time_limits.each do |k, v|
+                    %option{ value: k } #{v}
+              .form-check
+                %input#rated.form-check-input{ type: :checkbox, value: 1, checked: :checked }/
+                %label.form-check-label{ for:  :rated }
+                  Rated
+      .modal-footer
+        %button.btn.btn-danger{ type: 'button', 'data-dismiss' => 'modal'  } Cancel
+        %button.btn.btn-primary{ type: 'button', id: "submit_invite" } Submit Invite
+
+:javascript
+  $(function() {
+    $('#invite').on('click', function() {
+      $('#invite_#{player.id}').modal();
+    });
+
+    $('#submit_invite').on('click', function() {
+      $.ajax({
+        method: 'post',
+        url: '/play/invites',
+        data: {
+          id: #{player.id},
+          r: $('#rated').val(),
+          s: $('#shots_per_turn').val(),
+          t: $('#time_per_turn').val()
+        },
+        headers: {
+          'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+        }
+       });
+    });
+
+    $('#unblock').on('click', function() {
+      $.ajax({
+        method: 'post',
+        url: '/play/players/#{player.id}/unblock',
+        headers: {
+          'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+        }
+       });
+    });
+
+    $('#block').on('click', function() {
+      $.ajax({
+        method: 'post',
+        url: '/play/players/#{player.id}/block',
+        headers: {
+          'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+        }
+      });
+    });
+
+    $('#unfriend').on('click', function() {
+      $.ajax({
+        method: 'post',
+        url: '/play/players/#{player.id}/unfriend',
+        headers: {
+          'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+        }
+      });
+    });
+
+    $('#friend').on('click', function() {
+      $.ajax({
+        method: 'post',
+        url: '/play/players/#{player.id}/friend',
+        headers: {
+          'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+        }
+      });
+    });
+  });

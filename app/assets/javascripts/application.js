@@ -14,3 +14,4 @@
 //= require activestorage
 //= require jquery3
 //= require_tree .
+//= stub play

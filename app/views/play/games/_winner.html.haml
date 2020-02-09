@@ -1,0 +1,11 @@
+%tr#winner
+  %td{ colspan: 2 }
+    - if @game.winner.present?
+      Winner:
+      %span.winner #{@game.winner.name}
+    - else
+      = "Turn: "
+      - if @game.turn == @current_player
+        %span.player #{@current_player.name}
+      - else
+        %span.opponent #{@game.opponent(@current_player).name}

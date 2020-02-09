@@ -45,8 +45,13 @@
         .row
           .col-md-8.mx-auto
             %h2.section-heading Discover a turn-based strategy game!
-            %p Our game is available on Android mobile devices! &nbsp;Download now!
+            %p
+              Our game is available to play in your browser and
+              %br/
+              on Android mobile devices too! &nbsp;Download now!
+            %a{ href: '/play', class: 'play-in-browser' } Play In Your Browser, Now!
             %p &nbsp;
+
             .badges
               %a.badge-link{href: 'https://play.google.com/store/apps/details?id=com.nauticalwar.nw', target: '_blank'}
                 %img{:alt => "", :src => asset_path('google-play-badge.svg')}/

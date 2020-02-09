@@ -1,0 +1,34 @@
+%nav.navbar.navbar-expand-lg.navbar.navbar-dark.nw-navbar.navbar-fixed-top
+
+  = link_to 'Nautical War', play_games_path, class: 'navbar-brand nw-title'
+  %button.navbar-toggler{"aria-controls" => "navbarNavAltMarkup", "aria-expanded" => "false", "aria-label" => "Toggle navigation", "data-toggle" => "modal", "data-target" => "#nav-modal", :type => "button"}
+    %span.navbar-toggler-icon
+  #navbarNavAltMarkup.collapse.navbar-collapse
+    .navbar-nav
+      = link_to 'Games', play_games_path, class: 'nav-item nav-link'
+      = link_to 'Invites', play_invites_path, class: 'nav-item nav-link'
+      = link_to 'Players', play_players_path, class: 'nav-item nav-link'
+      = link_to 'Ranks', play_ranks_path, class: 'nav-item nav-link'
+      = link_to 'Logout', play_sessions_path, method: :delete, class: 'nav-item nav-link'
+
+#nav-modal.modal.fade{ "aria-labelledby" => "myModalLabel", role: :dialog, tabindex: -1 }
+  .modal-dialog{ role: :document }
+    .modal-nav-content
+      .modal-nav-body
+        %ul
+          %li.nw-title.nav-modal Nautical War
+          %li= link_to 'Games', play_games_path, class: 'modal-link'
+          %li= link_to 'Invites', play_invites_path, class: 'modal-link'
+          %li= link_to 'Players', play_players_path, class: 'modal-link'
+          %li= link_to 'Ranks', play_ranks_path, class: 'modal-link'
+          %li= link_to 'Logout', play_sessions_path, method: :delete, class: 'modal-link'
+
+:javascript
+  $(function() {
+    const path = window.location.pathname.split('/')[2];
+    $.each($('.navbar-nav a'), function(i, link) {
+      if($(link)[0].href.includes(path)) {
+        $(this).addClass('active');
+      }
+    });
+  });

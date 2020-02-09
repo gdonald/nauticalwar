@@ -1,0 +1,341 @@
+@import 'bootstrap';
+
+@font-face {
+  font-family: 'Championship';
+  src:url('Championship.ttf') format('truetype');
+}
+
+body
+{
+  background: #061B34 url(asset_path('play/water_blue.jpg')) fixed no-repeat;
+  background-size: cover;
+}
+
+.card-trans {
+  background: rgba(64, 255, 255, 0.1);
+  border: dotted aqua 1px;
+}
+
+.card-body-trans {
+  background: rgba(64, 255, 255, 0.1);
+}
+
+.card {
+  label {
+    color: #fff;
+    font-size: 1.2em;
+  }
+}
+
+.nw-title {
+  font-family: "Championship", sans-serif;
+  font-size: 3em;
+  font-weight: bold;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.55);
+  text-transform: uppercase;
+  background: -webkit-linear-gradient(#eee, #333);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  line-height: 1em;
+  padding: 0;
+  margin: 0 0 -12px 0;
+}
+
+li.nw-title.nav-modal {
+  font-size: 2.8em;
+}
+
+.navbar-brand.nw-title {
+  font-size: 1.8em;
+  padding: 0 20px 0 0;
+  margin: 0 0 -7px -4px;
+}
+
+nav.navbar {
+  background: rgba(64, 255, 255, 0.2);
+  min-width: 300px;
+}
+
+nav.nw-navbar {
+  background: rgba(64, 255, 255, 0.2);
+  border-bottom: dotted aqua 1px;
+  color: #fff;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.55);
+}
+
+.navbar-dark .navbar-nav .nav-link {
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.navbar-dark:hover .navbar-nav:hover .nav-link:hover {
+  color: rgba(255, 255, 255, 1.0);
+}
+
+p.info {
+  color: #fff;
+  font-size: 1.2em;
+  margin: 10px 0 0 10px;
+
+  a {
+    color: #ccc;
+    text-decoration: underline;
+  }
+
+  a:hover {
+    color: #fff;
+  }
+}
+
+table.list {
+  border-collapse: separate;
+  border-spacing: 0 1px;
+  width: 100%;
+}
+
+table.list td {
+  color: #fff;
+}
+
+td.info {
+  vertical-align: middle;
+  padding: 10px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+td.rank {
+  background: rgba(0, 0, 0, 0.7);
+  padding: 10px 8px 10px 8px;
+  text-align: center;
+  width: 1%;
+}
+
+img.rank {
+  height: 56px;
+  width: auto;
+}
+
+.center {
+  text-align: center;
+}
+
+.tight {
+  line-height: 1.1em;
+}
+
+.player-name {
+  font-size: 1.2em;
+  font-weight: bold;
+}
+
+.player-rank, table.list td.player-rank {
+  font-size: 0.9em;
+  color: #fbff00;
+}
+
+.game-player-name {
+  font-size: 0.9em;
+  font-weight: bold;
+}
+
+.rating {
+  color: aqua;
+}
+
+.wins {
+  color: #0f0;
+}
+
+.losses {
+  color: red;
+}
+
+.last {
+  float: right;
+}
+
+.ratings {
+  font-size: 0.8em;
+  color: #aaa;
+}
+
+.versus {
+  color: aqua;
+}
+
+.status {
+  font-size: 0.8em;
+}
+
+.winner {
+  color: #f00;
+}
+
+.layout-fleet {
+  font-weight: bold;
+  color: #f00;
+}
+
+.time-limit {
+  font-weight: bold;
+  color: #f00;
+}
+
+table.search {
+  width: 100%;
+}
+
+td.search-field {
+  padding: 5px;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+td.search-field input {
+  background: transparent;
+  border: none;
+  border-bottom: 1px solid aqua;
+  width: 100%;
+  box-sizing : border-box;
+  color: #fff;
+  padding: 3px;
+  font-size: 1.2em;
+}
+
+::placeholder {
+  color: #fff;
+  opacity: 1;
+}
+
+table.buttons td {
+  padding: 5px;
+}
+
+table.player-invite {
+  width: 100%;
+}
+
+table.player-invite td {
+  color: #121212;
+}
+
+@media only screen and (max-width: 300px) {
+  table.game-info {
+    width: 300px;
+  }
+}
+
+@media only screen and (min-width: 301px) and (max-width: 639px) {
+  table.game-info {
+    width: 100%;
+  }
+}
+
+@media only screen and (min-width: 640px) {
+  table.game-info {
+    width: 640px;
+  }
+}
+
+table.game-info {
+  background: rgba(0, 0, 0, 0.4);
+
+  td {
+    padding: 2px 0 0 4px;
+    color: #fff;
+    font-size: 1.2em;
+    font-weight: bold;
+
+    span.player {
+      color: #0f0;
+    }
+
+    span.opponent {
+      color: #f00;
+    }
+  }
+
+  td.game-icons {
+    padding: 0 4px 0 0;
+    text-align: right;
+
+    img {
+      margin-top: -5px;
+    }
+  }
+
+  tr:last-child td {
+    padding-bottom: 6px;
+  }
+}
+
+#ship_patrol_boat, #ship_submarine, #ship_destroyer, #ship_battleship, #ship_carrier,
+  .shot, .move {
+  position: absolute;
+}
+
+p.error {
+  color: #f00;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.55);
+  padding: 2px 0 0 2px;
+}
+
+#nav-modal {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.navbar-toggle {
+  float: left !important;
+  margin-left: 15px;
+  margin-right: 0;
+}
+
+.modal-nav-content {
+  width: 100%;
+  height: auto;
+}
+
+.modal-nav-body {
+  margin-top: 100px;
+}
+
+.modal-nav-body ul {
+  list-style-type: none;
+  color: white;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+.modal-nav-body ul li {
+  text-align: center;
+  font-size: 130%;
+  padding: 8px;
+  text-transform: uppercase;
+}
+
+.modal-dialog a.modal-link {
+  pointer-events: all;
+  text-decoration: none;
+  text-transform: none;
+  font-size: 1.5em;
+}
+
+@media only screen and (max-width: 300px) {
+  .grid {
+    width: 300px;
+    height: auto;
+  }
+}
+
+@media only screen and (min-width: 301px) and (max-width: 639px) {
+  .grid {
+    width: 100%;
+    height: auto;
+  }
+}
+
+@media only screen and (min-width: 640px) {
+  .grid {
+    width: 640px;
+    height: auto;
+  }
+}

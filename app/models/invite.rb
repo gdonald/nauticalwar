@@ -8,8 +8,8 @@ class Invite < ApplicationRecord
 
   validates :player_1, presence: true
   validates :player_2, presence: true
-  validates :player_2, uniqueness: { scope: :player_1_id,
-                                     message: 'Invite already exists' }
+  validates :player_2, uniqueness: {scope: :player_1_id,
+                                    message: 'Invite already exists'}
 
   validates :rated, inclusion: [true, false]
   validates :shots_per_turn, inclusion: 1..5
@@ -19,6 +19,18 @@ class Invite < ApplicationRecord
 
   scope :ordered, -> { order(created_at: :asc) }
 
+  def self.shot_opts
+    (1..5).to_a.reverse
+  end
+
+  def self.time_limits
+    { '86400': '1 day',
+      '28800': '8 hours',
+      '3600': '1 hour',
+      '900': '15 minutes',
+      '300': '5 minutes' }
+  end
+
   def cannot_invite_self
     errors.add(:player_2, 'Cannot invite self') if player_1 == player_2
   end
@@ -26,7 +38,7 @@ class Invite < ApplicationRecord
   def create_game
     player_2.update(activity: player_2.activity + 1)
     attrs = attributes.except('id', 'created_at', 'updated_at')
-                      .merge('turn' => player_1)
+                .merge('turn' => player_1)
     Game.create!(attrs)
   end
 end

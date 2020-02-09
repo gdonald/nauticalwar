@@ -12,6 +12,7 @@ class Api::PlayersController < Api::ApiController
 
   respond_to :json
 
+  # TODO: handle search
   def index
     if params[:game_id]
       render json: Player.list_for_game(params[:game_id])

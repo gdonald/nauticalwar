@@ -1,0 +1,5 @@
+<% if @game.player_1_layed_out && @game.player_2_layed_out %>
+window.location.href = '/play/games/' + <%= @game.id %>;
+<% else %>
+window.location.href = '/play/games';
+<% end %>

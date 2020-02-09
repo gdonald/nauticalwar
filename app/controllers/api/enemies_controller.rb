@@ -7,5 +7,10 @@ class Api::EnemiesController < Api::ApiController
   def create
     render json: { status: @current_player.create_enemy!(params[:id]) }
   end
+
+  # TODO: add to android
+  def destory
+    render json: { status: @current_player.destroy_enemy!(params[:id]) }
+  end
 end
 # rubocop:enable Style/ClassAndModuleChildren

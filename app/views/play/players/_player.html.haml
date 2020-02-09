@@ -1,0 +1,14 @@
+%tr{ data: 'player', id: player.id }
+  %td.rank= image_tag "play/#{player.rank}.png", class: 'rank'
+  %td.info
+    %div.last= image_tag "play/dot_#{player.last_color}.png"
+    %span.player-name= player.name
+    %br/
+    %span.player-rank= rank_name(player.rank)
+    %br/
+    %b Rating:
+    %span.rating= player.rating
+    %b &nbsp;&nbsp;Wins:
+    %span.wins= player.wins
+    %b &nbsp;&nbsp;Losses:
+    %span.losses= player.losses

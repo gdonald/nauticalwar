@@ -1,0 +1,95 @@
+//= require rails-ujs
+//= require jquery3
+//= require bootstrap.bundle
+//= require bootstrap
+//= require jquery-ui
+
+// 640 base size
+let offset_top = 79.4;
+let offset_left = 22.5;
+let sqr = 58.55;
+let line = 3.55;
+const navbar = 57;
+
+let selectedShipName = null;
+
+const patrol_boat = "<%= asset_path('play/patrol_boat.png') %>";
+const patrol_boat_vertical = "<%= asset_path('play/patrol_boat_vertical.png') %>";
+const submarine = "<%= asset_path('play/submarine.png') %>";
+const submarine_vertical = "<%= asset_path('play/submarine_vertical.png') %>";
+const destroyer = "<%= asset_path('play/destroyer.png') %>";
+const destroyer_vertical = "<%= asset_path('play/destroyer_vertical.png') %>";
+const battleship = "<%= asset_path('play/battleship.png') %>";
+const battleship_vertical = "<%= asset_path('play/battleship_vertical.png') %>";
+const carrier = "<%= asset_path('play/carrier.png') %>";
+const carrier_vertical = "<%= asset_path('play/carrier_vertical.png') %>";
+
+const crosshair = "<%= asset_path('play/crosshair.png') %>";
+
+$(function() {
+
+});
+
+function reCalculate() {
+  const h = $('#grid').height();
+
+  offset_top = ((79.4 - navbar) / 640 * h) + navbar;
+  offset_left = 22.5 / 640 * h;
+  sqr = 58.55 / 640 * h;
+  line = 3.55 / 640 * h;
+}
+
+function getRow(pixelsTop, offset) {
+  const o = offset ? sqr / 2 : 0;
+  return Math.round(Math.abs((pixelsTop - offset_top - o) / (sqr + line)));
+}
+
+function getCol(pixelsLeft, offset) {
+  const o = offset ? sqr / 2 : 0;
+  return Math.round(Math.abs((pixelsLeft - offset_left - o) / (sqr + line)))
+}
+
+function getShipStyle(ship) {
+  let top = ((sqr * ship['row']) + (line * ship['row'])) + offset_top;
+  let left = ((sqr * ship['col']) + (line * ship['col'])) + offset_left;
+  let style = 'top: ' + top + 'px; left: ' + left + 'px; height: ' + getPixelHeight(ship) + 'px; width: ' + getPixelWidth(ship) + 'px;';
+  if(selectedShipName === ship['name']) { style += ' background: rgba(0, 0, 255, 0.3); border: 1px solid aqua;'; }
+  return style;
+}
+
+function getPixelWidth(ship) {
+  if(ship['vertical']) { return sqr; }
+  return (sqr * ship['size']) + ((line - 1) * ship['size']);
+}
+
+function getPixelHeight(ship) {
+  if(!ship['vertical']) { return sqr; }
+  return (sqr * ship['size']) + ((line - 1) * ship['size']);
+}
+
+function getShotStyle(shot) {
+  let top = ((sqr * shot['row']) + (line * shot['row'])) + offset_top;
+  let left = ((sqr * shot['col']) + (line * shot['col'])) + offset_left;
+  return 'top: ' + top + 'px; left: ' + left + 'px; height: ' + sqr + 'px; width: ' + sqr
+    + 'px; background: rgba(255, 0, 0, 0.3); border: 1px dashed red;';
+}
+
+function getMoveStyle(move) {
+  let top = ((sqr * move['row']) + (line * move['row'])) + offset_top;
+  let left = ((sqr * move['col']) + (line * move['col'])) + offset_left;
+  let background = move['hit'] ? '255, 0, 0, 0.4' : '255, 255, 255, 0.3'
+  return 'top: ' + top + 'px; left: ' + left + 'px; height: ' + sqr + 'px; width: ' + sqr
+    + 'px; background: rgba(' + background + ');';
+}
+
+function drawMoves() {
+  $('div[class=move]').remove();
+
+  $.each(moves, function(index, move) {
+    $('<div />').attr({
+      'id': 'move_' + move['col'] + '_' + move['row'],
+      'style': getMoveStyle(move),
+      'class': 'move'
+    }).appendTo('body');
+  });
+}

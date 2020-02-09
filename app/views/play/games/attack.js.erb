@@ -1,0 +1,13 @@
+shots = [];
+ships = [ <%= @layouts.html_safe %> ];
+moves = [ <%= @moves.html_safe %> ];
+can_attack = <%= @can_attack %>;
+draw();
+
+<% if @game.winner.present? %>
+$('#winner').replaceWith("<%= escape_javascript( render( partial: 'winner' ) ) %>");
+<% end %>
+
+<% unless @game.player_2.bot? %>
+setTimeout(function() { window.location.href = '/play/games/' + <%= @game.id %> }, 2000);
+<% end %>

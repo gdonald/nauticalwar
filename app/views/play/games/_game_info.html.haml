@@ -1,0 +1,15 @@
+%table.game-info
+  %tr
+    %td
+      = "Fleet: "
+      - if action_name == 'show'
+        %span.player #{@current_player.name}
+      - else
+        %span.opponent #{@game.opponent(@current_player).name}
+
+    %td.game-icons
+      - if @game.rated?
+        = image_tag asset_path('play/rated.png')
+      = image_tag asset_path("play/#{shots_per_turn_name(@game)}.png")
+
+  = render partial: 'winner'

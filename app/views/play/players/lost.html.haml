@@ -1,0 +1,23 @@
+.container
+  %p
+  .row
+    .col-md-3
+    .col-md-6
+      .card.card-trans
+        .card-body.card-body-trans
+          %form{ action: locate_play_players_path, method: :post }
+            %input{ name: :utf8, type: :hidden, value: '✓' }
+              = hidden_field_tag :authenticity_token, form_authenticity_token
+              .form-group
+                %label.control-label{ for: :email } Email
+                %input#email.form-control{ name: :email, placeholder: 'Email', type: :email, value: '' }
+              .form-group
+                %button.btn.btn-light{ type: :submit, id: :submit }
+                  Locate Account
+    .col-md-3
+
+  .row
+    .col-md-9.text-right
+      = link_to 'Signup', new_play_player_path, class: 'badge badge-light'
+      = link_to 'Login', new_play_session_path, class: 'badge badge-light'
+    .col-md-3

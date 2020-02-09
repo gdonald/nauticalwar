@@ -1,0 +1,25 @@
+.container
+  %p
+  .row
+    .col-md-3
+    .col-md-6
+      .card.card-trans
+        .card-body.card-body-trans
+          %form{ action: reset_password_play_players_path, method: :post }
+            %input{ name: :utf8, type: :hidden, value: '✓' }
+            %input{ name: :token, type: :hidden, value: @token }
+            = hidden_field_tag :authenticity_token, form_authenticity_token
+            .form-group
+              %label.control-label{ for: :password } Password
+              %input#password.form-control{ name: :password, placeholder: 'Password', type: :password, value: '' }
+              - if @player.errors[:password].any?
+                %p.error= @player.errors[:password].first
+            .form-group
+              %label.control-label{ for: :password_confirmation } Password Confirmation
+              %input#password_confirmation.form-control{ name: :password_confirmation, placeholder: 'Password Confirmation', type: :password, value: '' }
+              - if @player.errors[:password_confirmation].any?
+                %p.error= @player.errors[:password_confirmation].first
+            .form-group
+              %button.btn.btn-light{ type: :submit, id: :submit }
+                Reset Password
+    .col-md-3

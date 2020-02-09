@@ -1,0 +1,13 @@
+<% if @my_turn %>
+window.location.reload();
+<% else %>
+setTimeout(function() {
+  $.ajax({
+    method: 'get',
+    url: '/play/games/' + <%= @game.id %> + '/my_turn',
+    headers: {
+      'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+    }
+  });
+}, 5000);
+<% end %>
