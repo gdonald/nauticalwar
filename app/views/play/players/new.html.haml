@@ -1,0 +1,40 @@
+.container
+  %p
+  .row
+    .col-md-3
+    .col-md-6
+      .card.card-trans
+        .card-body.card-body-trans
+          %form{ action: play_players_path, method: :post }
+            %input{ name: :utf8, type: :hidden, value: '✓' }
+            = hidden_field_tag :authenticity_token, form_authenticity_token
+            .form-group
+              %label.control-label{ for: :name } Name
+              %input#name.form-control{ name: :name, placeholder: 'Name ', type: :name, value: @player.name || '' }
+              - if @player.errors[:name].any?
+                %p.error= @player.errors[:name].first
+            .form-group
+              %label.control-label{ for: :email } Email
+              %input#email.form-control{ name: :email, placeholder: 'Email', type: :email, value: @player.email || '' }
+              - if @player.errors[:email].any?
+                %p.error= @player.errors[:email].first
+            .form-group
+              %label.control-label{ for: :password } Password
+              %input#password.form-control{ name: :password, placeholder: 'Password', type: :password, value: '' }
+              - if @player.errors[:password].any?
+                %p.error= @player.errors[:password].first
+            .form-group
+              %label.control-label{ for: :password_confirmation } Password Confirmation
+              %input#password_confirmation.form-control{ name: :password_confirmation, placeholder: 'Password Confirmation', type: :password, value: '' }
+              - if @player.errors[:password_confirmation].any?
+                %p.error= @player.errors[:password_confirmation].first
+            .form-group
+              %button.btn.btn-light{ type: :submit, id: :submit }
+                Signup
+    .col-md-3
+
+  .row
+    .col-md-9.text-right
+      = link_to 'Login', new_play_session_path, class: 'badge badge-light'
+      = link_to 'Locate Account', lost_play_players_path, class: 'badge badge-light'
+    .col-md-3

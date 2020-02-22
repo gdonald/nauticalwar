@@ -105,6 +105,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
                     vertical: hash['vertical'] == '1')
   end
 
+  # TODO: validate layout for overlap and out of bounds
   def create_ship_layouts(player, json)
     ships = parse_ships(json)
     ships.each { |s| create_ship_layout(player, s) }

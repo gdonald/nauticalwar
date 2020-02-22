@@ -1,0 +1,166 @@
+= image_tag 'play/grid_green.png', class: 'grid', id: :grid
+%br/
+= render partial: 'game_info'
+
+%table.buttons#layout-buttons
+  %tr
+    %td
+      %button.btn.btn-light{ type: :submit, id: :my_fleet }
+        My Fleet
+    %td
+      %button.btn.btn-light{ type: :submit, id: :attack, style: 'display:none' }
+        Fire!
+
+.modal{ role: 'dialog', tabindex: '-1', id: "game_over" }
+  .modal-dialog.modal-dialog-centered{ role: 'document' }
+    .modal-content
+      .modal-header
+        %h5.modal-title Game Over
+        %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
+          %span{ 'aria-hidden' => 'true' } ×
+      .modal-body
+        %p This game has ended
+      .modal-footer
+        %button.btn.btn-success{ type: 'button', 'data-dismiss' => 'modal' } OK
+
+:javascript
+  let ships = [ #{@layouts.html_safe} ];
+  let moves = [ #{@moves.html_safe} ];
+  let shots_per_turn = #{@game.shots_per_turn};
+  let shots = [];
+  let can_attack = #{@can_attack};
+  let my_turn = #{@my_turn};
+  let game_over = #{@game_over};
+
+  $(function() {
+    $(window).resize(function() { reDraw(); });
+    reDraw();
+
+    $('#grid').on('click', function(event) {
+      if(game_over) {
+        $('#game_over').modal();
+      } else {
+        addRemoveShot(getCol(event.pageX, true), getRow(event.pageY, true));
+        draw();
+      }
+    });
+
+    $('#my_fleet').on('click', function() {
+      window.location.href = '/play/games/#{@game.id}';
+    });
+
+    $('#attack').on('click', function() {
+      attack();
+    });
+
+    if(!my_turn) {
+      setTimeout(function() {
+        $.ajax({
+          method: 'get',
+          url: '/play/games/' + #{@game.id} + '/my_turn',
+          headers: {
+            'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+          }
+        });
+      }, 5000);
+    }
+  });
+
+  function reDraw() {
+    reCalculate();
+    draw();
+  }
+
+  function draw() {
+    drawMoves();
+    drawShips();
+    drawShots();
+    drawButtons();
+  }
+
+  function drawShips() {
+    $('img[id^=ship_]').remove();
+
+    $.each(ships, function(index, ship) {
+      $('<img />').attr({
+        'id': 'ship_' + ship['name'],
+        'src': ship['vertical'] ? ship['img_v'] : ship['img_h'],
+        'style': getShipStyle(ship)
+      }).appendTo('body');
+    });
+  }
+
+  function drawShots() {
+    $('img[class=shot]').remove();
+
+    $.each(shots, function(index, shot) {
+      $('<img />').attr({
+        'id': 'shot_' + shot['col'] + '_' + shot['row'],
+        'style': getShotStyle(shot),
+        'class': 'shot',
+        'src': crosshair
+      }).appendTo('body');
+
+      const $shot = $('#shot_' + shot['col'] + '_' + shot['row']);
+
+      $shot.on('click', function() {
+        removeShot(shot['col'], shot['row']);
+        draw();
+      });
+    });
+  }
+
+  function attack() {
+    let s = [];
+    for(let x = 0; x < shots.length; x++) {
+      s.push({ x: shots[x]['col'], y: shots[x]['row'] });
+    }
+
+    $.ajax({
+      method: 'post',
+      url: '/play/games/#{@game.id}/attack',
+      data: { s: JSON.stringify(s) },
+      headers: {
+        'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+      }
+    });
+  }
+
+  function addRemoveShot(col, row) {
+    if(shotPresent(col, row)) {
+      removeShot(col, row);
+    } else {
+      addShot(col, row);
+    }
+  }
+
+  function shotPresent(col, row) {
+    for(let x = 0; x < shots.length; x++) {
+      if(shots[x]['col'] === col && shots[x]['row'] === row) { return true; }
+    }
+
+    return false;
+  }
+
+  function removeShot(col, row) {
+    shots = shots.filter(shot => shot['col'] !== col || shot['row'] !== row);
+  }
+
+  function addShot(col, row) {
+    if(!can_attack || shots.length >= shots_per_turn) { return; }
+    shots.push({ col: col, row: row });
+  }
+
+  function drawButtons() {
+    const attack = $('#attack');
+    if(can_attack) {
+      attack.show();
+      if(shots.length === shots_per_turn) {
+        attack.prop('disabled', false);
+      } else {
+        attack.prop('disabled', true);
+      }
+    } else {
+      attack.hide();
+    }
+  }

@@ -235,6 +235,11 @@ section.download .badges .badge-link img {
   }
 }
 
+section.features {
+  background: -webkit-linear-gradient(to left, #0077ff, #004d9a);
+  background: linear-gradient(to left, #0077ff, #004d9a);
+}
+
 section.features .section-heading {
   margin-bottom: 100px;
 }
@@ -281,6 +286,12 @@ section.features .feature-item i {
   background: linear-gradient(to left, #7b4397, #dc2430);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+}
+
+section.features .feature-item p.text-muted,
+section.features .section-heading p.text-muted
+{
+  color: #ccc !important;
 }
 
 section.cta {
@@ -415,19 +426,19 @@ footer ul li a:hover, footer ul li a:focus, footer ul li a:active, footer ul li 
 }
 
 .btn-outline {
-  color: #666 !important;
+  color: #ccc !important;
   border: 1px solid;
   border-color: #000;
-  background-color: #6ec794;
+  background-color: #004d9a;
   text-decoration: none !important;
   font-size: 15px !important;
   font-weight: bold !important;
 }
 
 .btn-outline:hover, .btn-outline:focus, .btn-outline:active, .btn-outline.active {
-  color: #000 !important;
+  color: #eee !important;
   border-color: #000;
-  background-color: #6ec794;
+  background-color: #0068b4;
   font-size: 15px !important;
   font-weight: bold !important;
 }
@@ -442,4 +453,15 @@ footer ul li a:hover, footer ul li a:focus, footer ul li a:active, footer ul li 
 .btn-xl {
   font-size: 11px;
   padding: 15px 45px;
+}
+
+a.play-in-browser {
+  font-family: 'Lato', 'Helvetica', 'Arial', 'sans-serif';
+  color: #ddd;
+  font-size: 1.6em;
+  font-weight: bold;
+}
+
+a.play-in-browser:hover {
+  color: #fff;
 }

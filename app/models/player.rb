@@ -43,6 +43,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   scope :active, -> { where.not(confirmed_at: nil) }
   scope :not_bot, -> { where(bot: false) }
+  scope :not_self, ->(id) { where.not(id: id) }
 
   def to_s
     name
@@ -82,10 +83,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def invite_args(params)
-    { player_2: Player.active.where(id: params[:id]).first,
-      rated: params[:r] == '1',
-      shots_per_turn: params[:s].to_i,
-      time_limit: params[:t].to_i }
+    { player_2: Player.active.not_self(self.id).where(id: params[:id]).first,
+     rated: params[:r] == '1',
+     shots_per_turn: params[:s].to_i,
+     time_limit: params[:t].to_i }
   end
 
   def create_opponent_invite!(args)
@@ -110,9 +111,20 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     end
   end
 
+  # TODO: add to android
+  def destroy_enemy!(id)
+    enemy = enemies.where(player_2_id: id).first
+    if enemy
+      player_2_id = enemy.player_2_id
+      enemy.destroy
+      return player_2_id
+    end
+    -1
+  end
+
   def create_enemy!(id)
     if !enemies_player_ids.include?(id) && !friends_player_ids.include?(id)
-      player = Player.active.not_bot.find_by(id: id)
+      player = Player.active.not_bot.not_self(self.id).find_by(id: id)
       if player
         enemies.create!(player_2: player)
         return player.id
@@ -137,7 +149,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def create_friend!(id)
     if !friends_player_ids.include?(id) && !enemies_player_ids.include?(id)
-      player = Player.active.find_by(id: id)
+      player = Player.active.not_self(self.id).find_by(id: id)
       if player
         friends.create!(player_2: player)
         return player.id
@@ -150,8 +162,12 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     friends.collect(&:player_2_id)
   end
 
-  def is_friend(player_id)
+  def friend?(player_id)
     friends.find_by(player_2_id: player_id).present?
+  end
+
+  def enemy?(player_id)
+    enemies.find_by(player_2_id: player_id).present?
   end
 
   def new_activity!
@@ -287,9 +303,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def active_games
     games_1.includes(%i[player_1 player_2])
-           .where(del_player_1: false)
-           .or(games_2.includes(%i[player_1 player_2])
-                      .where(del_player_2: false))
+        .where(del_player_1: false)
+        .or(games_2.includes(%i[player_1 player_2])
+                .where(del_player_2: false))
   end
 
   def invites
@@ -302,13 +318,20 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     Player.where(id: ids)
   end
 
+  def self.search(name)
+    Player.where('name ILIKE ?', "%#{name}%")
+        .where.not(confirmed_at: nil)
+        .order(rating: :desc)
+        .limit(30)
+  end
+
   def self.list(player) # rubocop:disable Metrics/AbcSize
     ids = Player.select(:id).where(bot: true).collect(&:id)
     query = Player.select(:id).where.not(id: player.enemies_player_ids)
     ids += query.where(arel_table[:rating].gteq(player.rating))
-                .order(rating: :asc).limit(15).collect(&:id)
+               .order(rating: :asc).limit(15).collect(&:id)
     ids += query.where(arel_table[:rating].lteq(player.rating))
-                .order(rating: :desc).limit(15).collect(&:id)
+               .order(rating: :desc).limit(15).collect(&:id)
     ids.uniq!
     Player.where(id: ids).where.not(confirmed_at: nil).order(rating: :desc)
   end
@@ -346,6 +369,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     else
       player.password = params[:password]
       player.password_confirmation = params[:password_confirmation]
+      player.save!
+      player.password_token = nil
+      player.password_token_expire = nil
       player.save!
       PlayerMailer.with(player: player).reset_complete_email.deliver_now
       { id: player.id }
@@ -438,6 +464,64 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def self.hash_password(password, salt)
     BCrypt::Engine.hash_secret(password, salt)
+  end
+
+  def last_color
+    case last
+    when 0
+      'green'
+    when 1
+      'blue'
+    when 2
+      'orange'
+    else
+      'red'
+    end
+  end
+
+  def rank
+    case rating
+    when 700..800
+      'e2'
+    when 800..900
+      'e3'
+    when 900..1000
+      'e4'
+    when 1000..1100
+      'e5'
+    when 1100..1200
+      'e6'
+    when 1200..1300
+      'e7'
+    when 1300..1400
+      'e8'
+    when 1400..1500
+      'e9'
+    when 1500..1600
+      'o1'
+    when 1600..1700
+      'o2'
+    when 1700..1800
+      'o3'
+    when 1800..1850
+      'o4'
+    when 1850..1900
+      'o5'
+    when 1900..1950
+      'o6'
+    when 1950..2000
+      'o7'
+    when 2000..2050
+      'o8'
+    when 2050..2100
+      'o9'
+    when 2100..2150
+      'o10'
+    when 2150..Integer.MAX
+      'o11'
+    else
+      'e1'
+    end
   end
 
   private

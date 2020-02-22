@@ -4,6 +4,6 @@
   Click here to confirm your email:
   %br/
   %br/
-  = confirm_url(token: @player.confirmation_token)
+  = link_to confirm_url(token: @player.confirmation_token), confirm_url(token: @player.confirmation_token)
   %br/
   %br/

@@ -1,6 +1,50 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
+  namespace :play do
+    resources :games, only: %i[index show destroy] do
+      member do
+        get :layout
+        get :my_turn
+        get :opponent
+        post :attack
+        post :cancel
+      end
+    end
+
+    resources :invites, only: %i[index create] do
+      member do
+        post :accept
+        delete :decline
+        delete :cancel
+      end
+    end
+
+    resources :players, only: %i[index show new create] do
+      collection do
+        get :search
+        get :lost
+        post :locate
+        post :reset_password
+      end
+      member do
+        post :block, :unblock, :friend, :unfriend
+      end
+    end
+
+    resources :layouts, only: %i[create] do
+    end
+
+    resources :ranks, only: %i[index] do
+    end
+
+    resources :sessions, only: %i[new create] do
+      collection do
+        delete :destroy
+      end
+    end
+  end
+
   namespace :api do # rubocop:disable Metrics/BlockLength
     resources :ping, only: [:index]
 
@@ -50,7 +94,9 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  get '/android', to: 'home#android'
+  get '/play', to: 'play/home#index'
+
+  # get '/android', to: 'home#android'
   get '/privacy', to: 'home#privacy'
   get '/terms',   to: 'home#terms'
 

@@ -49,5 +49,3 @@ Rails.application.configure do
   # Raises error for missing translations
   # config.action_view.raise_on_missing_translations = true
 end
-
-ANDROID_URL = 'nauticalwar://10.0.0.37'

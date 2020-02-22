@@ -5,21 +5,29 @@ class HomeController < ApplicationController
     render layout: 'spa'
   end
 
-  def android
-    render layout: 'mobile'
-  end
-
   def confirm
-    Player.confirm_email(confirm_params[:token])
-    redirect_to android_url
+    flash[:notice] = if Player.confirm_email(confirm_params[:token])
+                       'Account confirmed'
+                     else
+                       'Invalid token, account confirmation failed'
+                     end
+    redirect_to new_play_session_path
   end
 
   def reset
-    redirect_to android_url(token: params[:token])
+    @player = Player.find_by(password_token: params[:token])
+    if @player.nil? || @player.password_token_expire < Time.zone.now
+      flash[:notice] = 'Invalid token'
+      redirect_to new_play_session_path
+    else
+      @token = params[:token]
+      flash[:notice] = 'Reset your password'
+      render 'play/players/reset', layout: 'play'
+    end
   end
 
   def reset_complete
-    redirect_to android_url(reset_complete: 1)
+    redirect_to new_play_session_path
   end
 
   private

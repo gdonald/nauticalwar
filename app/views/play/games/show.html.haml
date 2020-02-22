@@ -1,0 +1,92 @@
+= image_tag 'play/grid_green.png', class: 'grid', id: :grid
+%br/
+
+= render partial: 'game_info'
+
+%table.buttons#layout-buttons
+  %tr
+    %td
+      %button.btn.btn-light{ type: :submit, id: :opponent_fleet }
+        Opponent Fleet
+
+.modal{ role: 'dialog', tabindex: '-1', id: "cannot_attack" }
+  .modal-dialog.modal-dialog-centered{ role: 'document' }
+    .modal-content
+      .modal-header
+        %h5.modal-title Oops
+        %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
+          %span{ 'aria-hidden' => 'true' } ×
+      .modal-body
+        %p You cannot attack your own fleet.
+        %p Click &quot;Opponent Fleet&quot; below
+      .modal-footer
+        %button.btn.btn-success{ type: 'button', 'data-dismiss' => 'modal' } OK
+
+.modal{ role: 'dialog', tabindex: '-1', id: "game_over" }
+  .modal-dialog.modal-dialog-centered{ role: 'document' }
+    .modal-content
+      .modal-header
+        %h5.modal-title Game Over
+        %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
+          %span{ 'aria-hidden' => 'true' } ×
+      .modal-body
+        %p This game has ended
+      .modal-footer
+        %button.btn.btn-success{ type: 'button', 'data-dismiss' => 'modal' } OK
+
+:javascript
+  let ships = [ #{@layouts.html_safe} ];
+  let moves = [ #{@moves.html_safe} ];
+  let my_turn = #{@my_turn};
+  let game_over = #{@game_over};
+
+  $(function() {
+    $(window).resize(function() { reDraw(); });
+    reDraw();
+
+    $('#grid').on('click', function(event) {
+      if(game_over) {
+        $('#game_over').modal();
+      } else {
+        $('#cannot_attack').modal();
+      }
+    });
+
+    $('#opponent_fleet').on('click', function() {
+      window.location.href = '/play/games/#{@game.id}/opponent';
+    });
+
+    if(!my_turn) {
+      setTimeout(function() {
+        $.ajax({
+          method: 'get',
+          url: '/play/games/' + #{@game.id} + '/my_turn',
+          headers: {
+            'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+          }
+        });
+      }, 5000);
+    }
+  });
+
+  function reDraw() {
+    reCalculate();
+    draw();
+  }
+
+  function draw() {
+    drawMoves();
+    drawShips();
+  }
+
+  function drawShips() {
+    $('img[id^=ship_]').remove();
+
+    $.each(ships, function(index, ship) {
+      $('<img />').attr({
+        'id': 'ship_' + ship['name'],
+        'src': ship['vertical'] ? ship['img_v'] : ship['img_h'],
+        'style': getShipStyle(ship)
+      }).appendTo('body');
+    });
+  }
