@@ -6,11 +6,12 @@ class HomeController < ApplicationController
   end
 
   def confirm
-    flash[:notice] = if Player.confirm_email(confirm_params[:token])
-                       'Account confirmed'
-                     else
-                       'Invalid token, account confirmation failed'
-                     end
+    if Player.confirm_email(confirm_params[:token])
+      flash[:notice] = 'Account confirmed'
+      PlayerMailer.with(player: @player).confirmation_complete_email.deliver_now
+    else
+      flash[:notice] = 'Invalid token, account confirmation failed'
+    end
     redirect_to new_play_session_path
   end
 

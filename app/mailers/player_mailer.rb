@@ -6,6 +6,11 @@ class PlayerMailer < ApplicationMailer
     mail(to: @player.email, subject: 'Nautical War Signup')
   end
 
+  def confirmation_complete_email
+    @player = params[:player]
+    mail(to: @player.email, subject: 'Nautical War Account Confirmation')
+  end
+
   def reset_email
     @player = params[:player]
     mail(to: @player.email, subject: 'Nautical War Password Reset')

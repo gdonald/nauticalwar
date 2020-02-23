@@ -1,13 +1,18 @@
 %h1
   Welcome to Nautical War, #{@player.name}
 %p
-  Please click here to confirm your email:
+  Please complete your signup by confirming your email address using the link below:
   %br/
   %br/
   = link_to confirm_url(token: @player.confirmation_token), confirm_url(token: @player.confirmation_token)
+  %br/
+  %br/
+  If you did not signup for a Nautical War account no further action is required.
   %br/
 
 %p
   Thanks,
   %br/
   Nautical War Support
+  %br/
+  = link_to 'support@nauticalwar.com', 'mailto:support@nauticalwar.com'
