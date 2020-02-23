@@ -1,0 +1,4 @@
+%div.last#last
+  - if @friends.include?(player)
+    = image_tag "play/heart.png", alt: '', title: 'Friend'
+  = image_tag "play/dot_#{player.last_color}.png", alt: ''

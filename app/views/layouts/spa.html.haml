@@ -8,6 +8,8 @@
     %title Nautical War - Multiplayer Turn Based Stategy Sea Battle Game for Android
     = stylesheet_link_tag    'application', media: 'all'
     = javascript_include_tag 'application'
+    %script{:src => asset_path("new-age.js")}
+    %script{:async => "", :src => "https://www.googletagmanager.com/gtag/js?id=UA-86101804-3"}
     %link{:href => "https://fonts.googleapis.com/css?family=Lato", :rel => "stylesheet"}/
     %link{:href => "https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900", :rel => "stylesheet"}/
     %link{:href => "https://fonts.googleapis.com/css?family=Muli", :rel => "stylesheet"}/
@@ -127,4 +129,8 @@
           -#%li.list-inline-item
           -#  %a{:href => "/faq"} FAQ
 
-    %script{:src => asset_path("new-age.js")}
+    :javascript
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'UA-86101804-3');

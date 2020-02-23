@@ -23,7 +23,10 @@
     $(window).resize(function() { reDraw(); });
     reDraw();
 
-    $('#grid').on('click', function() {
+    const $grid = $('#grid');
+    $grid.attr('draggable', false);
+
+    $grid.on('click', function() {
       selectedShipName = null;
       draw();
     });

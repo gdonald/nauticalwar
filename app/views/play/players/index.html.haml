@@ -3,7 +3,7 @@
     %td.search-field
       = text_field_tag :q, '', placeholder: 'Search', data: 'player-name'
 
-= render partial: 'players', locals: { players: @players }
+= render partial: 'players'
 
 :javascript
   $(function() {

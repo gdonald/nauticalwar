@@ -1,7 +1,7 @@
 %tr{ data: 'player', id: player.id }
   %td.rank= image_tag "play/#{player.rank}.png", class: 'rank'
   %td.info
-    %div.last= image_tag "play/dot_#{player.last_color}.png"
+    = render partial: 'last', locals: { player: player }
     %span.player-name= player.name
     %br/
     %span.player-rank= rank_name(player.rank)

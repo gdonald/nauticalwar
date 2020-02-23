@@ -44,7 +44,10 @@
     $(window).resize(function() { reDraw(); });
     reDraw();
 
-    $('#grid').on('click', function(event) {
+    const $grid = $('#grid');
+    $grid.attr('draggable', false);
+
+    $grid.on('click', function(event) {
       if(game_over) {
         $('#game_over').modal();
       } else {
@@ -88,5 +91,7 @@
         'src': ship['vertical'] ? ship['img_v'] : ship['img_h'],
         'style': getShipStyle(ship)
       }).appendTo('body');
+
+      $('#ship_' + ship['name']).attr('draggable', false);
     });
   }

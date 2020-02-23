@@ -158,6 +158,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     -1
   end
 
+  def friends_list
+    friends.collect(&:player_2)
+  end
+
   def friends_player_ids
     friends.collect(&:player_2_id)
   end
@@ -344,10 +348,12 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def last
     return 0 if bot
 
-    if last_sign_in_at
-      return 0 if last_sign_in_at > 1.hour.ago
-      return 1 if last_sign_in_at > 1.day.ago
-      return 2 if last_sign_in_at > 3.days.ago
+    latest = last_sign_in_at > updated_at ? last_sign_in_at : updated_at
+
+    if latest
+      return 0 if latest > 1.hour.ago
+      return 1 if latest > 1.day.ago
+      return 2 if latest > 3.days.ago
     end
     3
   end

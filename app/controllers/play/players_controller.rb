@@ -1,13 +1,14 @@
 class Play::PlayersController < Play::PlayController
   before_action :get_current_player, except: %i[new create lost locate reset_password]
   before_action :player, only: %i[show block unblock friend unfriend]
+  before_action :friends, only: %i[index search show]
 
   def index
-    @players = Player.list(@current_player)
+    @players = Player.list(@current_player).includes(:friends)
   end
 
   def search
-    @players = Player.search(params[:q])
+    @players = Player.search(params[:q]).includes(:friends)
   end
 
   def show; end
@@ -22,10 +23,12 @@ class Play::PlayersController < Play::PlayController
 
   def friend
     @current_player.create_friend!(params[:id])
+    friends
   end
 
   def unfriend
     @current_player.destroy_friend!(params[:id])
+    friends
   end
 
   def new
@@ -87,5 +90,9 @@ class Play::PlayersController < Play::PlayController
 
   def player
     @player ||= Player.find_by(id: params[:id])
+  end
+
+  def friends
+    @friends ||= @current_player.friends_list
   end
 end
