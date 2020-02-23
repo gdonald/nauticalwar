@@ -348,12 +348,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def last
     return 0 if bot
 
-    latest = last_sign_in_at > updated_at ? last_sign_in_at : updated_at
-
-    if latest
-      return 0 if latest > 1.hour.ago
-      return 1 if latest > 1.day.ago
-      return 2 if latest > 3.days.ago
+    if updated_at
+      return 0 if updated_at > 1.hour.ago
+      return 1 if updated_at > 1.day.ago
+      return 2 if updated_at > 3.days.ago
     end
     3
   end
@@ -451,7 +449,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     player = Player.find_by(confirmation_token: token)
     return unless player
 
-    player.update(confirmed_at: Time.zone.now)
+    return player if player.update(confirmed_at: Time.zone.now)
   end
 
   attr_reader :password

@@ -10,14 +10,6 @@ RSpec.describe HomeController, type: :controller do # rubocop:disable Metrics/Bl
     end
   end
 
-  describe 'GET #android' do
-    it 'returns http success' do
-      get :android
-      expect(response).to be_successful
-      expect(response).to render_template(layout: 'mobile')
-    end
-  end
-
   describe 'GET #confirm' do
     let(:player) { create(:player) }
 

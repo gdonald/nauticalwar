@@ -17,7 +17,7 @@ RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable Metrics/BlockLen
     it 'renders the body' do
       expected = "Welcome to Nautical War, #{player.name}"
       expect(mail.body.encoded).to match(expected)
-      expected = 'Click here to confirm your email:'
+      expected = 'Please complete your signup by confirming your email address using the link below:'
       expect(mail.body.encoded).to match(expected)
       expected = "http://localhost:3000/confirm/#{player.confirmation_token}"
       expect(mail.body.encoded).to match(expected)
@@ -40,7 +40,7 @@ RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable Metrics/BlockLen
     it 'renders the body' do
       expected = "Dear #{player.name},"
       expect(mail.body.encoded).to match(expected)
-      expected = 'Click here to reset your Nautical War password:'
+      expected = 'You may click here to reset your Nautical War account password:'
       expect(mail.body.encoded).to match(expected)
       expected = "http://localhost:3000/reset/#{player.password_token}"
       expect(mail.body.encoded).to match(expected)
@@ -63,9 +63,9 @@ RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable Metrics/BlockLen
     it 'renders the body' do
       expected = "Dear #{player.name},"
       expect(mail.body.encoded).to match(expected)
-      expected = 'Your password has been reset.'
+      expected = 'Your Nautical War account password has been reset.'
       expect(mail.body.encoded).to match(expected)
-      expected = 'http://localhost:3000/reset_complete'
+      expected = 'http://localhost:3000/'
       expect(mail.body.encoded).to match(expected)
     end
   end

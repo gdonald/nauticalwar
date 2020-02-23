@@ -1021,12 +1021,12 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#last' do
-    let(:player_1) { create(:player, last_sign_in_at: Time.current) }
-    let(:player_2) { create(:player, last_sign_in_at: 2.hours.ago) }
-    let(:player_3) { create(:player, last_sign_in_at: 2.days.ago) }
-    let(:player_4) { create(:player, last_sign_in_at: 4.days.ago) }
-    let(:player_5) { create(:player, last_sign_in_at: nil) }
-    let(:bot) { create(:player, :bot) }
+    let(:player_1) { build(:player, updated_at: Time.current) }
+    let(:player_2) { build(:player, updated_at: 2.hours.ago) }
+    let(:player_3) { build(:player, updated_at: 2.days.ago) }
+    let(:player_4) { build(:player, updated_at: 4.days.ago) }
+    let(:player_5) { build(:player, updated_at: nil) }
+    let(:bot) { build(:player, :bot) }
 
     it 'signed in recently returns a 0' do
       expect(player_1.last).to eq(0)

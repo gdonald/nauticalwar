@@ -9,7 +9,7 @@ class Api::FriendsController < Api::ApiController
   end
 
   def show
-    render json: { status: @current_player.is_friend(params[:id]) }
+    render json: { status: @current_player.friend?(params[:id]) }
   end
 
   def create
