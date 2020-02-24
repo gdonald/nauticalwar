@@ -34,6 +34,8 @@
       .modal-footer
         %button.btn.btn-success{ type: 'button', 'data-dismiss' => 'modal' } OK
 
+= render partial: 'preload'
+
 :javascript
   let ships = [ #{@layouts.html_safe} ];
   let moves = [ #{@moves.html_safe} ];

@@ -8,7 +8,7 @@ create(:player, :admin,
        confirmed_at: Time.current)
 
 x = 0
-%w[BarneyBot BettyBot WilmaBot FredBot].each do |name|
+%w[Bender Johnny_5 Irona Eve].each do |name|
   x += 1
   pwd = Player.generate_password(16)
   email = "#{name}@nauticalwar.com"

@@ -10,6 +10,8 @@
       %button.btn.btn-light{ type: :submit, id: :rotate }
         Rotate Ship
 
+= render partial: 'preload'
+
 :javascript
   let ships = [
     { col: 6, row: 1, size: 2, vertical: false, name: 'patrol_boat', img_h: patrol_boat, img_v: patrol_boat_vertical },

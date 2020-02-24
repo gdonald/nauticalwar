@@ -23,6 +23,8 @@
       .modal-footer
         %button.btn.btn-success{ type: 'button', 'data-dismiss' => 'modal' } OK
 
+= render partial: 'preload'
+
 :javascript
   let ships = [ #{@layouts.html_safe} ];
   let moves = [ #{@moves.html_safe} ];
@@ -131,7 +133,17 @@
     });
   }
 
+  function shotExists(col, row) {
+    for(let x = 0; x < moves.length; x++) {
+      if(moves[x]['col'] === col && moves[x]['row'] === row) { return true; }
+    }
+
+    return false;
+  }
+
   function addRemoveShot(col, row) {
+    if(shotExists(col, row)) { return; }
+
     if(shotPresent(col, row)) {
       removeShot(col, row);
     } else {

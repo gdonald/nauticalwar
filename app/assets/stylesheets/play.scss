@@ -11,6 +11,10 @@ body
   background-size: cover;
 }
 
+.preload {
+  display: none;
+}
+
 .card-trans {
   background: rgba(64, 255, 255, 0.1);
   border: dotted aqua 1px;
