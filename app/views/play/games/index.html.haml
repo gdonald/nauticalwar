@@ -1,7 +1,7 @@
 
 - if @games.empty?
   %p.info
-    No games found.  Click on
+    Click on
     = link_to 'Players', play_players_path
     to start a game.
 
@@ -77,7 +77,7 @@
           .modal-footer
             - if game.winner.nil? && game.player_1 == @current_player && !game.player_1_layed_out || game.player_2 == @current_player && !game.player_2_layed_out
               %button.btn.btn-danger{ type: 'button', id: "cancel_#{game.id}" } Cancel Game
-              %button.btn.btn-success{ type: 'button', id: "layout_#{game.id}" } Layout Fleet
+              %button.btn.btn-primary{ type: 'button', id: "layout_#{game.id}" } Layout Fleet
             - elsif game.winner.nil? && game.player_1 != @current_player && !game.player_1_layed_out || game.player_2 != @current_player && !game.player_2_layed_out
               %button.btn.btn-danger{ type: 'button', id: "cancel_#{game.id}" } Cancel Game
             - elsif game.winner.present?
@@ -85,7 +85,7 @@
               %button.btn.btn-primary{ type: 'button', id: "review_#{game.id}" } Review Game
             - else
               %button.btn.btn-danger{ type: 'button', id: "cancel_#{game.id}" } Cancel Game
-              %button.btn.btn-success{ type: 'button', id: "opponent_#{game.id}" } Play Game
+              %button.btn.btn-primary{ type: 'button', id: "opponent_#{game.id}" } Play Game
 
 :javascript
   $(function() {
@@ -110,12 +110,12 @@
       $(this).on('click', function() {
         const id = $(this).attr('id').split('_')[1];
         $.ajax({
-        method: 'post',
-        url: '/play/games/' + id + '/cancel',
-        headers: {
-          'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
-        }
-       });
+          method: 'post',
+          url: '/play/games/' + id + '/cancel',
+          headers: {
+            'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+          }
+        });
       })
     });
 

@@ -1,9 +1,9 @@
 
 - if @invites.empty?
   %p.info
-    No invites found.  Click on
+    Click on
     = link_to 'Players', play_players_path
-    to invite someone to a game.
+    to start a game.
 
 %table.list#invites
   - @invites.each do |invite|
@@ -49,7 +49,7 @@
             - if invite.player_1 == @current_player
               %button.btn.btn-danger{ type: 'button', id: "cancel_#{invite.id}" } Cancel Invite
             - else
-              %button.btn.btn-success{ type: 'button', id: "accept_#{invite.id}" } Accept Invite
+              %button.btn.btn-primary{ type: 'button', id: "accept_#{invite.id}" } Accept Invite
               %button.btn.btn-danger{ type: 'button', id: "decline_#{invite.id}" } Decline Invite
 
 :javascript

@@ -1,0 +1,5 @@
+<% if @game %>
+  window.location.href = '/play/games/<%= @game.id %>/opponent';
+<% else %>
+  window.location.href = '/play/games';
+<% end %>

@@ -5,9 +5,11 @@
     .col-md-6
       .card.card-trans
         .card-body.card-body-trans
-          %form{ action: play_players_path, method: :post }
+          %form{ action: create_player_play_guests_path, method: :post }
             %input{ name: :utf8, type: :hidden, value: '✓' }
             = hidden_field_tag :authenticity_token, form_authenticity_token
+            %p.white
+              You can convert your guest account to a full account:
             .form-group
               %label.control-label{ for: :name } Name
               %input#name.form-control{ name: :name, placeholder: 'Name ', type: :name, value: @player.name || '' }
@@ -30,14 +32,11 @@
                 %p.error= @player.errors[:password_confirmation].first
             .form-group
               %button.btn.btn-primary{ type: :submit, id: :submit }
-                Signup
+                Convert To Full Account
     .col-md-3
 
   .row
     .col-md-3
-    .col-md-3
+    .col-md-6
       = link_to 'NauticalWar.com', root_path, class: 'white'
-    .col-md-3.text-right
-      = link_to 'Login', new_play_session_path, class: 'badge badge-light'
-      = link_to 'Locate Account', lost_play_players_path, class: 'badge badge-light'
     .col-md-3

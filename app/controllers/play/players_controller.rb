@@ -1,14 +1,22 @@
 class Play::PlayersController < Play::PlayController
   before_action :get_current_player, except: %i[new create lost locate reset_password]
   before_action :player, only: %i[show block unblock friend unfriend]
-  before_action :friends, only: %i[index search show]
+  before_action :friends, only: %i[index search show block unblock]
 
   def index
-    @players = Player.list(@current_player).includes(:friends)
+    @players = if @current_player.guest?
+                 Player.guest_list(@current_player)
+               else
+                 Player.list(@current_player).includes(:friends)
+               end
   end
 
   def search
-    @players = Player.search(params[:q]).includes(:friends)
+    @players = if @current_player.guest?
+                 Player.guest_search(params[:q])
+               else
+                 Player.search(params[:q]).includes(:friends)
+               end
   end
 
   def show; end
@@ -23,11 +31,15 @@ class Play::PlayersController < Play::PlayController
 
   def friend
     @current_player.create_friend!(params[:id])
+
+    # called late
     friends
   end
 
   def unfriend
     @current_player.destroy_friend!(params[:id])
+
+    # called late
     friends
   end
 
@@ -38,7 +50,7 @@ class Play::PlayersController < Play::PlayController
   def create
     @player = Player.create(player_params)
     if @player.valid?
-      flash[:notice] = 'Please confirm your email'
+      flash[:notice] = 'Please confirm your email address'
       redirect_to new_play_session_path
     else
       flash[:notice] = 'Signup failed'

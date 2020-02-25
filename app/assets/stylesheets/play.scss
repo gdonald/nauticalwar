@@ -5,6 +5,11 @@
   src: url(asset_path('Championship.ttf')) format('truetype');
 }
 
+@font-face {
+  font-family: 'russo-one';
+  src: url(asset_path('russo-one.ttf')) format('truetype');
+}
+
 body
 {
   background: #061B34 url(asset_path('play/water_blue.jpg')) fixed no-repeat;
@@ -15,13 +20,19 @@ body
   display: none;
 }
 
+.card {
+  font-family: 'russo-one', monospace;
+  letter-spacing: 0.5px;
+  font-size: 0.9em;
+}
+
 .card-trans {
-  background: rgba(64, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
   border: dotted aqua 1px;
 }
 
 .card-body-trans {
-  background: rgba(64, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.4);
 }
 
 .card {
@@ -35,7 +46,7 @@ body
   font-family: "Championship", sans-serif;
   font-size: 3em;
   font-weight: bold;
-  text-shadow: 1px 1px rgba(0, 0, 0, 0.55);
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.55);
   text-transform: uppercase;
   background: -webkit-linear-gradient(#eee, #333);
   -webkit-background-clip: text;
@@ -58,17 +69,25 @@ li.nw-title.nav-modal {
 nav.navbar {
   background: rgba(64, 255, 255, 0.2);
   min-width: 300px;
+  font-family: 'russo-one', monospace;
+  letter-spacing: 1px;
+  min-height: 57px;
 }
 
 nav.nw-navbar {
   background: rgba(64, 255, 255, 0.2);
   border-bottom: dotted aqua 1px;
   color: #fff;
-  text-shadow: 1px 1px rgba(0, 0, 0, 0.55);
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.55);
 }
 
 .navbar-dark .navbar-nav .nav-link {
   color: rgba(255, 255, 255, 0.8);
+  font-family: 'russo-one', monospace;
+  font-size: 1.0em;
+  line-height: 1.0em;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+  font-weight: bold;
 }
 
 .navbar-dark:hover .navbar-nav:hover .nav-link:hover {
@@ -77,7 +96,11 @@ nav.nw-navbar {
 
 p.info {
   color: #fff;
+  font-weight: bold;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
   font-size: 1.2em;
+  font-family: 'russo-one', monospace;
+  letter-spacing: 1px;
   margin: 10px 0 0 10px;
 
   a {
@@ -100,10 +123,17 @@ table.list td {
   color: #fff;
 }
 
+table#players tr:hover {
+  cursor: pointer;
+}
+
 td.info {
   vertical-align: middle;
   padding: 10px;
   background: rgba(0, 0, 0, 0.4);
+  font-family: 'russo-one', monospace;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 td.rank {
@@ -131,9 +161,16 @@ img.rank {
   font-weight: bold;
 }
 
+.player-name-guest {
+  font-size: 1.2em;
+  font-weight: bold;
+  color: #af0;
+}
+
 .player-rank, table.list td.player-rank {
   font-size: 0.9em;
-  color: #fbff00;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+  color: #ee0;
 }
 
 .game-player-name {
@@ -168,10 +205,6 @@ img.rank {
 
 .status {
   font-size: 0.8em;
-}
-
-.winner {
-  color: #f00;
 }
 
 .layout-fleet {
@@ -209,6 +242,19 @@ td.search-field input {
   opacity: 1;
 }
 
+table.buttons, table.player-buttons {
+  background: rgba(0, 0, 0, 0.4);
+}
+
+table.player-buttons td {
+  padding: 5px 0 5px 5px;
+  font-family: 'russo-one', monospace;
+}
+
+table.max {
+  width: 100%;
+}
+
 table.buttons td {
   padding: 5px;
 }
@@ -221,43 +267,38 @@ table.player-invite td {
   color: #121212;
 }
 
-@media only screen and (max-width: 300px) {
-  table.game-info {
-    width: 300px;
-  }
-}
-
-@media only screen and (min-width: 301px) and (max-width: 639px) {
-  table.game-info {
-    width: 100%;
-  }
-}
-
-@media only screen and (min-width: 640px) {
-  table.game-info {
-    width: 640px;
-  }
-}
-
 table.game-info {
-  background: rgba(0, 0, 0, 0.4);
+  background: rgba(0, 255, 255, 0.3);
+  border-left: 1px dotted aqua;
+  border-right: 1px dotted aqua;
+  border-bottom: 1px dotted aqua;
+}
+
+table.game-info tr > td {
+  padding: 4px 4px 0 4px;
+  td { padding: 5px; }
+}
+
+table.game-info tr td > table {
 
   td {
-    padding: 2px 0 0 4px;
-    color: #fff;
-    font-size: 1.2em;
     font-weight: bold;
+    text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
+    padding: 5px 0 2px 5px;
+    color: #ddd;
+    font-size: 1.1em;
+    line-height: 1.1em;
+    font-family: 'russo-one', monospace;
+    letter-spacing: 1px;
 
     span.player {
-      color: #0f0;
-    }
-
-    span.opponent {
-      color: #f00;
+      a { color: #e48f00; }
+      a:hover { color: #fa0; }
     }
   }
 
   td.game-icons {
+    font-family: serif, normal;
     padding: 0 4px 0 0;
     text-align: right;
 
@@ -271,6 +312,22 @@ table.game-info {
   }
 }
 
+table.game-info tr.fill {
+  height: 99%;
+}
+
+td.fill, table.game-info tr td.fill {
+  width: 99%;
+}
+
+span#shots_left {
+  color: #e48f00;
+}
+
+td.nowrap {
+  white-space: nowrap;
+}
+
 #ship_patrol_boat, #ship_submarine, #ship_destroyer, #ship_battleship, #ship_carrier,
   .shot, .move {
   position: absolute;
@@ -278,12 +335,34 @@ table.game-info {
 
 p.error {
   color: #f00;
-  text-shadow: 1px 1px rgba(0, 0, 0, 0.55);
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.55);
   padding: 2px 0 0 2px;
 }
 
 #nav-modal {
   background: rgba(0, 0, 0, 0.8);
+}
+
+.modal-content {
+  background: #fff;
+}
+
+.modal-title {
+  font-family: 'russo-one', monospace;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
+}
+
+.modal-body {
+  font-family: 'russo-one', monospace;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
+}
+
+.modal-footer {
+  font-family: 'russo-one', monospace;
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.5);
+  letter-spacing: 0.5px;
 }
 
 .navbar-toggle {
@@ -303,7 +382,6 @@ p.error {
 
 .modal-nav-body ul {
   list-style-type: none;
-  color: white;
   margin: 0;
   padding: 0;
   width: 100%;
@@ -311,35 +389,73 @@ p.error {
 
 .modal-nav-body ul li {
   text-align: center;
-  font-size: 130%;
-  padding: 8px;
-  text-transform: uppercase;
+  padding: 0 0 20px 0;
 }
 
 .modal-dialog a.modal-link {
   pointer-events: all;
   text-decoration: none;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
   text-transform: none;
   font-size: 1.5em;
+  font-family: 'russo-one', monospace;
+  letter-spacing: 2px;
+}
+
+.account-type {
+  color: #fff;
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.55);
+  font-size: 1.1em;
+}
+
+p.white {
+  color: #fff;
+}
+
+a.white {
+  color: #ccc;
+  font-family: 'russo-one', monospace;
+  letter-spacing: 1px;
+  font-size: 0.9em;
+}
+
+a.white:hover {
+  color: #fff;
+}
+
+.grid-wrapper {
+  float: left;
+}
+
+.grid {
+  border-left: 1px dotted aqua;
+  border-bottom: 1px dotted aqua;
+  padding: 0 1px 1px 0;
+}
+
+.btn {
+  text-shadow: 1px 1px rgba(0, 0, 0, 0.5);
 }
 
 @media only screen and (max-width: 300px) {
-  .grid {
-    width: 300px;
-    height: auto;
-  }
+  table.game-info, table.buttons, .grid { width: 300px; }
+  .grid { height: auto; }
 }
 
-@media only screen and (min-width: 301px) and (max-width: 639px) {
-  .grid {
-    width: 100%;
-    height: auto;
-  }
+@media only screen and (min-width: 301px) and (max-width: 511px) {
+  table.game-info, table.buttons, .grid { width: 100%; }
+  .grid { height: auto; }
 }
 
-@media only screen and (min-width: 640px) {
-  .grid {
-    width: 640px;
-    height: auto;
-  }
+@media only screen and (min-width: 512px) {
+  table.game-info, table.buttons, .grid { width: 512px; }
+  .grid { height: auto; }
+}
+
+@media only screen and (max-width: 1024px) {
+  .grid { border-right: 1px dotted aqua; }
+}
+
+@media only screen and (min-width: 1024px) {
+  table.game-info { height: 512px; }
 }

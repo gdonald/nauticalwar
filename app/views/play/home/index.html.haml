@@ -1,0 +1,48 @@
+.container
+  %p
+  .row
+    .col-md-3
+    .col-md-6
+      .card.card-trans
+        .card-body.card-body-trans.account-type
+          %p
+            In a hurry?  You can play immediately as a guest.
+            Your guest account will remain active until you close your browser.
+          .form-group
+            %button.btn.btn-lg.btn-secondary{ type: :submit, id: :guest }
+              Play as a guest
+          %p
+            A permanent account will maintain your game history and stats.
+          .form-group
+            %button.btn.btn-lg.btn-primary{ type: :submit, id: :signup }
+              Create an account
+            %button.btn.btn-lg.btn-primary{ type: :submit, id: :login }
+              Login
+    .col-md-3
+
+  .row
+    .col-md-3
+    .col-md-6
+      = link_to 'NauticalWar.com', root_path, class: 'white'
+    .col-md-3
+
+:javascript
+  $(function() {
+    $('#guest').on('click', function() {
+      $.ajax({
+        method: 'post',
+        url: '/play/guests',
+        headers: {
+          'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+        }
+      });
+    });
+
+    $('#signup').on('click', function() {
+      window.location.href = '/play/players/new';
+    });
+
+    $('#login').on('click', function() {
+      window.location.href = '/play/sessions/new';
+    });
+  });

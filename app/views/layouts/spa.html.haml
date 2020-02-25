@@ -46,13 +46,17 @@
       .container
         .row
           .col-md-8.mx-auto
-            %h2.section-heading Discover a turn-based strategy game!
+            %h2.section-heading Re-discover a classic, turn-based strategy game!
             %p
               Our game is available to play in your browser and
               %br/
               on Android mobile devices too! &nbsp;Download now!
-            %a{ href: '/play', class: 'play-in-browser' } Play In Your Browser, Now!
-            %p &nbsp;
+              %br/
+
+            %a.btn.btn-outline.btn-xl{href: "/play"} Play In Your Browser!
+            %br/
+            %br/
+            %p - OR -
 
             .badges
               %a.badge-link{href: 'https://play.google.com/store/apps/details?id=com.nauticalwar.nw', target: '_blank'}
@@ -124,10 +128,6 @@
             &middot;
           %li.list-inline-item
             = link_to 'Terms', terms_path, target: '_blank'
-          -#%li.list-inline-item
-          -#  &middot;
-          -#%li.list-inline-item
-          -#  %a{:href => "/faq"} FAQ
 
     :javascript
       window.dataLayer = window.dataLayer || [];

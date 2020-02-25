@@ -1,14 +1,7 @@
-= image_tag 'play/grid_green.png', class: 'grid', id: :grid
-%br/
-
-%table.buttons#layout-buttons
-  %tr
-    %td
-      %button.btn.btn-light{ type: :submit, id: :save }
-        Save Layout
-    %td
-      %button.btn.btn-light{ type: :submit, id: :rotate }
-        Rotate Ship
+.grid-wrapper
+  = image_tag 'play/grid_green.png', class: 'grid', id: :grid
+.info-wrapper
+  = render partial: 'game_info'
 
 = render partial: 'preload'
 
