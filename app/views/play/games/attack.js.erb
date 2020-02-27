@@ -3,6 +3,7 @@ ships = [ <%= @layouts.html_safe %> ];
 moves = [ <%= @moves.html_safe %> ];
 can_attack = <%= @can_attack %>;
 draw();
+updateShotsLeft();
 
 <% if @game.winner.present? %>
 $('#winner').replaceWith("<%= escape_javascript( render( partial: 'winner' ) ) %>");
