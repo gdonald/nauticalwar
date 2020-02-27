@@ -2,7 +2,14 @@
   %td.rank= image_tag "play/#{player.rank}.png", class: 'rank'
   %td.info
     = render partial: 'last', locals: { player: player }
-    %span.player-name= player.name
+
+    - if @current_player == player
+      %span.player-name-guest
+        = player.name
+        = "(You)"
+    - else
+      %span.player-name= player.name
+
     %br/
     %span.player-rank= rank_name(player.rank)
     %br/

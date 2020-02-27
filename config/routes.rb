@@ -20,6 +20,13 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
+    resources :guests, only: %i[create] do
+      collection do
+        get :new_player
+        post :create_player
+      end
+    end
+
     resources :players, only: %i[index show new create] do
       collection do
         get :search
@@ -94,9 +101,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  get '/play', to: 'play/home#index'
-
-  # get '/android', to: 'home#android'
+  get '/play',    to: 'play/home#index'
   get '/privacy', to: 'home#privacy'
   get '/terms',   to: 'home#terms'
 

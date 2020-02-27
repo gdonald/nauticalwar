@@ -9,7 +9,10 @@
       = link_to 'Invites', play_invites_path, class: 'nav-item nav-link'
       = link_to 'Players', play_players_path, class: 'nav-item nav-link'
       = link_to 'Ranks', play_ranks_path, class: 'nav-item nav-link'
-      = link_to 'Logout', play_sessions_path, method: :delete, class: 'nav-item nav-link'
+      - if @current_player.guest?
+        = link_to 'Guest', new_player_play_guests_path, class: 'nav-item nav-link'
+      - else
+        = link_to 'Logout', play_sessions_path, method: :delete, class: 'nav-item nav-link'
 
 #nav-modal.modal.fade{ "aria-labelledby" => "myModalLabel", role: :dialog, tabindex: -1 }
   .modal-dialog{ role: :document }
@@ -21,7 +24,10 @@
           %li= link_to 'Invites', play_invites_path, class: 'modal-link'
           %li= link_to 'Players', play_players_path, class: 'modal-link'
           %li= link_to 'Ranks', play_ranks_path, class: 'modal-link'
-          %li= link_to 'Logout', play_sessions_path, method: :delete, class: 'modal-link'
+          - if @current_player.guest?
+            %li= link_to 'Guest', new_player_play_guests_path, class: 'modal-link'
+          - else
+            %li= link_to 'Logout', play_sessions_path, method: :delete, class: 'modal-link'
 
 :javascript
   $(function() {

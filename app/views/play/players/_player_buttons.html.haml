@@ -1,27 +1,30 @@
-%table.buttons#player-buttons
+%table.player-buttons.max#player-buttons
   %tr
-    %td
-      %button.btn.btn-light{ type: :submit, id: :invite }
-        Invite To Play
-
-    - if @current_player.friend?(player.id)
+    - unless @current_player.enemy?(player.id)
       %td
-        %button.btn.btn-light{ type: :submit, id: :unfriend }
-          Un-friend
-    - else
-      %td
-        %button.btn.btn-light{ type: :submit, id: :friend }
-          Add Friend
+        %button.btn.btn-primary{ type: :submit, id: :invite }
+          Invite To Play
 
-    - unless player.bot?
+    - unless @current_player.guest? || @current_player.enemy?(player.id)
+      - if @current_player.friend?(player.id)
+        %td
+          %button.btn.btn-warning{ type: :submit, id: :unfriend }
+            Un-friend
+      - else
+        %td
+          %button.btn.btn-primary{ type: :submit, id: :friend }
+            Add Friend
+
+    - unless player.bot? || @current_player.friend?(player.id)
       - if @current_player.enemy?(player.id)
         %td
-          %button.btn.btn-light{ type: :submit, id: :unblock }
+          %button.btn.btn-warning{ type: :submit, id: :unblock }
             Un-block
       - else
         %td
-          %button.btn.btn-light{ type: :submit, id: :block }
+          %button.btn.btn-danger{ type: :submit, id: :block }
             Block
+    %td.fill &nbsp;
 
 .modal{ role: 'dialog', tabindex: '-1', id: "invite_#{player.id}" }
   .modal-dialog.modal-dialog-centered{ role: 'document' }

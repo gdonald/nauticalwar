@@ -6,11 +6,11 @@
 //= require jquery.ui.touch-punch
 
 // 640 base size
-let offset_top = 79.4;
-let offset_left = 22.5;
-let sqr = 58.55;
-let line = 3.55;
-const navbar = 57;
+const base_offset_top = 79;
+const base_offset_left = 23.5;
+const base_sqr = 58.95;
+const base_line = 3.20;
+const base_navbar = 57;
 
 let selectedShipName = null;
 
@@ -34,10 +34,10 @@ $(function() {
 function reCalculate() {
   const h = $('#grid').height();
 
-  offset_top = ((79.4 - navbar) / 640 * h) + navbar;
-  offset_left = 22.5 / 640 * h;
-  sqr = 58.55 / 640 * h;
-  line = 3.55 / 640 * h;
+  offset_top = ((base_offset_top - base_navbar) / 640 * h) + base_navbar;
+  offset_left = base_offset_left / 640 * h;
+  sqr = base_sqr / 640 * h;
+  line = base_line / 640 * h;
 }
 
 function getRow(pixelsTop, offset) {
@@ -72,15 +72,15 @@ function getShotStyle(shot) {
   let top = ((sqr * shot['row']) + (line * shot['row'])) + offset_top;
   let left = ((sqr * shot['col']) + (line * shot['col'])) + offset_left;
   return 'top: ' + top + 'px; left: ' + left + 'px; height: ' + sqr + 'px; width: ' + sqr
-    + 'px; background: rgba(255, 0, 0, 0.3); border: 1px dashed red;';
+    + 'px; background: rgba(255, 255, 255, 0.6); border: 1px dashed red;';
 }
 
 function getMoveStyle(move) {
-  let top = ((sqr * move['row']) + (line * move['row'])) + offset_top;
-  let left = ((sqr * move['col']) + (line * move['col'])) + offset_left;
-  let background = move['hit'] ? '255, 0, 0, 0.4' : '255, 255, 255, 0.3'
-  return 'top: ' + top + 'px; left: ' + left + 'px; height: ' + sqr + 'px; width: ' + sqr
-    + 'px; background: rgba(' + background + ');';
+  let top = ((sqr * move['row']) + (line * move['row'])) + offset_top - 1;
+  let left = ((sqr * move['col']) + (line * move['col'])) + offset_left - 1;
+  let background = move['hit'] ? '200, 0, 0, 0.5' : '255, 255, 255, 0.3'
+  return 'top: ' + top + 'px; left: ' + left + 'px; height: ' + (sqr + 2) + 'px; width: ' + (sqr + 2)
+    + 'px; background: rgba(' + background + '); border: 1px solid rgba(0, 0, 0, 0.4)';
 }
 
 function drawMoves() {

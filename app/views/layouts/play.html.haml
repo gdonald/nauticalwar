@@ -28,7 +28,7 @@
             .modal-body
               %p #{flash[:notice]}
             .modal-footer
-              %button.btn.btn-success{ type: 'button', 'data-dismiss' => 'modal' } OK
+              %button.btn.btn-primary{ type: 'button', 'data-dismiss' => 'modal' } OK
       :javascript
         $('#modal_notice').modal();
       - flash[:notice] = nil

@@ -185,6 +185,13 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     update(player_2_layed_out: true)
   end
 
+  def guest_layout
+    Ship.ordered.each do |ship|
+      Layout.set_location(self, player_1, ship, [0, 1].sample.zero?)
+    end
+    update(player_1_layed_out: true)
+  end
+
   def player(player)
     player == player_1 ? player_1 : player_2
   end

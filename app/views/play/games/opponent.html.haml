@@ -1,15 +1,7 @@
-= image_tag 'play/grid_green.png', class: 'grid', id: :grid
-%br/
-= render partial: 'game_info'
-
-%table.buttons#layout-buttons
-  %tr
-    %td
-      %button.btn.btn-light{ type: :submit, id: :my_fleet }
-        My Fleet
-    %td
-      %button.btn.btn-light{ type: :submit, id: :attack, style: 'display:none' }
-        Fire!
+.grid-wrapper
+  = image_tag 'play/grid_green.png', class: 'grid', id: :grid
+.info-wrapper
+  = render partial: 'game_info'
 
 .modal{ role: 'dialog', tabindex: '-1', id: "game_over" }
   .modal-dialog.modal-dialog-centered{ role: 'document' }
@@ -19,9 +11,12 @@
         %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
           %span{ 'aria-hidden' => 'true' } ×
       .modal-body
-        %p This game has ended
+        %p
+          This game has ended.  Click on
+          = link_to 'Players', play_players_path
+          to start a new game.
       .modal-footer
-        %button.btn.btn-success{ type: 'button', 'data-dismiss' => 'modal' } OK
+        %button.btn.btn-primary{ type: 'button', 'data-dismiss' => 'modal' } OK
 
 = render partial: 'preload'
 
@@ -35,6 +30,7 @@
   let game_over = #{@game_over};
 
   $(function() {
+    updateShotsLeft();
     $(window).resize(function() { reDraw(); });
     reDraw();
 
@@ -46,6 +42,7 @@
         $('#game_over').modal();
       } else {
         addRemoveShot(getCol(event.pageX, true), getRow(event.pageY, true));
+        updateShotsLeft();
         draw();
       }
     });
@@ -83,6 +80,23 @@
     drawButtons();
   }
 
+  function updateShotsLeft() {
+    let shots_left = shots_per_turn - shots.length;
+
+    if(shots_left > 0) {
+      $('#shoot_now').hide();
+      $('#how_to_shoot').show();
+
+      let html = shots_left === 1 ? '' : '&nbsp;' + shots_left;
+      html += ' attack' + (shots_left === 1 ? '' : 's');
+
+      $('#shots_left').html(html);
+    } else {
+      $('#how_to_shoot').hide();
+      $('#shoot_now').show();
+    }
+  }
+
   function drawShips() {
     $('img[id^=ship_]').remove();
 
@@ -112,6 +126,7 @@
 
       $shot.on('click', function() {
         removeShot(shot['col'], shot['row']);
+        updateShotsLeft();
         draw();
       });
     });

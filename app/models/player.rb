@@ -27,8 +27,8 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   validates :p_hash, length: { maximum: 80 }
 
   before_save :downcase_email
-  before_create :set_confirmation_token
-  after_create :send_confirmation_email
+  before_create :set_confirmation_token, unless: -> { guest? }
+  after_create :send_confirmation_email, unless: -> { guest? }
 
   has_many :games_1, foreign_key: :player_1_id, class_name: 'Game'
   has_many :games_2, foreign_key: :player_2_id, class_name: 'Game'
@@ -41,7 +41,8 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   has_many :friends, foreign_key: :player_1_id, class_name: 'Friend'
   has_many :enemies, foreign_key: :player_1_id, class_name: 'Enemy'
 
-  scope :active, -> { where.not(confirmed_at: nil) }
+  scope :active, -> { where.not(confirmed_at: nil).or(is_guest) }
+  scope :is_guest, -> { where(guest: true) }
   scope :not_bot, -> { where(bot: false) }
   scope :not_self, ->(id) { where.not(id: id) }
 
@@ -109,6 +110,25 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     else
       create_opponent_invite!(args)
     end
+  end
+
+  def self.create_guest
+    player = nil
+    while player.nil?
+      r = 7.times.collect { rand(0..9) }.join
+      name = "Guest#{r}"
+      email = "#{name}@nauticalwar.com"
+      player = Player.create(guest: true, name: name, email: email)
+      player = nil unless player.valid?
+    end
+    player
+  end
+
+  def create_guest_bot_game
+    args = { player_2: Player.where(bot: true).sample, rated: true, shots_per_turn: 5, time_limit: 300 }
+    game = create_bot_game!(args)
+    game.guest_layout
+    game
   end
 
   # TODO: add to android
@@ -322,6 +342,12 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     Player.where(id: ids)
   end
 
+  def self.guest_search(name)
+    Player.where(guest: true).where('name ILIKE ?', "%#{name}%")
+        .order(rating: :desc)
+        .limit(30)
+  end
+
   def self.search(name)
     Player.where('name ILIKE ?', "%#{name}%")
         .where.not(confirmed_at: nil)
@@ -329,8 +355,21 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
         .limit(30)
   end
 
+  def self.guest_list(player) # rubocop:disable Metrics/AbcSize
+    ids = [player.id]
+    ids += Player.select(:id).where(bot: true).collect(&:id)
+    query = Player.select(:id).where(guest: true)
+    ids += query.where(arel_table[:rating].gteq(player.rating))
+               .order(rating: :asc).limit(15).collect(&:id)
+    ids += query.where(arel_table[:rating].lteq(player.rating))
+               .order(rating: :desc).limit(15).collect(&:id)
+    ids.uniq!
+    Player.where(id: ids).order(rating: :desc)
+  end
+
   def self.list(player) # rubocop:disable Metrics/AbcSize
-    ids = Player.select(:id).where(bot: true).collect(&:id)
+    ids = [player.id]
+    ids += Player.select(:id).where(bot: true).collect(&:id)
     query = Player.select(:id).where.not(id: player.enemies_player_ids)
     ids += query.where(arel_table[:rating].gteq(player.rating))
                .order(rating: :asc).limit(15).collect(&:id)
@@ -410,6 +449,20 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
       { id: player.id }
     else
       { errors: player.errors }
+    end
+  end
+
+  def convert_guest_to_player(params)
+    params.merge(guest: false)
+
+    downcase_email
+    set_confirmation_token
+
+    if update(params)
+      send_confirmation_email
+      { id: id }
+    else
+      { errors: errors }
     end
   end
 
@@ -531,6 +584,8 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   private
 
   def pass_req?
+    return false if guest?
+
     p_hash.blank? || password
   end
 
