@@ -8,7 +8,7 @@
     %title Nautical War - Multiplayer Turn Based Stategy Sea Battle Game for Android
     = stylesheet_link_tag    'application', media: 'all'
     = javascript_include_tag 'application'
-    %script{:src => asset_path("new-age.js")}
+    %script{:src => asset_path("nauticalwar.js")}
     %script{:async => "", :src => "https://www.googletagmanager.com/gtag/js?id=UA-86101804-3"}
     %link{:href => "https://fonts.googleapis.com/css?family=Lato", :rel => "stylesheet"}/
     %link{:href => "https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900", :rel => "stylesheet"}/
@@ -33,7 +33,7 @@
         .row.h-100
           .col-lg-7.my-auto
             .header-content.mx-auto
-              %h1.mb-5 Nautical War is a multiplayer mobile game where opponents battle to sink each other's ships first.
+              %h1.mb-5 Nautical War is a multiplayer mobile game where opponents battle to sink each other's ships.
               %a.btn.btn-outline.btn-xl.js-scroll-trigger{:href => "#download"} Play Now!
           .col-lg-5.my-auto
             .device-container
@@ -47,16 +47,13 @@
         .row
           .col-md-8.mx-auto
             %h2.section-heading Re-discover a classic, turn-based strategy game!
+            %br/
             %p
-              Our game is available to play in your browser and
-              %br/
-              on Android mobile devices too! &nbsp;Download now!
-              %br/
-
+              Our game is available to play in your browser:
             %a.btn.btn-outline.btn-xl{href: "/play"} Play In Your Browser!
             %br/
             %br/
-            %p - OR -
+            %p Or play your on your Android mobile device:
 
             .badges
               %a.badge-link{href: 'https://play.google.com/store/apps/details?id=com.nauticalwar.nw', target: '_blank'}
@@ -113,7 +110,9 @@
         %h2
           We
           %i.fa.fa-heart
-          new players!
+          to hear from new players!
+        %p
+          = link_to 'Email Us!', 'mailto:support@nauticalwar.com', class: 'text-black-50'
 
     %footer
       .container

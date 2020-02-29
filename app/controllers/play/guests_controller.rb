@@ -14,6 +14,7 @@ class Play::GuestsController < Play::PlayController
     redirect_to new_play_player_path if @player.nil?
 
     @player.email = ''
+    @current_player = @player
   end
 
   def create_player

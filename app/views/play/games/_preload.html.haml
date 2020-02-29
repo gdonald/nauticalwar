@@ -1,6 +1,7 @@
 .preload
-  = image_tag asset_path('play/water_blue.jpg')
-  = image_tag asset_path('play/grid_green.png')
+  = image_tag asset_path("play/water_#{Player::WATERS[@current_player.water]}.jpg")
+  = image_tag asset_path("play/grid_#{Player::GRIDS[@current_player.grid]}.png")
+
   = image_tag asset_path('play/patrol_boat.png')
   = image_tag asset_path('play/patrol_boat_vertical.png')
   = image_tag asset_path('play/submarine.png')

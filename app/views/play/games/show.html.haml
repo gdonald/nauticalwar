@@ -1,5 +1,5 @@
 .grid-wrapper
-  = image_tag 'play/grid_green.png', class: 'grid', id: :grid
+  = image_tag "play/grid_#{Player::GRIDS[@current_player.grid]}.png", class: 'grid', id: :grid
 .info-wrapper
   = render partial: 'game_info'
 
@@ -11,7 +11,11 @@
         %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
           %span{ 'aria-hidden' => 'true' } ×
       .modal-body
-        %p You cannot attack your own fleet.
+        %p
+          You cannot attack your own fleet.
+          %br/
+          %br/
+          Click "Opponent Fleet" to launch an attack.
       .modal-footer
         %button.btn.btn-primary{ type: 'button', 'data-dismiss' => 'modal' } OK
 
@@ -23,7 +27,13 @@
         %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
           %span{ 'aria-hidden' => 'true' } ×
       .modal-body
-        %p This game has ended
+        %p
+          This game has ended.
+          %br/
+          %br/
+          Click on
+          = link_to 'Players', play_players_path
+          to start a new game.
       .modal-footer
         %button.btn.btn-primary{ type: 'button', 'data-dismiss' => 'modal' } OK
 
@@ -75,6 +85,21 @@
   function draw() {
     drawMoves();
     drawShips();
+    setupMovesShipsNoClick();
+  }
+
+  function setupMovesShipsNoClick() {
+    $('div[id^=move]').each( function() {
+      $(this).on('click', function() {
+        $('#cannot_attack').modal();
+      });
+    });
+
+    $('img[id^=ship]').each( function() {
+      $(this).on('click', function() {
+        $('#cannot_attack').modal();
+      });
+    });
   }
 
   function drawShips() {

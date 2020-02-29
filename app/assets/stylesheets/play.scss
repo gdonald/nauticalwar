@@ -12,8 +12,7 @@
 
 body
 {
-  background: #061B34 url(asset_path('play/water_blue.jpg')) fixed no-repeat;
-  background-size: cover;
+  background: #000;
 }
 
 .preload {
@@ -28,7 +27,7 @@ body
 
 .card-trans {
   background: rgba(0, 0, 0, 0.4);
-  border: dotted aqua 1px;
+  border: 1px dotted silver;
 }
 
 .card-body-trans {
@@ -67,7 +66,6 @@ li.nw-title.nav-modal {
 }
 
 nav.navbar {
-  background: rgba(64, 255, 255, 0.2);
   min-width: 300px;
   font-family: 'russo-one', monospace;
   letter-spacing: 1px;
@@ -75,8 +73,8 @@ nav.navbar {
 }
 
 nav.nw-navbar {
-  background: rgba(64, 255, 255, 0.2);
-  border-bottom: dotted aqua 1px;
+  background: rgba(0, 0, 0, 0.1);
+  border-bottom: 1px dotted silver;
   color: #fff;
   text-shadow: 2px 2px rgba(0, 0, 0, 0.55);
 }
@@ -156,6 +154,10 @@ img.rank {
   line-height: 1.1em;
 }
 
+.bot {
+  color: #00cdff;
+}
+
 .player-name {
   font-size: 1.2em;
   font-weight: bold;
@@ -167,10 +169,18 @@ img.rank {
   color: #af0;
 }
 
-.player-rank, table.list td.player-rank {
+.player-rank {
+  font-size: 1.0em;
+  color: #ccc;
+}
+
+table.list td.player-rank {
   font-size: 0.9em;
-  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
   color: #ee0;
+}
+
+.player-rank, table.list td.player-rank {
+  text-shadow: 2px 2px rgba(0, 0, 0, 0.5);
 }
 
 .game-player-name {
@@ -215,6 +225,10 @@ img.rank {
 .time-limit {
   font-weight: bold;
   color: #f00;
+}
+
+.stats-info {
+  font-size: 0.75em;
 }
 
 table.search {
@@ -268,10 +282,10 @@ table.player-invite td {
 }
 
 table.game-info {
-  background: rgba(0, 255, 255, 0.3);
-  border-left: 1px dotted aqua;
-  border-right: 1px dotted aqua;
-  border-bottom: 1px dotted aqua;
+  background: rgba(0, 0, 0, 0.1);
+  border-left: 1px dotted silver;
+  border-right: 1px dotted silver;
+  border-bottom: 1px dotted silver;
 }
 
 table.game-info tr > td {
@@ -428,8 +442,8 @@ a.white:hover {
 }
 
 .grid {
-  border-left: 1px dotted aqua;
-  border-bottom: 1px dotted aqua;
+  border-left: 1px dotted silver;
+  border-bottom: 1px dotted silver;
   padding: 0 1px 1px 0;
 }
 
@@ -453,7 +467,7 @@ a.white:hover {
 }
 
 @media only screen and (max-width: 1024px) {
-  .grid { border-right: 1px dotted aqua; }
+  .grid { border-right: 1px dotted silver; }
 }
 
 @media only screen and (min-width: 1024px) {

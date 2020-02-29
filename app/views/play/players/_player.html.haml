@@ -6,16 +6,22 @@
     - if @current_player == player
       %span.player-name-guest
         = player.name
-        = "(You)"
+        = '(You)'
     - else
-      %span.player-name= player.name
+      - if player.bot?
+        %span.player-name.bot
+          = player.name
+          = '(Bot)'
+      - else
+        %span.player-name
+          = player.name
 
-    %br/
-    %span.player-rank= rank_name(player.rank)
-    %br/
-    %b Rating:
-    %span.rating= player.rating
-    %b &nbsp;&nbsp;Wins:
-    %span.wins= player.wins
-    %b &nbsp;&nbsp;Losses:
-    %span.losses= player.losses
+    .stats-info
+      %span.player-rank= rank_name(player.rank)
+      %br/
+      %b Rating:
+      %span.rating= player.rating
+      %b &nbsp;&nbsp;Wins:
+      %span.wins= player.wins
+      %b &nbsp;&nbsp;Losses:
+      %span.losses= player.losses

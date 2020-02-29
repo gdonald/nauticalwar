@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 11) do
+ActiveRecord::Schema.define(version: 12) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -105,6 +105,9 @@ ActiveRecord::Schema.define(version: 11) do
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.boolean "guest", default: false, null: false
+    t.boolean "hints", default: true, null: false
+    t.integer "water", default: 0, null: false
+    t.integer "grid", default: 1, null: false
     t.index ["email"], name: "index_players_on_email", unique: true
     t.index ["name"], name: "index_players_on_name", unique: true
     t.index ["rating"], name: "index_players_on_rating"

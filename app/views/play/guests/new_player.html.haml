@@ -1,8 +1,7 @@
-.container
+.container-fluid
   %p
   .row
-    .col-md-3
-    .col-md-6
+    .col-md-12
       .card.card-trans
         .card-body.card-body-trans
           %form{ action: create_player_play_guests_path, method: :post }
@@ -33,10 +32,3 @@
             .form-group
               %button.btn.btn-primary{ type: :submit, id: :submit }
                 Convert To Full Account
-    .col-md-3
-
-  .row
-    .col-md-3
-    .col-md-6
-      = link_to 'NauticalWar.com', root_path, class: 'white'
-    .col-md-3
