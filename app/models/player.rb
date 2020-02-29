@@ -13,6 +13,9 @@ end
 class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   include BCrypt
 
+  WATERS = { 0 => 'blue', 1 => 'green', 3 => 'red', 2 => 'grey' }.freeze
+  GRIDS = { 0 => 'blue', 1 => 'green', 2 => 'red' }.freeze
+
   validates :email, presence: true, uniqueness: true, email: true
   validates :name, presence: true, uniqueness: true, length: { maximum: 12 }
   validates :bot, inclusion: [true, false]
@@ -342,8 +345,12 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     Player.where(id: ids)
   end
 
-  def self.guest_search(name)
-    Player.where(guest: true).where('name ILIKE ?', "%#{name}%")
+  def self.guest_search(player, name)
+    ids = [player.id]
+    ids += Player.select(:id).where(bot: true).collect(&:id)
+    ids.uniq!
+
+    Player.where(id: ids).where('name ILIKE ?', "%#{name}%")
         .order(rating: :desc)
         .limit(30)
   end
@@ -355,14 +362,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
         .limit(30)
   end
 
-  def self.guest_list(player) # rubocop:disable Metrics/AbcSize
+  def self.guest_list(player)
     ids = [player.id]
     ids += Player.select(:id).where(bot: true).collect(&:id)
-    query = Player.select(:id).where(guest: true)
-    ids += query.where(arel_table[:rating].gteq(player.rating))
-               .order(rating: :asc).limit(15).collect(&:id)
-    ids += query.where(arel_table[:rating].lteq(player.rating))
-               .order(rating: :desc).limit(15).collect(&:id)
     ids.uniq!
     Player.where(id: ids).order(rating: :desc)
   end

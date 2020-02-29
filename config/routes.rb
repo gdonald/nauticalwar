@@ -42,6 +42,13 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     resources :layouts, only: %i[create] do
     end
 
+    resources :options, only: %i[] do
+      collection do
+        get :edit
+        post :update
+      end
+    end
+
     resources :ranks, only: %i[index] do
     end
 

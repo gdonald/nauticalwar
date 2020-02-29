@@ -1,0 +1,27 @@
+.container-fluid
+  %p
+  .row
+    .col-md-12
+      .card.card-trans
+        .card-body.card-body-trans
+          %form{ action: play_options_path, method: :post }
+            %input{ name: :utf8, type: :hidden, value: '✓' }
+            = hidden_field_tag :authenticity_token, form_authenticity_token
+            .form-group
+              %label{ for: :water } Water Color
+              %select#water.form-control{ name: :water }
+                - Player::WATERS.each do |k, v|
+                  %option{ value: k, selected: @current_player.water == k } #{v.titleize}
+            .form-group
+              %label{ for: :grid } Grid Color
+              %select#grid.form-control{ name: :grid }
+                - Player::GRIDS.each do |k, v|
+                  %option{ value: k, selected: @current_player.grid == k } #{v.titleize}
+            .form-group.form-check
+              %input{ name: :hints, type: :hidden, value: 0 }
+              %input#hints.form-check-input{ name: :hints, type: :checkbox, value: 1, checked: @current_player.hints? }/
+              %label.form-check-label{ for: :hints }
+                Show Hints
+            .form-group
+              %button.btn.btn-primary{ type: :submit, id: :submit }
+                Save Options

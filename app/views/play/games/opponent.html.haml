@@ -1,5 +1,5 @@
 .grid-wrapper
-  = image_tag 'play/grid_green.png', class: 'grid', id: :grid
+  = image_tag "play/grid_#{Player::GRIDS[@current_player.grid]}.png", class: 'grid', id: :grid
 .info-wrapper
   = render partial: 'game_info'
 
@@ -12,7 +12,10 @@
           %span{ 'aria-hidden' => 'true' } ×
       .modal-body
         %p
-          This game has ended.  Click on
+          This game has ended.
+          %br/
+          %br/
+          Click on
           = link_to 'Players', play_players_path
           to start a new game.
       .modal-footer

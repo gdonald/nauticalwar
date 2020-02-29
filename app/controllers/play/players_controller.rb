@@ -13,7 +13,7 @@ class Play::PlayersController < Play::PlayController
 
   def search
     @players = if @current_player.guest?
-                 Player.guest_search(params[:q])
+                 Player.guest_search(@current_player, params[:q])
                else
                  Player.search(params[:q]).includes(:friends)
                end

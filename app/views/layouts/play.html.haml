@@ -32,3 +32,9 @@
       :javascript
         $('#modal_notice').modal();
       - flash[:notice] = nil
+
+    :javascript
+      $(function() {
+        document.body.style.background = "#3d40f1 url('#{asset_path("play/water_#{Player::WATERS[@current_player&.water || 0]}.jpg")}') fixed no-repeat";
+        document.body.style.backgroundSize = "cover";
+      });

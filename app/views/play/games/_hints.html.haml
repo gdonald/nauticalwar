@@ -1,0 +1,40 @@
+- if action_name == 'opponent'
+  %tr
+    %td
+      %table
+        %tr
+          %td
+            %br/
+            %span#how_to_shoot
+              Click on the grid to choose your next
+              %span#shots_left>
+                &nbsp;
+              = '.'
+              %br/
+              Then press "Fire!"
+            %span#shoot_now
+              Press "Fire!"
+            %br/
+            %br/
+            Click on "My Fleet" to view your opponent's attacks on your fleet.
+
+- if action_name == 'show'
+  %tr
+    %td
+      %table
+        %tr
+          %td
+            %br/
+            Click "Opponent Fleet" to attack your opponent.
+
+- if action_name == 'layout'
+  %tr
+    %td
+      %table
+        %tr
+          %td
+            %br/
+            Drag and rotate your ships to create your fleet layout.
+            %br/
+            %br/
+            After you are satisfied click "Save Layout".
