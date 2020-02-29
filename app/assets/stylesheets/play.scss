@@ -445,6 +445,7 @@ a.white:hover {
   border-left: 1px dotted silver;
   border-bottom: 1px dotted silver;
   padding: 0 1px 1px 0;
+  touch-action: manipulation;
 }
 
 .btn {

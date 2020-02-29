@@ -358,6 +358,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def self.search(name)
     Player.where('name ILIKE ?', "%#{name}%")
         .where.not(confirmed_at: nil)
+        .where.not(guest: true)
         .order(rating: :desc)
         .limit(30)
   end
@@ -372,7 +373,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def self.list(player) # rubocop:disable Metrics/AbcSize
     ids = [player.id]
     ids += Player.select(:id).where(bot: true).collect(&:id)
-    query = Player.select(:id).where.not(id: player.enemies_player_ids)
+    query = Player.select(:id).where.not(id: player.enemies_player_ids).where.not(guest: true)
     ids += query.where(arel_table[:rating].gteq(player.rating))
                .order(rating: :asc).limit(15).collect(&:id)
     ids += query.where(arel_table[:rating].lteq(player.rating))

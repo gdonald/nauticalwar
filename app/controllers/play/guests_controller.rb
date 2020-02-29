@@ -4,7 +4,7 @@ class Play::GuestsController < Play::PlayController
     player = Player.create_guest unless player.present?
     return unless player
 
-    @game = player.create_guest_bot_game
+    @game = player.create_guest_bot_game if player.guest?
     session[:player_id] = player.id
   end
 
