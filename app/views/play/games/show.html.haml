@@ -61,6 +61,7 @@
     });
 
     $('#opponent_fleet').on('click', function() {
+      showWait();
       window.location.href = '/play/games/#{@game.id}/opponent';
     });
 

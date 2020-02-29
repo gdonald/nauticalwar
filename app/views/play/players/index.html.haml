@@ -11,7 +11,10 @@
 
     const player_name = $("input[data='player-name']");
     if(player_name.val() !== '') { doPlayerNameSearch(player_name.val()); }
-    $(player_name).on('keyup', function() { doPlayerNameSearch($(this).val()); });
+    $(player_name).on('keyup', function() {
+      showWait();
+      doPlayerNameSearch($(this).val());
+    });
   });
 
   function doPlayerNameSearch(q) {
@@ -21,6 +24,7 @@
   function setupPlayerTrOnClicks() {
     $("tr[data=player]").each( function () {
       $(this).on('click', function() {
+        showWait();
         window.location.href = '/play/players/' + this.id;
       });
     });

@@ -1,2 +1,3 @@
 $('#player-buttons').replaceWith("<%= escape_javascript( render( partial: 'player_buttons', locals: { player: @player } ) ) %>");
 $('#last').replaceWith("<%= escape_javascript( render( partial: 'last', locals: { player: @player } ) ) %>");
+hideWait();

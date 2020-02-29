@@ -32,11 +32,13 @@
             %button.btn.btn-danger{  type: :submit, id: :attack, style: 'display:none' }
               Fire!
           %td.fill &nbsp;
+
         - elsif action_name == 'show'
           %td
             %button.btn.btn-secondary{ type: :submit, id: :opponent_fleet }
               Opponent Fleet
           %td.fill &nbsp;
+
         - elsif action_name == 'layout'
           %td
             %button.btn.btn-light{ type: :submit, id: :rotate }

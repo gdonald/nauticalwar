@@ -66,6 +66,7 @@
 
     $("button[id^=cancel_]").each( function () {
       $(this).on('click', function() {
+        showWait();
         const id = $(this).attr('id').split('_')[1];
         $.ajax({
         method: 'delete',
@@ -79,6 +80,7 @@
 
     $("button[id^=decline_]").each( function () {
       $(this).on('click', function() {
+        showWait();
         const id = $(this).attr('id').split('_')[1];
         $.ajax({
         method: 'delete',
@@ -92,13 +94,14 @@
 
     $("button[id^=accept_]").each( function () {
       $(this).on('click', function() {
+        showWait();
         const id = $(this).attr('id').split('_')[1];
         $.ajax({
-        method: 'post',
-        url: '/play/invites/' + id + '/accept',
-        headers: {
-          'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
-        }
+          method: 'post',
+          url: '/play/invites/' + id + '/accept',
+          headers: {
+            'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
+          }
        });
       })
     });

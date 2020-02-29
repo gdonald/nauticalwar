@@ -80,6 +80,7 @@
               %button.btn.btn-primary{ type: 'button', id: "layout_#{game.id}" } Layout Fleet
             - elsif game.winner.nil? && game.player_1 != @current_player && !game.player_1_layed_out || game.player_2 != @current_player && !game.player_2_layed_out
               %button.btn.btn-danger{ type: 'button', id: "cancel_#{game.id}" } Cancel Game
+              %button.btn.btn-secondary{ type: 'button', id: "keep-waiting_#{game.id}" } Keep Waiting
             - elsif game.winner.present?
               %button.btn.btn-danger{ type: 'button', id: "destroy_#{game.id}" } Delete Game
               %button.btn.btn-primary{ type: 'button', id: "review_#{game.id}" } Review Game
@@ -96,14 +97,21 @@
     $("tr[data=game]").each( function () {
       $(this).on('click', function() {
         $('#modal_' + $(this).attr('id')).modal('show');
-      })
+      });
+    });
+
+    $("button[id^=keep-waiting_]").each( function () {
+      $(this).on('click', function() {
+        const id = $(this).attr('id').split('_')[1];
+        $('#modal_' + id).modal('hide');
+      });
     });
 
     $("button[id^=layout_]").each( function () {
       $(this).on('click', function() {
         const id = $(this).attr('id').split('_')[1];
         window.location.href = '/play/games/' + id + '/layout';
-      })
+      });
     });
 
     $("button[id^=cancel_]").each( function () {
@@ -116,7 +124,7 @@
             'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
           }
         });
-      })
+      });
     });
 
     $("button[id^=destroy_]").each( function () {
@@ -129,20 +137,20 @@
           'X-CSRF-Token': document.querySelector("meta[name=csrf-token]").content
         }
        });
-      })
+      });
     });
 
     $("button[id^=opponent_]").each( function () {
       $(this).on('click', function() {
         const id = $(this).attr('id').split('_')[1];
         window.location.href = '/play/games/' + id + '/opponent';
-      })
+      });
     });
 
     $("button[id^=review_]").each( function () {
       $(this).on('click', function() {
         const id = $(this).attr('id').split('_')[1];
         window.location.href = '/play/games/' + id;
-      })
+      });
     });
   }

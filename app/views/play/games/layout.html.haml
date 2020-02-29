@@ -31,6 +31,7 @@
     });
 
     $('#save').on('click', function() {
+      showWait();
       saveLayout();
     });
   });
@@ -161,15 +162,8 @@
         const s1 = ships[x1];
         const s2 = ships[x2];
 
-        if(s1['name'] === s2['name'])
-        {
-          continue;
-        }
-
-        if(s1['col'] === s2['col'] && s1['row'] === s2['row'])
-        {
-          return true;
-        }
+        if(s1['name'] === s2['name']) { continue; }
+        if(s1['col'] === s2['col'] && s1['row'] === s2['row']) { return true; }
 
         if(s1['vertical'])
         {

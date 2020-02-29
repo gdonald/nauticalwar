@@ -51,10 +51,12 @@
     });
 
     $('#my_fleet').on('click', function() {
+      showWait();
       window.location.href = '/play/games/#{@game.id}';
     });
 
     $('#attack').on('click', function() {
+      showWait();
       attack();
     });
 

@@ -38,3 +38,12 @@
         document.body.style.background = "#3d40f1 url('#{asset_path("play/water_#{Player::WATERS[@current_player&.water || 0]}.jpg")}') fixed no-repeat";
         document.body.style.backgroundSize = "cover";
       });
+
+    #wait-modal.modal{ "aria-labelledby" => "myModalWaitLabel", role: :dialog, tabindex: -1 }
+      .modal-dialog{ role: :document, class: 'modal-wait-dialog' }
+        .modal-wait-content
+          .modal-wait-body
+            %table
+              %tr
+                %td
+                  = image_tag asset_path("wait.gif"), alt: ''
