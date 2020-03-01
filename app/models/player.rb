@@ -33,16 +33,16 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   before_create :set_confirmation_token, unless: -> { guest? }
   after_create :send_confirmation_email, unless: -> { guest? }
 
-  has_many :games_1, foreign_key: :player_1_id, class_name: 'Game'
-  has_many :games_2, foreign_key: :player_2_id, class_name: 'Game'
+  has_many :games_1, foreign_key: :player_1_id, class_name: 'Game', dependent: :destroy
+  has_many :games_2, foreign_key: :player_2_id, class_name: 'Game', dependent: :destroy
 
-  has_many :moves
+  has_many :moves, dependent: :destroy
 
-  has_many :invites_1, foreign_key: :player_1_id, class_name: 'Invite'
-  has_many :invites_2, foreign_key: :player_2_id, class_name: 'Invite'
+  has_many :invites_1, foreign_key: :player_1_id, class_name: 'Invite', dependent: :destroy
+  has_many :invites_2, foreign_key: :player_2_id, class_name: 'Invite', dependent: :destroy
 
-  has_many :friends, foreign_key: :player_1_id, class_name: 'Friend'
-  has_many :enemies, foreign_key: :player_1_id, class_name: 'Enemy'
+  has_many :friends, foreign_key: :player_1_id, class_name: 'Friend', dependent: :destroy
+  has_many :enemies, foreign_key: :player_1_id, class_name: 'Enemy', dependent: :destroy
 
   scope :active, -> { where.not(confirmed_at: nil).or(is_guest) }
   scope :is_guest, -> { where(guest: true) }

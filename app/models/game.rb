@@ -9,8 +9,8 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
              foreign_key: 'winner_id',
              optional: true
 
-  has_many :layouts
-  has_many :moves
+  has_many :layouts, dependent: :destroy
+  has_many :moves, dependent: :destroy
 
   validates :time_limit, presence: true
 

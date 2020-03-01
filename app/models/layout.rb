@@ -5,12 +5,9 @@ class Layout < ApplicationRecord
   belongs_to :game
   belongs_to :ship
 
-  has_many :moves
+  has_many :moves, dependent: :destroy
 
-  validates :player, presence: true
-  validates :game, presence: true
   validates :x, inclusion: { in: (0..9).to_a }
-  validates :ship, presence: true
   validates :y, inclusion: { in: (0..9).to_a }
 
   validates :player, uniqueness: { scope: %i[game x y],

@@ -2,5 +2,6 @@
 
 require 'rails_helper'
 
-RSpec.describe HomeHelper, type: :helper do
+RSpec.describe ApplicationHelper, type: :helper do
+
 end
