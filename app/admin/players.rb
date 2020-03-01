@@ -9,6 +9,7 @@ ActiveAdmin.register Player do # rubocop:disable Metrics/BlockLength
     column :email
     column :admin
     column :bot
+    column :guest
     column :strength
     column :wins
     column :losses
