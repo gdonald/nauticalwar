@@ -456,7 +456,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def convert_guest_to_player(params)
-    params.merge(guest: false)
+    params.merge!(guest: false)
 
     downcase_email
     set_confirmation_token
