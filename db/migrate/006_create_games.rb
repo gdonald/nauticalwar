@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateGames < ActiveRecord::Migration[5.2]
+class CreateGames < ActiveRecord::Migration[6.0]
   def change # rubocop:disable Metrics/MethodLength
     create_table :games do |t|
       t.integer :player_1_id, null: false

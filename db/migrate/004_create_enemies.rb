@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreateEnemies < ActiveRecord::Migration[5.2]
+class CreateEnemies < ActiveRecord::Migration[6.0]
   def change
     create_table :enemies do |t|
       t.integer :player_1_id, null: false

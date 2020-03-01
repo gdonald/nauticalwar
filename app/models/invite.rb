@@ -36,7 +36,7 @@ class Invite < ApplicationRecord
   end
 
   def create_game
-    player_2.update(activity: player_2.activity + 1)
+    player_2.new_activity!
     attrs = attributes.except('id', 'created_at', 'updated_at')
                 .merge('turn' => player_1)
     Game.create!(attrs)

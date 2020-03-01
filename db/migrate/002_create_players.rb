@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class CreatePlayers < ActiveRecord::Migration[5.2]
+class CreatePlayers < ActiveRecord::Migration[6.0]
   def change # rubocop:disable Metrics/MethodLength, Metrics/AbcSize
     create_table :players do |t|
       t.string :email,              null: false, default: ''
