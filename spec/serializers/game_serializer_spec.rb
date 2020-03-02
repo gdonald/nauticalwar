@@ -3,10 +3,10 @@
 require 'rails_helper'
 
 RSpec.describe GameSerializer, type: :serializer do
-  let(:player_1) { create(:player) }
-  let(:player_2) { create(:player) }
+  let(:player_1) { build_stubbed(:player, id: 1) }
+  let(:player_2) { build_stubbed(:player, id: 2) }
   let(:game) do
-    create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    build_stubbed(:game, id: 1, player_1: player_1, player_2: player_2, turn: player_1)
   end
   let(:serializer) { GameSerializer.new(game) }
   let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }

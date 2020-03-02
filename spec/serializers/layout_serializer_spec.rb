@@ -3,13 +3,13 @@
 require 'rails_helper'
 
 RSpec.describe LayoutSerializer, type: :serializer do
-  let(:player_1) { create(:player) }
-  let(:player_2) { create(:player) }
+  let(:player_1) { build_stubbed(:player, id: 1) }
+  let(:player_2) { build_stubbed(:player, id: 2) }
   let(:game) do
-    create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+    build_stubbed(:game, id: 1, player_1: player_1, player_2: player_2, turn: player_1)
   end
-  let(:ship) { create(:ship) }
-  let(:layout) { create(:layout, game: game, ship: ship, player: player_1) }
+  let(:ship) { build_stubbed(:ship, id: 1) }
+  let(:layout) { build_stubbed(:layout, id: 1, game: game, ship: ship, player: player_1) }
   let(:serializer) { LayoutSerializer.new(layout) }
   let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
   let(:json) { JSON.parse(serialization.to_json) }

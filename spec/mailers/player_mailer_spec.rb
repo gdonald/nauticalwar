@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
-  let(:player) { create(:player) }
+  let(:player) { build_stubbed(:player, confirmation_token: 'xxx') }
 
   describe '#confirmation_email' do
     let(:mail) { PlayerMailer.with(player: player).confirmation_email }
@@ -28,7 +28,9 @@ RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable Metrics/BlockLen
     let(:mail) { PlayerMailer.with(player: player).reset_email }
 
     before do
-      player.reset_password_token
+      # player.reset_password_token
+      player.password_token = Player.generate_unique_secure_token
+      player.password_token_expire = Time.zone.now + 1.hour
     end
 
     it 'renders the headers' do

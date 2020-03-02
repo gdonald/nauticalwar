@@ -3,28 +3,36 @@
 require 'rails_helper'
 
 RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
-  let(:player_1) { create(:player) }
-  let(:player_2) { create(:player) }
-  let(:game) do
-    create(:game, player_1: player_1, player_2: player_2, turn: player_1)
+  let(:player_1) { build_stubbed(:player, id: 1) }
+  let(:player_2) { build_stubbed(:player, id: 2) }
+  let(:game_1) do
+    build_stubbed(:game, id: 1, player_1: player_1, player_2: player_2, turn: player_1)
   end
-  let(:ship_1) { create(:ship) }
-  let(:ship_2) { create(:ship) }
-  let(:layout_1) { create(:layout, game: game, ship: ship_1, player: player_1) }
+  let(:ship_1) { build_stubbed(:ship, id: 1) }
+  let(:ship_2) { build_stubbed(:ship, id: 2) }
+  let(:layout_1) { build_stubbed(:layout, id: 1, game: game_1, ship: ship_1, player: player_1) }
   let(:layout_2) do
-    create(:layout, :horizontal, game: game, ship: ship_2, player: player_1)
+    build_stubbed(:layout, :horizontal, id: 2, game: game_1, ship: ship_2, player: player_1)
   end
+
+  let(:player_3) { create(:player) }
+  let(:player_4) { create(:player) }
+  let(:ship_3) { create(:ship) }
+  let(:game_2) do
+    create(:game, player_1: player_3, player_2: player_4, turn: player_3)
+  end
+  let(:layout_3) { create(:layout, game: game_2, ship: ship_3, player: player_3) }
 
   describe '.rand_col_row' do
     it 'returns an array of integers' do
-      result = game.rand_col_row(9, 9)
+      result = game_1.rand_col_row(9, 9)
       expect(result).to be_a(Array)
       expect(result[0]).to be_between(0, 9)
       expect(result[1]).to be_between(0, 9)
     end
 
     it 'returns an array of integers between 0 and 5' do
-      result = game.rand_col_row(5, 5)
+      result = game_1.rand_col_row(5, 5)
       expect(result).to be_a(Array)
       expect(result[0]).to be_between(0, 5)
       expect(result[1]).to be_between(0, 5)
@@ -34,13 +42,13 @@ RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
   describe '.set_location' do
     it 'creates a new vertical layout' do
       expect do
-        Layout.set_location(game, player_1, ship_1, true)
+        Layout.set_location(game_2, player_3, ship_1, true)
       end.to change(Layout, :count).by(1)
     end
 
     it 'creates a new horizontal layout' do
       expect do
-        Layout.set_location(game, player_1, ship_1, false)
+        Layout.set_location(game_2, player_3, ship_1, false)
       end.to change(Layout, :count).by(1)
     end
   end
@@ -94,13 +102,13 @@ RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#sunk?' do
     it 'returns false' do
-      expect(layout_1.sunk?).to be_falsey
+      expect(layout_2.sunk?).to be_falsey
     end
 
     it 'returns true' do
-      create(:move, player: player_1, game: game, layout: layout_1)
-      create(:move, player: player_1, game: game, layout: layout_1, x: 1, y: 1)
-      expect(layout_1.sunk?).to be_truthy
+      create(:move, player: player_3, game: game_2, layout: layout_3)
+      create(:move, player: player_3, game: game_2, layout: layout_3, x: 1, y: 1)
+      expect(layout_3.sunk?).to be_truthy
     end
   end
 end

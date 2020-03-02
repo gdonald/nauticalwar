@@ -321,6 +321,7 @@ GEM
       railties (>= 5.0)
     rspec_junit_formatter (0.4.1)
       rspec-core (>= 2, < 4, != 2.12.0)
+    ruby-prof (1.0.0)
     ruby_dep (1.5.0)
     ruby_parser (3.14.2)
       sexp_processor (~> 4.9)
@@ -353,7 +354,9 @@ GEM
     sshkit (1.20.0)
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
+    stackprof (0.2.15)
     temple (0.8.2)
+    test-prof (0.11.3)
     thor (1.0.1)
     thread_safe (0.3.6)
     tilt (2.0.10)
@@ -414,8 +417,11 @@ DEPENDENCIES
   rspec-rails!
   rspec-support!
   rspec_junit_formatter
+  ruby-prof (>= 0.17.0)
   sass-rails
   simplecov
+  stackprof (>= 0.2.9)
+  test-prof
   tzinfo-data
   uglifier
   web-console

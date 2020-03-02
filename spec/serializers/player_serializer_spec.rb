@@ -3,7 +3,7 @@
 require 'rails_helper'
 
 RSpec.describe PlayerSerializer, type: :serializer do
-  let(:player) { create(:player) }
+  let(:player) { build_stubbed(:player, id: 1) }
   let(:serializer) { PlayerSerializer.new(player) }
   let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
   let(:json) { JSON.parse(serialization.to_json) }

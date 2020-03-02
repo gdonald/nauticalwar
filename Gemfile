@@ -36,7 +36,8 @@ group :development, :test do
   # TODO: add this back:
   # gem 'rspec-rails'
 
-
+  gem 'ruby-prof', '>= 0.17.0', require: false
+  gem 'stackprof', '>= 0.2.9', require: false
   gem 'wirble'
 end
 
@@ -51,8 +52,9 @@ end
 group :test do
   gem 'capybara-selenium'
   gem 'database_cleaner'
-  gem 'rspec_junit_formatter'
   gem 'rails-controller-testing'
+  gem 'rspec_junit_formatter'
   gem 'simplecov', require: false
+  gem 'test-prof'
   gem 'webdrivers'
 end

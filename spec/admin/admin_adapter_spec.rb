@@ -12,7 +12,7 @@ RSpec.describe AdminAdapter, type: :model do
     let(:adapter) { AdminAdapter.new resource, user }
 
     describe 'as user' do
-      let(:user) { create(:player) }
+      let(:user) { build_stubbed(:player) }
 
       it 'returns false' do
         expect(adapter.authorized?(user)).to be_falsey
@@ -20,7 +20,7 @@ RSpec.describe AdminAdapter, type: :model do
     end
 
     describe 'as admin' do
-      let(:user) { create(:player, :admin) }
+      let(:user) { build_stubbed(:player, :admin) }
 
       it 'returns true' do
         expect(adapter.authorized?(user)).to be_truthy

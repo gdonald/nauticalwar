@@ -8,6 +8,12 @@ require File.expand_path('../config/environment', __dir__)
 if Rails.env.production?
   abort('The Rails environment is running in production mode!')
 end
+
+require 'test_prof/recipes/rspec/let_it_be'
+
+require 'bcrypt'
+Kernel.silence_warnings { BCrypt::Engine::DEFAULT_COST = 1 }
+
 require 'rspec/rails'
 require 'support/session'
 

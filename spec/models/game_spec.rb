@@ -3,19 +3,20 @@
 require 'rails_helper'
 
 RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
-  let(:ship) { Ship.first }
-  let(:player_1) { create(:player) }
-  let(:player_2) { create(:player) }
-  let(:player_3) { create(:player) }
-  let!(:game_1) do
+  let_it_be(:player_1, reload: true) { create(:player) }
+  let_it_be(:player_2, reload: true) { create(:player) }
+  let_it_be(:game_1, reload: true) do
     create(:game, shots_per_turn: 5, player_1: player_1, player_2: player_2, turn: player_1)
   end
-  let!(:game_2) do
+  let_it_be(:game_2) do
     create(:game, player_1: player_1, player_2: player_2, turn: player_2)
   end
 
-  before do
-    Game.create_ships
+  let(:player_3) { create(:player) }
+  let(:ship) { Ship.first }
+
+  before_all do
+    described_class.create_ships
   end
 
   describe '#layouts_for_player' do
@@ -116,12 +117,12 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#bot_attack!' do # rubocop:disable Metrics/BlockLength
-    let(:bot) { create(:player, :bot, strength: 3) }
-    let(:game) do
+    let_it_be(:bot) { create(:player, :bot, strength: 3) }
+    let_it_be(:game) do
       create(:game, shots_per_turn: 5, player_1: player_1, player_2: bot, turn: bot)
     end
 
-    before do
+    before_all do
       Ship.ordered.each do |ship|
         Layout.set_location(game, player_1, ship, [0, 1].sample.zero?)
       end
@@ -835,9 +836,9 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#declare_winner' do
-    before do
-      create(:layout, game: game_1, player: player_1, ship: ship)
-      create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
+    before_all do
+      create(:layout, game: game_1, player: player_1, ship: Ship.first)
+      create(:layout, game: game_1, player: player_2, ship: Ship.first, sunk: true)
     end
 
     it 'sets a game winner' do
@@ -847,9 +848,9 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#all_ships_sunk?' do
-    before do
-      create(:layout, game: game_1, player: player_1, ship: ship)
-      create(:layout, game: game_1, player: player_2, ship: ship, sunk: true)
+    before_all do
+      create(:layout, game: game_1, player: player_1, ship: Ship.first)
+      create(:layout, game: game_1, player: player_2, ship: Ship.first, sunk: true)
     end
 
     it 'returns false' do
