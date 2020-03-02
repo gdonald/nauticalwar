@@ -24,18 +24,24 @@
 = render partial: 'preload'
 
 :javascript
-  let ships = [ #{@layouts.html_safe} ];
-  let moves = [ #{@moves.html_safe} ];
-  let shots_per_turn = #{@game.shots_per_turn};
+  let ships = [];
+  let moves = [];
   let shots = [];
-  let can_attack = #{@can_attack};
-  let my_turn = #{@my_turn};
-  let game_over = #{@game_over};
+  let shots_per_turn = 0;
+  let can_attack = false;
+  let my_turn = false;
+  let game_over = false;
 
   $(function() {
+    ships = [ #{@layouts.html_safe} ];
+    moves = [ #{@moves.html_safe} ];
+    shots_per_turn = #{@game.shots_per_turn};
+    can_attack = #{@can_attack};
+    my_turn = #{@my_turn};
+    game_over = #{@game_over};
+
     updateShotsLeft();
     $(window).resize(function() { reDraw(); });
-    reDraw();
     reDraw();
 
     const $grid = $('#grid');

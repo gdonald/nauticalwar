@@ -14,7 +14,7 @@ class Play::SessionsController < Play::PlayController
 
   def destroy
     reset_session
-    redirect_to new_play_session_path
+    redirect_to root_path
   end
 
   private

@@ -32,3 +32,14 @@
             .form-group
               %button.btn.btn-primary{ type: :submit, id: :submit }
                 Convert To Full Account
+
+  .row
+    .col.text-center
+      %br/
+      %p
+        = link_to 'Logout', play_sessions_path, method: :delete, class: 'badge badge-light'
+
+  .row
+    .col.text-center
+      = link_to 'NauticalWar.com', root_path, class: 'white'
+    %p &nbsp;

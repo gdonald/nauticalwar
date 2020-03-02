@@ -128,8 +128,9 @@
           %li.list-inline-item
             = link_to 'Terms', terms_path, target: '_blank'
 
-    :javascript
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'UA-86101804-3');
+    - if Rails.env.production?
+      :javascript
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-86101804-3');

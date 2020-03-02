@@ -40,14 +40,18 @@
 = render partial: 'preload'
 
 :javascript
-  let ships = [ #{@layouts.html_safe} ];
-  let moves = [ #{@moves.html_safe} ];
-  let my_turn = #{@my_turn};
-  let game_over = #{@game_over};
+  let ships = [];
+  let moves = [];
+  let my_turn = false;
+  let game_over = false;
 
   $(function() {
+    ships = [ #{@layouts.html_safe} ];
+    moves = [ #{@moves.html_safe} ];
+    my_turn = #{@my_turn};
+    game_over = #{@game_over};
+
     $(window).resize(function() { reDraw(); });
-    reDraw();
     reDraw();
 
     const $grid = $('#grid');
