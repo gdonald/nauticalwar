@@ -40,12 +40,36 @@
 = render partial: 'preload'
 
 :javascript
+  let patrol_boat = null;
+  let patrol_boat_vertical = null;
+  let submarine = null;
+  let submarine_vertical = null;
+  let destroyer = null;
+  let destroyer_vertical = null;
+  let battleship = null;
+  let battleship_vertical = null;
+  let carrier = null;
+  let carrier_vertical = null;
+  let crosshair = null;
+
   let ships = [];
   let moves = [];
   let my_turn = false;
   let game_over = false;
 
   $(function() {
+    patrol_boat = "#{ asset_path('play/patrol_boat.png') }";
+    patrol_boat_vertical = "#{ asset_path('play/patrol_boat_vertical.png') }";
+    submarine = "#{ asset_path('play/submarine.png') }";
+    submarine_vertical = "#{ asset_path('play/submarine_vertical.png') }";
+    destroyer = "#{ asset_path('play/destroyer.png') }";
+    destroyer_vertical = "#{ asset_path('play/destroyer_vertical.png') }";
+    battleship = "#{ asset_path('play/battleship.png') }";
+    battleship_vertical = "#{ asset_path('play/battleship_vertical.png') }";
+    carrier = "#{ asset_path('play/carrier.png') }";
+    carrier_vertical = "#{ asset_path('play/carrier_vertical.png') }";
+    crosshair = "#{ asset_path('play/crosshair.png') }";
+
     ships = [ #{@layouts.html_safe} ];
     moves = [ #{@moves.html_safe} ];
     my_turn = #{@my_turn};

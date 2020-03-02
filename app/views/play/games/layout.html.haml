@@ -6,9 +6,33 @@
 = render partial: 'preload'
 
 :javascript
+  let patrol_boat = null;
+  let patrol_boat_vertical = null;
+  let submarine = null;
+  let submarine_vertical = null;
+  let destroyer = null;
+  let destroyer_vertical = null;
+  let battleship = null;
+  let battleship_vertical = null;
+  let carrier = null;
+  let carrier_vertical = null;
+  let crosshair = null;
+
   let ships = [];
 
   $(function() {
+    patrol_boat = "#{ asset_path('play/patrol_boat.png') }";
+    patrol_boat_vertical = "#{ asset_path('play/patrol_boat_vertical.png') }";
+    submarine = "#{ asset_path('play/submarine.png') }";
+    submarine_vertical = "#{ asset_path('play/submarine_vertical.png') }";
+    destroyer = "#{ asset_path('play/destroyer.png') }";
+    destroyer_vertical = "#{ asset_path('play/destroyer_vertical.png') }";
+    battleship = "#{ asset_path('play/battleship.png') }";
+    battleship_vertical = "#{ asset_path('play/battleship_vertical.png') }";
+    carrier = "#{ asset_path('play/carrier.png') }";
+    carrier_vertical = "#{ asset_path('play/carrier_vertical.png') }";
+    crosshair = "#{ asset_path('play/crosshair.png') }";
+
     ships = [
       { col: 6, row: 1, size: 2, vertical: false, name: 'patrol_boat', img_h: patrol_boat, img_v: patrol_boat_vertical },
       { col: 7, row: 6, size: 3, vertical: true,  name: 'submarine', img_h: submarine, img_v: submarine_vertical },
