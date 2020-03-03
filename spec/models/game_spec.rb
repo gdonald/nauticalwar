@@ -899,11 +899,20 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#bot_layout' do
-    it 'creates layouts' do
+    it 'creates bot layouts' do
       expect do
         game_1.bot_layout
       end.to change(Layout, :count).by(Ship.count)
       expect(game_1.player_2_layed_out).to be_truthy
+    end
+  end
+
+  describe '#guest_layout' do
+    it 'creates guest layouts' do
+      expect do
+        game_1.guest_layout
+      end.to change(Layout, :count).by(Ship.count)
+      expect(game_1.player_1_layed_out).to be_truthy
     end
   end
 

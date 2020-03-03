@@ -24,4 +24,21 @@ RSpec.describe Invite, type: :model do
       expect(game).to be_valid
     end
   end
+
+  describe '.shot_opts' do
+    it 'returns an array of shot options' do
+      expect(Invite.shot_opts).to eq([5, 4, 3, 2, 1])
+    end
+  end
+
+  describe '.time_limits' do
+    it 'returns a hash of time limits' do
+      expected = { '86400': '1 day',
+                   '28800': '8 hours',
+                   '3600': '1 hour',
+                   '900': '15 minutes',
+                   '300': '5 minutes' }
+      expect(Invite.time_limits).to eq(expected)
+    end
+  end
 end
