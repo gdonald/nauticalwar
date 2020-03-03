@@ -179,7 +179,7 @@ section h2 {
 header.masthead {
   position: relative;
   width: 100%;
-  padding-top: 150px;
+  padding-top: 120px;
   padding-bottom: 100px;
   color: white;
   background: url("<%= asset_path 'grid_bg.png' %>"), #808080;
@@ -194,7 +194,7 @@ header.masthead .header-content {
 }
 
 header.masthead .header-content h1 {
-  font-size: 30px;
+  font-size: 1.8em;
 }
 
 header.masthead .device-container {
@@ -219,10 +219,30 @@ header.masthead .device-container .screen img {
     text-align: left;
   }
   header.masthead .header-content h1 {
-    font-size: 50px;
+    font-size: 2.4em;
   }
   header.masthead .device-container {
     max-width: 325px;
+  }
+}
+
+header.masthead .badges .badge-link {
+  display: block;
+  margin-bottom: 25px;
+}
+
+header.masthead .badges .badge-link:last-child {
+  margin-bottom: 0;
+}
+
+header.masthead .badges .badge-link img {
+  height: 60px;
+}
+
+@media (min-width: 768px) {
+  header.masthead .badges .badge-link {
+    display: inline-block;
+    margin-bottom: 0;
   }
 }
 

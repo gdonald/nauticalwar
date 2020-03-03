@@ -499,6 +499,10 @@ a.white:hover {
   width: auto;
 }
 
+i {
+  color: #ee0;
+}
+
 @media only screen and (max-width: 300px) {
   table.game-info, table.buttons, .grid { width: 300px; }
   .grid { height: auto; }

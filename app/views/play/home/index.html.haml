@@ -5,20 +5,28 @@
       .card.card-trans
         .card-body.card-body-trans.account-type
           %p
-            As a guest you can play immediately. Guest accounts remain active until your browser is closed.
+            As a guest&nbsp;
+            %i> you can play immediately
+            \. Guest accounts remain active until your browser is closed.
           .form-group
-            %button.btn.btn-secondary{ type: :submit, id: :guest }
-              Play as a guest
+            %button.btn.btn-info{ type: :submit, id: :guest }
+              Play as a Guest
           %p
-            If you have an account already you can login:
+            %br/
+            If you&nbsp;
+            %i> already have an account
+            , you can login:
             .form-group
               %button.btn.btn-primary{ type: :submit, id: :login }
-                Login
+                Login to my Account
           %p
-            A permanent account will maintain your game history and stats:
+            %br/
+            A
+            %i permanent account
+            will maintain your game history and stats:
             .form-group
               %button.btn.btn-primary{ type: :submit, id: :signup }
-                Create Account
+                Create a new Account
 
   .row
     .col.text-center

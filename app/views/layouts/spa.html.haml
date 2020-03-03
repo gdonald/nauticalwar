@@ -34,7 +34,17 @@
           .col-lg-7.my-auto
             .header-content.mx-auto
               %h1.mb-5 Nautical War is a multiplayer mobile game where opponents battle to sink each other's ships.
-              %a.btn.btn-outline.btn-xl.js-scroll-trigger{:href => "#download"} Play Now!
+              %p
+                Our game is available to play in your browser:
+              %a.btn.btn-outline.btn-xl{href: "/play"} Play In Your Browser!
+              %br/
+              %br/
+              %p Or play your on your Android mobile device:
+
+              .badges
+                %a.badge-link{href: 'https://play.google.com/store/apps/details?id=com.nauticalwar.nw', target: '_blank'}
+                  %img{ alt: '', :src => asset_path('google-play-badge.svg')}/
+
           .col-lg-5.my-auto
             .device-container
               .device-mockup.nexus7.portrait.white
@@ -57,7 +67,7 @@
 
             .badges
               %a.badge-link{href: 'https://play.google.com/store/apps/details?id=com.nauticalwar.nw', target: '_blank'}
-                %img{:alt => "", :src => asset_path('google-play-badge.svg')}/
+                %img{ alt: '', :src => asset_path('google-play-badge.svg')}/
     %section#features.features
       .container
         .section-heading.text-center
