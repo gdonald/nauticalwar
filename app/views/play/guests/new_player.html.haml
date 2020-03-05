@@ -43,3 +43,7 @@
     .col.text-center
       = link_to 'NauticalWar.com', root_path, class: 'white'
     %p &nbsp;
+
+- if Rails.env.production?
+  :javascript
+    gtag('event', 'conversion', {'send_to': 'AW-1059689279/tSkJCMbG-cgBEL-mpvkD'});
