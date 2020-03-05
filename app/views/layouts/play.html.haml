@@ -10,6 +10,8 @@
     = stylesheet_link_tag    'play', media: 'all'
     = javascript_include_tag 'play'
   %body
+    = render partial: '/play/games/preload'
+
     - if @current_player
       = render 'play/shared/header'
     - else

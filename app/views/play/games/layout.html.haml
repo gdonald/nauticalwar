@@ -1,9 +1,8 @@
+
 .grid-wrapper
   = image_tag "play/grid_#{Player::GRIDS[@current_player.grid]}.png", class: 'grid', id: :grid
 .info-wrapper
   = render partial: 'game_info'
-
-= render partial: 'preload'
 
 :javascript
   let patrol_boat = null;
@@ -72,7 +71,10 @@
   }
 
   function drawShips() {
+    console.log('drawShips()');
     $('img[id^=ship_]').remove();
+
+    console.log('old ships removed');
 
     $.each(ships, function(index, ship) {
       $('<img />').attr({
@@ -81,7 +83,11 @@
         'style': getShipStyle(ship)
       }).appendTo('body');
 
+      console.log('new ship appended: ' + ship['name']);
+
       const $ship = $('#ship_' + ship['name']);
+
+      console.log('$ship:' + $ship);
 
       $ship.draggable({
         stop: function(event, ui) {
@@ -89,10 +95,14 @@
         }
       });
 
+      console.log('draggable set!');
+
       $ship.on('click', function() {
         selectedShipName = ship['name'];
         draw();
       });
+
+      console.log('clickable set!');
 
       hideShowButtons();
     });
@@ -239,9 +249,7 @@
   }
 
   function hideShowButtons() {
-    if(selectedShipName !== null) {
-      $('#rotate').prop('disabled', false);
-    } else {
-      $('#rotate').prop('disabled', true);
-    }
+    console.log('hideShowButtons()');
+
+    $('#rotate').prop('disabled', selectedShipName !== null);
   }

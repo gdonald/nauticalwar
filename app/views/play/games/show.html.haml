@@ -1,3 +1,4 @@
+
 .grid-wrapper
   = image_tag "play/grid_#{Player::GRIDS[@current_player.grid]}.png", class: 'grid', id: :grid
 .info-wrapper
@@ -36,8 +37,6 @@
           to start a new game.
       .modal-footer
         %button.btn.btn-primary{ type: 'button', 'data-dismiss' => 'modal' } OK
-
-= render partial: 'preload'
 
 :javascript
   let patrol_boat = null;
