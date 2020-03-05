@@ -424,6 +424,17 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     end
   end
 
+  def self.confirm_account(params)
+    player = Player.find_by(email: params[:email])
+    if player
+      player.update(confirmation_token: Player.generate_unique_secure_token)
+      PlayerMailer.with(player: player).confirmation_email.deliver_now
+      { id: player.id }
+    else
+      { id: -1 }
+    end
+  end
+
   def self.locate_account(params)
     player = Player.find_by(email: params[:email])
     if player
@@ -492,6 +503,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def self.authenticate(params)
     player = Player.find_by(email: params[:email])
     return { error: 'Player not found' } if player.nil?
+    return { error: 'Email not confirmed' } unless player.confirmed_at
 
     if Player.hash_password(params[:password], player.p_salt) == player.p_hash
       player.update(last_sign_in_at: Time.zone.now)

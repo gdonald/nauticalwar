@@ -31,6 +31,8 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       collection do
         get :search
         get :lost
+        get :unconfirmed
+        post :confirm_email
         post :locate
         post :reset_password
       end

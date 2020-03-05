@@ -1,5 +1,5 @@
 class Play::PlayersController < Play::PlayController
-  before_action :get_current_player, except: %i[new create lost locate reset_password]
+  before_action :get_current_player, except: %i[new create lost locate reset_password unconfirmed confirm_email]
   before_action :player, only: %i[show block unblock friend unfriend]
   before_action :friends, only: %i[index search show block unblock]
 
@@ -60,6 +60,14 @@ class Play::PlayersController < Play::PlayController
 
   def lost; end
 
+  def unconfirmed; end
+
+  def confirm_email
+    Player.confirm_account(confirm_params)
+    flash[:notice] = 'Please check your email'
+    redirect_to play_games_path
+  end
+
   def locate
     Player.locate_account(locate_params)
     flash[:notice] = 'Please check your email'
@@ -91,6 +99,10 @@ class Play::PlayersController < Play::PlayController
   end
 
   private
+
+  def confirm_params
+    params.permit(:email)
+  end
 
   def locate_params
     params.permit(:email)
