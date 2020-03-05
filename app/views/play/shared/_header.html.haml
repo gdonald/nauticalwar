@@ -16,7 +16,7 @@
       = link_to 'Ranks', play_ranks_path, class: 'nav-item nav-link'
       = link_to 'Options', edit_play_options_path, class: 'nav-item nav-link'
       - if @current_player.guest?
-        = link_to 'Guest', new_player_play_guests_path, class: 'nav-item nav-link'
+        = link_to 'Signup', new_player_play_guests_path, class: 'nav-item nav-link'
       - else
         = link_to 'Logout', play_sessions_path, method: :delete, class: 'nav-item nav-link'
 
@@ -32,7 +32,7 @@
           %li= link_to 'Ranks', play_ranks_path, class: 'modal-link'
           %li= link_to 'Options', edit_play_options_path, class: 'modal-link'
           - if @current_player.guest?
-            %li= link_to 'Guest', new_player_play_guests_path, class: 'modal-link'
+            %li= link_to 'Signup', new_player_play_guests_path, class: 'modal-link'
           - else
             %li= link_to 'Logout', play_sessions_path, method: :delete, class: 'modal-link'
 
