@@ -41,6 +41,14 @@
         document.body.style.backgroundSize = "cover";
       });
 
+    - if Rails.env.production?
+      :javascript
+        window.dataLayer = window.dataLayer || [];
+        function gtag(){dataLayer.push(arguments);}
+        gtag('js', new Date());
+        gtag('config', 'UA-86101804-3');
+        gtag('config', 'AW-1059689279');
+
     #wait-modal.modal{ "aria-labelledby" => "myModalWaitLabel", role: :dialog, tabindex: -1 }
       .modal-dialog{ role: :document, class: 'modal-wait-dialog' }
         .modal-wait-content
