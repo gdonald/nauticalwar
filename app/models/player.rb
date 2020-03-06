@@ -30,6 +30,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   validates :p_hash, length: { maximum: 80 }
 
   before_save :downcase_email
+  before_create :set_unsub_hash
   before_create :set_confirmation_token, unless: -> { guest? }
   after_create :send_confirmation_email, unless: -> { guest? }
 
@@ -111,7 +112,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     if args[:player_2].bot
       create_bot_game!(args)
     else
-      create_opponent_invite!(args)
+      invite = create_opponent_invite!(args)
+      PlayerMailer.with(invite: invite).invite_email.deliver_now
+      invite
     end
   end
 
@@ -606,6 +609,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def downcase_email
     self.email = email.downcase
+  end
+
+  def set_unsub_hash
+    self.unsub_hash = Player.generate_unique_secure_token
   end
 
   def set_confirmation_token

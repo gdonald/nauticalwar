@@ -1,0 +1,23 @@
+%h1
+  Dear #{@opponent.name},
+%p
+  #{@player.name} has invited you to a game.
+  %br/
+  %br/
+  You may accept or decline the invite here:
+  %br/
+  %br/
+  = link_to play_invites_url, play_invites_url
+  %br/
+
+%p
+  Thanks,
+  %br/
+  Nautical War Support
+  %br/
+  = link_to 'support@nauticalwar.com', 'mailto:support@nauticalwar.com'
+  %br/
+  %br/
+  You may unsubscribe from Nautical War email here:
+  %br/
+  = link_to unsub_url(@opponent.unsub_hash), unsub_url(@opponent.unsub_hash)
