@@ -85,8 +85,13 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     describe 'wrong password' do
       let(:params) { { email: player_4.email, password: 'wrong' } }
 
-      it 'does not authenticate a player' do
+      it 'does not authenticate a confirmed player' do
+        player_4.update(confirmed_at: Time.zone.now)
         expect(result).to eq(error: 'Login failed')
+      end
+
+      it 'does not authenticate an unconfirmed player' do
+        expect(result).to eq(error: 'Email not confirmed')
       end
     end
 
@@ -97,11 +102,19 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
         player_4.update(last_sign_in_at: nil)
       end
 
-      it 'authenticates a player' do
+      it 'authenticates a confirmed player' do
+        player_4.update(confirmed_at: Time.zone.now)
         expect(player_4.last_sign_in_at).to_not be
         expect(result).to eq(id: player_4.id)
         player_4.reload
         expect(player_4.last_sign_in_at).to be
+      end
+
+      it 'fails to authenticate an unconfirmed player' do
+        expect(player_4.last_sign_in_at).to_not be
+        expect(result).to eq(error: 'Email not confirmed')
+        player_4.reload
+        expect(player_4.last_sign_in_at).to_not be
       end
     end
   end

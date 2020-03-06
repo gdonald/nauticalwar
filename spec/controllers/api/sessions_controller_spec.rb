@@ -4,7 +4,7 @@ require 'rails_helper'
 
 RSpec.describe Api::SessionsController, type: :controller do
   describe 'POST #create' do
-    let(:player) { create(:player) }
+    let(:player) { create(:player, :confirmed) }
     let(:params) do
       { email: player.email, password: 'changeme', format: :json }
     end
