@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 12) do
+ActiveRecord::Schema.define(version: 15) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -18,16 +18,16 @@ ActiveRecord::Schema.define(version: 12) do
   create_table "enemies", force: :cascade do |t|
     t.integer "player_1_id", null: false
     t.integer "player_2_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["player_1_id", "player_2_id"], name: "index_enemies_on_player_1_id_and_player_2_id", unique: true
   end
 
   create_table "friends", force: :cascade do |t|
     t.integer "player_1_id", null: false
     t.integer "player_2_id", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["player_1_id", "player_2_id"], name: "index_friends_on_player_1_id_and_player_2_id", unique: true
   end
 
@@ -42,8 +42,8 @@ ActiveRecord::Schema.define(version: 12) do
     t.integer "winner_id"
     t.boolean "del_player_1", default: false, null: false
     t.boolean "del_player_2", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.integer "shots_per_turn"
     t.index ["player_1_id"], name: "index_games_on_player_1_id"
     t.index ["player_2_id"], name: "index_games_on_player_2_id"
@@ -54,8 +54,8 @@ ActiveRecord::Schema.define(version: 12) do
     t.integer "player_2_id", null: false
     t.boolean "rated", default: true, null: false
     t.integer "time_limit", default: 60, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.integer "shots_per_turn"
     t.index ["player_1_id", "player_2_id"], name: "index_invites_on_player_1_id_and_player_2_id", unique: true
   end
@@ -68,8 +68,8 @@ ActiveRecord::Schema.define(version: 12) do
     t.integer "y", null: false
     t.boolean "vertical", null: false
     t.boolean "sunk", default: false, null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["player_id", "game_id", "x", "y"], name: "index_layouts_on_player_id_and_game_id_and_x_and_y", unique: true
     t.index ["sunk"], name: "index_layouts_on_sunk"
   end
@@ -80,8 +80,8 @@ ActiveRecord::Schema.define(version: 12) do
     t.integer "layout_id"
     t.integer "x", null: false
     t.integer "y", null: false
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["game_id", "player_id", "x", "y"], name: "index_moves_on_game_id_and_player_id_and_x_and_y", unique: true
   end
 
@@ -102,12 +102,13 @@ ActiveRecord::Schema.define(version: 12) do
     t.string "confirmation_token"
     t.datetime "confirmed_at"
     t.datetime "last_sign_in_at"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.boolean "guest", default: false, null: false
     t.boolean "hints", default: true, null: false
     t.integer "water", default: 0, null: false
     t.integer "grid", default: 1, null: false
+    t.string "unsub_hash"
     t.index ["email"], name: "index_players_on_email", unique: true
     t.index ["name"], name: "index_players_on_name", unique: true
     t.index ["rating"], name: "index_players_on_rating"
@@ -116,8 +117,8 @@ ActiveRecord::Schema.define(version: 12) do
   create_table "sessions", force: :cascade do |t|
     t.string "session_id", null: false
     t.text "data"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
     t.index ["session_id"], name: "index_sessions_on_session_id", unique: true
     t.index ["updated_at"], name: "index_sessions_on_updated_at"
   end
@@ -125,8 +126,14 @@ ActiveRecord::Schema.define(version: 12) do
   create_table "ships", force: :cascade do |t|
     t.string "name", limit: 12
     t.integer "size"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
+  end
+
+  create_table "unsubs", force: :cascade do |t|
+    t.string "email", null: false
+    t.datetime "created_at", precision: 6, null: false
+    t.datetime "updated_at", precision: 6, null: false
   end
 
 end

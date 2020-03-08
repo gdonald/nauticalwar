@@ -60,7 +60,8 @@ class Play::GamesController < Play::PlayController
     @layouts = []
     @moves = []
 
-    @game.layouts_for_player(@game.opponent(@current_player)).each do |l|
+    opponent = @game.opponent(@current_player)
+    @game.layouts_for_player(opponent).each do |l|
       next unless l.sunk?
 
       name = l.ship.name.downcase.gsub(/ /, '_')
@@ -74,6 +75,10 @@ class Play::GamesController < Play::PlayController
     @moves = @moves.join(',')
 
     @can_attack = @game.can_attack?(@current_player)
+
+    # return if opponent.updated_at > 1.hour.ago
+    #
+    # PlayerMailer.with(game: @game).turn_notify_email.deliver_now
   end
 
   def cancel

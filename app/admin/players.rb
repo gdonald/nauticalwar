@@ -7,6 +7,7 @@ ActiveAdmin.register Player do # rubocop:disable Metrics/BlockLength
     selectable_column
     id_column
     column :email
+    column :name
     column :admin
     column :bot
     column :guest
@@ -20,6 +21,7 @@ ActiveAdmin.register Player do # rubocop:disable Metrics/BlockLength
     actions
   end
 
+  filter :name
   filter :email
   filter :last_sign_in_at
   filter :confirmed_at, as: :date_range
@@ -27,6 +29,7 @@ ActiveAdmin.register Player do # rubocop:disable Metrics/BlockLength
 
   form do |f|
     f.inputs do
+      f.input :name
       f.input :email
       f.input :password
       f.input :password_confirmation

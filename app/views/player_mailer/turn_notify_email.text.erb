@@ -1,0 +1,14 @@
+Dear <%= @player.name %>,
+
+It's your turn in your Nautical War game against #{@opponent.name}.
+
+You may continue your game here:
+
+<%= play_game_url(@game) %>
+
+Thanks,
+Nautical War Support
+support@nauticalwar.com
+
+You may unsubscribe from Nautical War email here:
+<%= unsub_url(@player.unsub_hash) %>

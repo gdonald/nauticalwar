@@ -1,0 +1,14 @@
+Dear <%= @opponent.name %>,
+
+#{@player.name} has invited you to a game.
+
+You may accept or decline the invite here:
+
+<%= play_invites_url %>
+
+Thanks,
+Nautical War Support
+support@nauticalwar.com
+
+You may unsubscribe from Nautical War email here:
+<%= unsub_url(@opponent.unsub_hash) %>

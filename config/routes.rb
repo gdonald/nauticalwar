@@ -110,6 +110,9 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
   end
 
+  resources :unsubs, only: %i[show create] do
+  end
+
   get '/play',    to: 'play/home#index'
   get '/privacy', to: 'home#privacy'
   get '/terms',   to: 'home#terms'
