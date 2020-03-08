@@ -6,7 +6,7 @@
 //= require jquery.ui.touch-punch
 
 // 640 base size
-const base_navbar = 57;
+//const base_navbar = 57;
 const base_offset_top = 79;
 const base_offset_left = 23.5;
 const base_sqr = 58.95;
@@ -24,7 +24,9 @@ $(function() {
 });
 
 function reCalculate() {
-  const h = $('#grid').height();
+  const $grid = $('#grid');
+  const h = $grid.height();
+  const base_navbar = $grid[0].offsetTop;
 
   offset_top = ((base_offset_top - base_navbar) / 640 * h) + base_navbar;
   offset_left = base_offset_left / 640 * h;
