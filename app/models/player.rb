@@ -88,10 +88,10 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def invite_args(params)
-    { player_2: Player.active.not_self(self.id).where(id: params[:id]).first,
-     rated: params[:r] == '1',
-     shots_per_turn: params[:s].to_i,
-     time_limit: params[:t].to_i }
+    { player_2: Player.active.not_self(id).where(id: params[:id]).first,
+      rated: params[:r] == '1',
+      shots_per_turn: params[:s].to_i,
+      time_limit: params[:t].to_i }
   end
 
   def create_opponent_invite!(args)
@@ -249,32 +249,32 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     game && game.turn == self ? 1 : -1
   end
 
-  def cancel_game!(id) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/LineLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+  def cancel_game!(id) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, /Metrics/CyclomaticComplexity, Metrics/AbcSize
     game = Game.find_game(self, id)
     if game
       if game.t_limit.negative?
         # layouts
         if self == game.player_1
-          if game.player_1_layed_out && !game.player_2_layed_out # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
+          if game.player_1_layed_out && !game.player_2_layed_out # rubocop:disable /BlockNesting, Metrics/
             game.make_winner!(game.player_1)
-          elsif !game.player_1_layed_out # rubocop:disable Metrics/BlockNesting
+          elsif !game.player_1_layed_out
             game.make_winner!(game.player_2)
           end
         elsif self == game.player_2
-          if game.player_2_layed_out && !game.player_1_layed_out # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
+          if game.player_2_layed_out && !game.player_1_layed_out # rubocop:disable /BlockNesting, Metrics/
             game.make_winner!(game.player_2)
-          elsif !game.player_2_layed_out # rubocop:disable Metrics/BlockNesting
+          elsif !game.player_2_layed_out
             game.make_winner!(game.player_1)
           end
         end
 
         if game.winner.nil? && self == game.turn # player is giving up
-          winner = self == game.player_1 ? game.player_2 : game.player_1 # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
+          winner = self == game.player_1 ? game.player_2 : game.player_1 # rubocop:disable /BlockNesting, Metrics/
           game.make_winner!(winner)
         end
 
         if game.winner.nil? && self != game.turn # opponent won't play
-          winner = self == game.player_1 ? game.player_1 : game.player_2 # rubocop:disable Metrics/BlockNesting, Metrics/LineLength
+          winner = self == game.player_1 ? game.player_1 : game.player_2 # rubocop:disable /BlockNesting, Metrics/
           game.make_winner!(winner)
         end
       else
@@ -286,7 +286,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     game
   end
 
-  def destroy_game!(id) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, Metrics/LineLength, Metrics/CyclomaticComplexity, Metrics/AbcSize
+  def destroy_game!(id) # rubocop:disable Metrics/PerceivedComplexity, Metrics/MethodLength, /Metrics/CyclomaticComplexity, Metrics/AbcSize
     game = Game.find_game(self, id)
     if game&.winner
       if game.player_2.bot
@@ -333,8 +333,8 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def active_games
     games_1.includes(%i[player_1 player_2])
-        .where(del_player_1: false)
-        .or(games_2.includes(%i[player_1 player_2])
+           .where(del_player_1: false)
+           .or(games_2.includes(%i[player_1 player_2])
                 .where(del_player_2: false))
   end
 
@@ -354,16 +354,16 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     ids.uniq!
 
     Player.where(id: ids).where('name ILIKE ?', "%#{name}%")
-        .order(rating: :desc)
-        .limit(30)
+          .order(rating: :desc)
+          .limit(30)
   end
 
   def self.search(name)
     Player.where('name ILIKE ?', "%#{name}%")
-        .where.not(confirmed_at: nil)
-        .where.not(guest: true)
-        .order(rating: :desc)
-        .limit(30)
+          .where.not(confirmed_at: nil)
+          .where.not(guest: true)
+          .order(rating: :desc)
+          .limit(30)
   end
 
   def self.guest_list(player)
@@ -378,9 +378,9 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     ids += Player.select(:id).where(bot: true).collect(&:id)
     query = Player.select(:id).where.not(id: player.enemies_player_ids).where.not(guest: true)
     ids += query.where(arel_table[:rating].gteq(player.rating))
-               .order(rating: :asc).limit(15).collect(&:id)
+                .order(rating: :asc).limit(15).collect(&:id)
     ids += query.where(arel_table[:rating].lteq(player.rating))
-               .order(rating: :desc).limit(15).collect(&:id)
+                .order(rating: :desc).limit(15).collect(&:id)
     ids.uniq!
     Player.where(id: ids).where.not(confirmed_at: nil).order(rating: :desc)
   end
@@ -407,7 +407,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     save!
   end
 
-  def self.reset_password(params) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/LineLength
+  def self.reset_password(params) # rubocop:disable /AbcSize, Metrics/MethodLength, Metrics/
     player = Player.find_by(password_token: params[:token])
     if player.nil?
       { id: -1 }

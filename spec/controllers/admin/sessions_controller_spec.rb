@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Admin::SessionsController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
+RSpec.describe Admin::SessionsController, type: :controller do # rubocop:disable /BlockLength, Metrics/
   describe 'GET #new' do
     it 'returns http success' do
       get :new

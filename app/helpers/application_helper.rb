@@ -1,7 +1,6 @@
 # frozen_string_literal: true
 
 module ApplicationHelper
-
   def yes_no(bool)
     bool ? 'Yes' : 'No'
   end
@@ -50,5 +49,4 @@ module ApplicationHelper
     else 'Seaman Recruit'
     end
   end
-
 end

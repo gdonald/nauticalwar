@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::GamesController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
+RSpec.describe Api::GamesController, type: :controller do # rubocop:disable /BlockLength, Metrics/
   let(:player_1) { create(:player, :confirmed) }
   let(:player_2) { create(:player, :confirmed) }
   let(:json) { JSON.parse(response.body) }

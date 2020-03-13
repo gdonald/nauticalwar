@@ -308,7 +308,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     grid
   end
 
-  def spacing_moves_count(x_pos, y_pos, grid) # rubocop:disable Metrics/AbcSize
+  def spacing_moves_count(x_pos, y_pos, grid)
     count = 0
     ((x_pos - 1)..(x_pos + 1)).each do |c|
       next unless in_grid?(c)
@@ -365,7 +365,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     false
   end
 
-  def attack_random_ship(player, opponent) # rubocop:disable Metrics/AbcSize, Metrics/MethodLength, Metrics/LineLength
+  def attack_random_ship(player, opponent) # rubocop:disable /AbcSize, Metrics/MethodLength, Metrics/
     x, y = get_random_move_lines(player)
     layout = hit?(opponent, x, y)
     if layout.nil? && again?(player)
@@ -406,7 +406,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [cols, rows]
   end
 
-  def attack_unknown_vert(player, opponent, hit) # rubocop:disable Metrics/AbcSize, Metrics/LineLength
+  def attack_unknown_vert(player, opponent, hit) # rubocop:disable /AbcSize, Metrics/
     cols, rows = empty_neighbors(player, hit)
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample

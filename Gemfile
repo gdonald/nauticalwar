@@ -27,7 +27,6 @@ group :development, :test do
   gem 'faker'
   gem 'pry'
 
-
   # TODO: remove this:
   %w[rspec-core rspec-expectations rspec-mocks rspec-rails rspec-support].each do |lib|
     gem lib, git: "https://github.com/rspec/#{lib}.git", branch: 'master'
@@ -36,6 +35,7 @@ group :development, :test do
   # TODO: add this back:
   # gem 'rspec-rails'
 
+  gem 'rubocop-rails', require: false
   gem 'ruby-prof', '>= 0.17.0', require: false
   gem 'stackprof', '>= 0.2.9', require: false
   gem 'wirble'

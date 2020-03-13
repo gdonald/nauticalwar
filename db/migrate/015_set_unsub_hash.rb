@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class SetUnsubHash < ActiveRecord::Migration[6.0]
   def up
     Player.all.find_each do |player|

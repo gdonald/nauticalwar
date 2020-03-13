@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ActiveAdmin.register Unsub do # rubocop:disable Metrics/BlockLength
+ActiveAdmin.register Unsub do
   permit_params :email
 
   index do

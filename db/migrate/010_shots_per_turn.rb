@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class ShotsPerTurn < ActiveRecord::Migration[6.0]
   def up
     add_column :invites, :shots_per_turn, :integer

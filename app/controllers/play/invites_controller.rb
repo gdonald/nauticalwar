@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Play::InvitesController < Play::PlayController
   before_action :get_current_player
 

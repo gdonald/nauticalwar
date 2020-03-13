@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Play::GuestsController < Play::PlayController
   def create
     player = session[:player_id].present? ? Player.find_by(id: session[:player_id]) : nil

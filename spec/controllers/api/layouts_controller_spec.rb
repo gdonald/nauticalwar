@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::LayoutsController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
+RSpec.describe Api::LayoutsController, type: :controller do # rubocop:disable /BlockLength, Metrics/
   let(:player) { create(:player, :confirmed) }
 
   before do

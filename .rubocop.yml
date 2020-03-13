@@ -3,3 +3,4 @@ AllCops:
   - 'db/schema.rb'
 Documentation:
   Enabled: false
+

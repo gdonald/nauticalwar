@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Play::GamesController < Play::PlayController
   before_action :get_current_player
   before_action :game, only: %i[show opponent layout attack my_turn]
