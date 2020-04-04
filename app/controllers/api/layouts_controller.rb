@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class Api::LayoutsController < Api::ApiController # rubocop:disable Style/ClassAndModuleChildren, Metrics/LineLength
+class Api::LayoutsController < Api::ApiController # rubocop:disable Style/ClassAndModuleChildren, /
   skip_before_action :verify_authenticity_token, only: [:create]
 
   def create

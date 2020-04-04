@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
+RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable /BlockLength, Metrics/
   let(:player) { create(:player, :confirmed) }
 
   describe 'GET #index' do # rubocop:disable Metrics/BlockLength

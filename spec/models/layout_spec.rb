@@ -55,7 +55,7 @@ RSpec.describe Layout, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#to_s' do
     it 'returns a string' do
-      expected = "Layout(player: #{player_1.name} ship: Ship(name: #{ship_1.name}, size: 2) x: 0 y: 0 vertical: true)" # rubocop:disable Metrics/LineLength
+      expected = "Layout(player: #{player_1.name} ship: Ship(name: #{ship_1.name}, size: 2) x: 0 y: 0 vertical: true)" # rubocop:disable Layout/LineLength
       expect(layout_1.to_s).to eq(expected)
     end
   end

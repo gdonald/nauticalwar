@@ -27,11 +27,11 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
 
     it 'returns 8 hours' do
-      expect(helper.time_limit_in_words(28800)).to eq('8 hours')
+      expect(helper.time_limit_in_words(28_800)).to eq('8 hours')
     end
 
     it 'returns 5 minutes' do
-      expect(helper.time_limit_in_words(86400)).to eq('1 day')
+      expect(helper.time_limit_in_words(86_400)).to eq('1 day')
     end
   end
 

@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Play::PlayersController < Play::PlayController
   before_action :get_current_player, except: %i[new create lost locate reset_password unconfirmed confirm_email]
   before_action :player, only: %i[show block unblock friend unfriend]

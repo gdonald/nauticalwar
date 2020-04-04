@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
+RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable /BlockLength, Metrics/
   let(:player) { build_stubbed(:player, confirmation_token: 'xxx') }
 
   describe '#confirmation_email' do

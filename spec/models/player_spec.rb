@@ -624,7 +624,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       create(:game, player_1: player_4, player_2: player_5, turn: player_4)
     end
 
-    it 'returns true' do 5
+    it 'returns true' do
       expect(player_4.my_turn(game.id)).to eq(1)
     end
 

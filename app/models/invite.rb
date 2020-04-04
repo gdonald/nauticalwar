@@ -6,8 +6,8 @@ class Invite < ApplicationRecord
   belongs_to :player_1, class_name: 'Player', foreign_key: 'player_1_id'
   belongs_to :player_2, class_name: 'Player', foreign_key: 'player_2_id'
 
-  validates :player_2, uniqueness: {scope: :player_1_id,
-                                    message: 'Invite already exists'}
+  validates :player_2, uniqueness: { scope: :player_1_id,
+                                     message: 'Invite already exists' }
 
   validates :rated, inclusion: [true, false]
   validates :shots_per_turn, inclusion: 1..5
@@ -36,7 +36,7 @@ class Invite < ApplicationRecord
   def create_game
     player_2.new_activity!
     attrs = attributes.except('id', 'created_at', 'updated_at')
-                .merge('turn' => player_1)
+                      .merge('turn' => player_1)
     Game.create!(attrs)
   end
 end

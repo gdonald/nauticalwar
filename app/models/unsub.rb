@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Unsub < ApplicationRecord
   validates :email, presence: true, uniqueness: true
 

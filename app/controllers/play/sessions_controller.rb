@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 class Play::SessionsController < Play::PlayController
   def new; end
 

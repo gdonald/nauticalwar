@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
+RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable /BlockLength, Metrics/
   let(:player_1) { create(:player, :confirmed) }
   let(:player_2) { create(:player, :confirmed) }
   let(:json) { JSON.parse(response.body) }
@@ -14,11 +14,11 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
       get :index, params: {}, session: { player_id: player_1.id }
       expected = [{ 'id' => invite.id,
                     'player_1_id' => player_1.id,
-                    "player_1_name" => player_1.name,
-                    "player_1_rating" => 1200,
+                    'player_1_name' => player_1.name,
+                    'player_1_rating' => 1200,
                     'player_2_id' => player_2.id,
-                    "player_2_name" => player_2.name,
-                    "player_2_rating" => 1200,
+                    'player_2_name' => player_2.name,
+                    'player_2_rating' => 1200,
                     'created_at' => invite.created_at.iso8601,
                     'rated' => '1',
                     'shots_per_turn' => 1,
@@ -47,11 +47,11 @@ RSpec.describe Api::InvitesController, type: :controller do # rubocop:disable Me
       end.to change(Invite, :count).by(1)
       expected = { 'id' => invite.id,
                    'player_1_id' => player_1.id,
-                   "player_1_name" => player_1.name,
-                   "player_1_rating" => 1200,
+                   'player_1_name' => player_1.name,
+                   'player_1_rating' => 1200,
                    'player_2_id' => player_2.id,
-                   "player_2_name" => player_2.name,
-                   "player_2_rating" => 1200,
+                   'player_2_name' => player_2.name,
+                   'player_2_rating' => 1200,
                    'created_at' => invite.created_at.iso8601,
                    'rated' => '1',
                    'shots_per_turn' => 1,

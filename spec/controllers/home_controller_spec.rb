@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe HomeController, type: :controller do # rubocop:disable Metrics/BlockLength, Metrics/LineLength
+RSpec.describe HomeController, type: :controller do # rubocop:disable /BlockLength, Metrics/
   describe 'GET #index' do
     it 'returns http success' do
       get :index
