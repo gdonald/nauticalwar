@@ -11,7 +11,7 @@
 # other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
 
-server 'nauticalwar.com', user: fetch(:deploy_user), roles: %w[app db web]
+server 'darkclear.net', user: fetch(:deploy_user), roles: %w[app db web]
 set :branch, 'master'
 set :deploy_to, '/rails/nauticalwar.com'
 set :rails_env, 'production'
