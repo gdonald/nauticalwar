@@ -1,11 +1,11 @@
 # frozen_string_literal: true
 
 # config valid for current version and patch releases of Capistrano
-lock '~> 3.12.0'
+lock '3.14.1'
 
 set :application, 'nauticalwar.com'
-set :deploy_user, 'gd'
-set :repo_url, 'ssh://gd@darkclear.io:2217/git/nauticalwar'
+set :deploy_user, 'admin'
+set :repo_url, 'git@github.com:gdonald/nauticalwar.git'
 set :pty, true
 set :passenger_restart_with_touch, true
 
