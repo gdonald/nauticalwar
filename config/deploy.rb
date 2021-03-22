@@ -4,8 +4,8 @@
 lock '3.15.0'
 
 set :application, 'nauticalwar.com'
-set :deploy_user, 'admin'
-set :repo_url, 'git@github.com:gdonald/nauticalwar.git'
+set :deploy_user, 'gd'
+set :repo_url, 'ssh://gd@xor.darkclear.io:2217/git/nauticalwar'
 set :pty, true
 set :passenger_restart_with_touch, true
 

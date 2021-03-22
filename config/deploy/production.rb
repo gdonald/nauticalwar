@@ -11,13 +11,13 @@
 # other_property: :other_value
 # server "db.example.com", user: "deploy", roles: %w{db}
 
-server 'darkclear.net', user: fetch(:deploy_user), roles: %w[app db web]
+server 'xor.darkclear.io', user: fetch(:deploy_user), roles: %w[app db web]
 set :branch, 'master'
 set :deploy_to, '/rails/nauticalwar.com'
 set :rails_env, 'production'
 
 set :ssh_options, {
-  keys: "#{ENV['HOME']}/aws-private-key-2020-02-29.pem"
+  port: 2217
 }
 
 # role-based syntax
