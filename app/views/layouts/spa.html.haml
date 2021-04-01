@@ -9,7 +9,6 @@
     = stylesheet_link_tag    'application', media: 'all'
     = javascript_include_tag 'application'
     %script{:src => asset_path("nauticalwar.js")}
-    %script{:async => "", :src => "https://www.googletagmanager.com/gtag/js?id=UA-86101804-3"}
     %link{:href => "https://fonts.googleapis.com/css?family=Lato", :rel => "stylesheet"}/
     %link{:href => "https://fonts.googleapis.com/css?family=Catamaran:100,200,300,400,500,600,700,800,900", :rel => "stylesheet"}/
     %link{:href => "https://fonts.googleapis.com/css?family=Muli", :rel => "stylesheet"}/
@@ -137,11 +136,3 @@
             &middot;
           %li.list-inline-item
             = link_to 'Terms', terms_path, target: '_blank'
-
-    - if Rails.env.production?
-      :javascript
-        window.dataLayer = window.dataLayer || [];
-        function gtag(){dataLayer.push(arguments);}
-        gtag('js', new Date());
-        gtag('config', 'UA-86101804-3');
-        gtag('config', 'AW-1059689279');
