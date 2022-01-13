@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ruby '2.7.4'
+ruby '2.7.5'
 
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
@@ -13,8 +13,8 @@ gem 'rails'
 gem 'sass-rails'
 gem 'uglifier'
 
-gem 'active_model_serializers'
 gem 'activeadmin'
+gem 'active_model_serializers'
 gem 'activerecord-session_store'
 gem 'bootsnap', '>= 1.1.0', require: false
 gem 'factory_bot_rails'
@@ -22,6 +22,12 @@ gem 'haml-rails'
 gem 'jquery-rails'
 gem 'jquery-ui-rails'
 gem 'tzinfo-data'
+
+gem 'ed25519'
+gem 'bcrypt_pbkdf'
+
+# Until Ruby 3
+gem 'strscan', '1.0.3'
 
 group :development, :test do
   gem 'byebug', platform: :mri

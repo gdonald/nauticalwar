@@ -71,24 +71,24 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 end
 
-require 'selenium/webdriver'
+require 'webdrivers'
 
 Capybara.register_driver :chrome do |app|
   Capybara::Selenium::Driver.new(app, browser: :chrome)
 end
 
 Capybara.register_driver :headless_chrome do |app|
-  caps = Selenium::WebDriver::Remote::Capabilities.chrome(
-    loggingPrefs: { browser: 'ALL' }
+  capabilities = Selenium::WebDriver::Remote::Capabilities.chrome(
+    'goog:chromeOptions': { args: %w[headless disable-gpu] }
   )
-  opts = Selenium::WebDriver::Chrome::Options.new
 
-  chrome_args = %w[--headless --disable-gpu]
-  chrome_args.each { |arg| opts.add_argument(arg) }
-  Capybara::Selenium::Driver.new(app, browser: :chrome, options: opts, desired_capabilities: caps)
+  Capybara::Selenium::Driver.new app,
+                                 browser: :chrome,
+                                 capabilities: capabilities
 end
 
-Capybara.javascript_driver = case ENV['SHOW_CHROME']
-                             when 'true', '1' then :chrome
-                             else :headless_chrome
+Capybara.javascript_driver = if ENV['CHROME'] == 'true'
+                               :chrome
+                             else
+                               :headless_chrome
                              end
