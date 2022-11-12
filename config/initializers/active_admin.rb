@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
+require_relative '../../app/admin/admin_adapter'
+
 ActiveAdmin.setup do |config|
   # == Site Title
   #

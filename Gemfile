@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-ruby '2.7.5'
+ruby '3.1.2'
 
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
@@ -28,6 +28,8 @@ gem 'bcrypt_pbkdf'
 
 # Until Ruby 3
 gem 'strscan', '1.0.3'
+
+gem 'net-smtp', require: false
 
 group :development, :test do
   gem 'byebug', platform: :mri

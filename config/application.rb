@@ -11,7 +11,7 @@ Bundler.require(*Rails.groups)
 module Nauticalwar
   class Application < Rails::Application
     # Initialize configuration defaults for originally generated Rails version.
-    config.load_defaults 5.2
+    config.load_defaults 7.0
 
     # Settings in config/environments/* take precedence over those specified
     # here.
@@ -20,5 +20,7 @@ module Nauticalwar
     # the framework and any gems in your application.
 
     # config.web_console.whitelisted_ips = '10.0.0.0/8'
+
+    config.active_record.legacy_connection_handling = false
   end
 end
