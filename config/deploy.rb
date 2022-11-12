@@ -1,21 +1,32 @@
 # frozen_string_literal: true
 
-# config valid for current version and patch releases of Capistrano
-lock '3.16.0'
+lock '~> 3.17.0'
 
-set :application, 'nauticalwar.com'
-set :deploy_user, 'gd'
-set :repo_url, 'ssh://gd@xor.darkclear.io:2217/git/nauticalwar'
-set :pty, true
+set :application, 'nauticalwar'
+set :repo_url, 'git@github.com:gdonald/nauticalwar.git'
+set :branch, 'main'
+
+append :linked_files, 'config/database.yml', 'config/secrets.yml', 'config/storage.yml'
+append :linked_dirs, 'storage', 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
 set :passenger_restart_with_touch, true
 
-append :linked_files, 'config/database.yml', 'config/secrets.yml'
-append :linked_dirs,
-       'log',
-       'tmp/pids',
-       'tmp/cache',
-       'tmp/sockets',
-       'public/system'
+
+# # config valid for current version and patch releases of Capistrano
+# lock '3.16.0'
+
+# set :application, 'nauticalwar.com'
+# set :deploy_user, 'gd'
+# set :repo_url, 'ssh://gd@xor.darkclear.io:2217/git/nauticalwar'
+# set :pty, true
+# set :passenger_restart_with_touch, true
+
+# append :linked_files, 'config/database.yml', 'config/secrets.yml'
+# append :linked_dirs,
+#        'log',
+#        'tmp/pids',
+#        'tmp/cache',
+#        'tmp/sockets',
+#        'public/system'
 
 # Default branch is :master
 # ask :branch, `git rev-parse --abbrev-ref HEAD`.chomp
