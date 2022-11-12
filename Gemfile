@@ -27,7 +27,8 @@ gem 'ed25519'
 gem 'bcrypt_pbkdf'
 
 # Until Ruby 3
-gem 'strscan', '1.0.3'
+# gem 'strscan', '1.0.3'
+gem 'strscan', '3.0.1'
 
 gem 'net-smtp', require: false
 

@@ -366,7 +366,7 @@ GEM
       net-scp (>= 1.1.2)
       net-ssh (>= 2.8.0)
     stackprof (0.2.22)
-    strscan (1.0.3)
+    strscan (3.0.1)
     temple (0.9.1)
     test-prof (1.0.11)
     thor (1.2.1)
@@ -437,7 +437,7 @@ DEPENDENCIES
   sass-rails
   simplecov
   stackprof (>= 0.2.9)
-  strscan (= 1.0.3)
+  strscan (= 3.0.1)
   test-prof
   tzinfo-data
   uglifier
