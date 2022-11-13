@@ -20,7 +20,6 @@ gem 'jquery-rails', '~> 4.5.1'
 gem 'jquery-ui-rails', '~> 6.0.1'
 gem 'ed25519', '~> 1.3.0'
 gem 'bcrypt_pbkdf', '~> 1.1.0'
-# gem 'strscan', '~> 3.0.4'
 gem 'net-smtp', '~> 0.3.3', require: false
 
 group :development, :test do
