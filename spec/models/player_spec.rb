@@ -2,77 +2,77 @@
 
 require 'rails_helper'
 
-RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
-  let_it_be(:player_4) { create(:player, name: 'player4') }
-  let_it_be(:player_5) { create(:player, :confirmed, name: 'player5') }
+RSpec.describe Player do
+  let_it_be(:player4) { create(:player, name: 'player4') }
+  let_it_be(:player5) { create(:player, :confirmed, name: 'player5') }
 
-  let(:player_1) { build_stubbed(:player, id: 1, name: 'player1') }
-  let(:player_2) { build_stubbed(:player, :confirmed, id: 2) }
-  let(:player_3) { build_stubbed(:player, id: 3) }
-  let(:bot_1) { build_stubbed(:player, :bot, id: 4) }
-  let(:bot_2) { create(:player, :bot) }
-  let(:bot_3) { create(:player, :bot) }
+  let(:player1) { build_stubbed(:player, id: 1, name: 'player1') }
+  let(:player2) { build_stubbed(:player, :confirmed, id: 2) }
+  let(:player3) { build_stubbed(:player, id: 3) }
+  let(:bot1) { build_stubbed(:player, :bot, id: 4) }
+  let(:bot2) { create(:player, :bot) }
+  let(:bot3) { create(:player, :bot) }
 
   describe '#to_s' do
     it 'returns a string' do
-      expect(player_1.to_s).to eq(player_1.name)
+      expect(player1.to_s).to eq(player1.name)
     end
   end
 
-  describe '.reset_password' do # rubocop:disable Metrics/BlockLength
+  describe '.reset_password' do
     describe 'cannot find a player' do
       it 'with the wrong token' do
-        result = Player.reset_password(token: 'foo')
+        result = described_class.reset_password(token: 'foo')
         expect(result).to eq(id: -1)
       end
     end
 
     describe 'finds a player' do
       let(:params) do
-        { token: player_4.password_token, password: 'foo',
+        { token: player4.password_token, password: 'foo',
           password_confirmation: 'foo' }
       end
 
       before do
-        player_4.reset_password_token
+        player4.reset_password_token
       end
 
       it 'finds a player with an expired token' do
         travel_to 2.hours.from_now do
-          result = Player.reset_password(params)
+          result = described_class.reset_password(params)
           expect(result).to eq(id: -2)
         end
       end
 
       it 'cannot update with different passwords' do
         params[:password] = 'bar'
-        result = Player.reset_password(params)
+        result = described_class.reset_password(params)
         expect(result).to eq(id: -3)
       end
 
       it 'updates a player password' do
-        result = Player.reset_password(params)
-        expect(result).to eq(id: player_4.id)
+        result = described_class.reset_password(params)
+        expect(result).to eq(id: player4.id)
       end
     end
   end
 
   describe '.locate_account' do
-    let(:params) { { email: player_4.email } }
+    let(:params) { { email: player4.email } }
 
     it 'finds a player' do
-      result = Player.locate_account(params)
-      expect(result).to eq(id: player_4.id)
+      result = described_class.locate_account(params)
+      expect(result).to eq(id: player4.id)
     end
 
     it 'fails to find a player' do
-      result = Player.locate_account(email: 'foo@bar.com')
+      result = described_class.locate_account(email: 'foo@bar.com')
       expect(result).to eq(id: -1)
     end
   end
 
   describe '.authenticate' do
-    let(:result) { Player.authenticate(params) }
+    let(:result) { described_class.authenticate(params) }
 
     describe 'unknown email' do
       let(:params) { { email: 'unknown@example.com' } }
@@ -83,10 +83,10 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     describe 'wrong password' do
-      let(:params) { { email: player_4.email, password: 'wrong' } }
+      let(:params) { { email: player4.email, password: 'wrong' } }
 
       it 'does not authenticate a confirmed player' do
-        player_4.update(confirmed_at: Time.zone.now)
+        player4.update(confirmed_at: Time.zone.now)
         expect(result).to eq(error: 'Login failed')
       end
 
@@ -96,32 +96,32 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     describe 'valid params' do
-      let(:params) { { email: player_4.email, password: 'changeme' } }
+      let(:params) { { email: player4.email, password: 'changeme' } }
 
       before do
-        player_4.update(last_sign_in_at: nil)
+        player4.update(last_sign_in_at: nil)
       end
 
       it 'authenticates a confirmed player' do
-        player_4.update(confirmed_at: Time.zone.now)
-        expect(player_4.last_sign_in_at).to_not be
-        expect(result).to eq(id: player_4.id)
-        player_4.reload
-        expect(player_4.last_sign_in_at).to be
+        player4.update(confirmed_at: Time.zone.now)
+        expect(player4.last_sign_in_at).not_to be_present
+        expect(result).to eq(id: player4.id)
+        player4.reload
+        expect(player4.last_sign_in_at).to be_present
       end
 
       it 'fails to authenticate an unconfirmed player' do
-        expect(player_4.last_sign_in_at).to_not be
+        expect(player4.last_sign_in_at).not_to be_present
         expect(result).to eq(error: 'Email not confirmed')
-        player_4.reload
-        expect(player_4.last_sign_in_at).to_not be
+        player4.reload
+        expect(player4.last_sign_in_at).not_to be_present
       end
     end
   end
 
   describe '.authenticate_admin' do
     let!(:admin) { create(:player, :admin) }
-    let(:result) { Player.authenticate_admin(params) }
+    let(:result) { described_class.authenticate_admin(params) }
 
     describe 'unknown email' do
       let(:params) { { email: 'unknown@example.com' } }
@@ -143,22 +143,22 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       let(:params) { { email: admin.email, password: 'changeme' } }
 
       it 'authenticates a player' do
-        expect(result).to eq(id: Player.last.id)
+        expect(result).to eq(id: described_class.last.id)
       end
     end
   end
 
   describe '.confirm_email' do
     it 'updates confirmed at' do
-      Player.confirm_email(player_4.confirmation_token)
-      player_4.reload
-      expect(player_4.confirmed_at).to be
+      described_class.confirm_email(player4.confirmation_token)
+      player4.reload
+      expect(player4.confirmed_at).to be_present
     end
   end
 
-  describe '.create_player' do # rubocop:disable Metrics/BlockLength
-    let(:player) { Player.last }
-    let(:response) { Player.create_player(params) }
+  describe '.create_player' do
+    let(:player) { described_class.last }
+    let(:response) { described_class.create_player(params) }
 
     describe 'with valid params' do
       let(:params) do
@@ -171,7 +171,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       it 'creates a player' do
         expect do
           expect(response[:id]).to eq(player.id)
-        end.to change(Player, :count).by(1)
+        end.to change(described_class, :count).by(1)
       end
     end
 
@@ -186,7 +186,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
           expect(response[:errors][:name]).to eq(blank)
           expect(response[:errors][:password]).to eq(blank)
           expect(response[:errors][:password_confirmation]).to eq(blank)
-        end.to change(Player, :count).by(0)
+        end.not_to change(described_class, :count)
       end
     end
   end
@@ -195,17 +195,17 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     let(:params) { { foo: 'bar' } }
 
     it 'adds a random password' do
-      results = Player.params_with_password(params)
+      results = described_class.params_with_password(params)
       expect(results[:foo]).to eq('bar')
-      expect(results[:password]).to be
-      expect(results[:password_confirmation]).to be
+      expect(results[:password]).to be_present
+      expect(results[:password_confirmation]).to be_present
       expect(results[:password]).to eq(results[:password_confirmation])
     end
   end
 
-  describe '.complete_google_signup' do # rubocop:disable Metrics/BlockLength
-    let(:player) { Player.last }
-    let(:response) { Player.complete_google_signup(params) }
+  describe '.complete_google_signup' do
+    let(:player) { described_class.last }
+    let(:response) { described_class.complete_google_signup(params) }
 
     describe 'with valid params' do
       let(:params) do
@@ -216,7 +216,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
       it 'creates a player' do
         expect do
           expect(response[:id]).to eq(player.id)
-        end.to change(Player, :count).by(1)
+        end.to change(described_class, :count).by(1)
       end
     end
 
@@ -231,7 +231,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
           expect(response[:errors][:name]).to eq(blank)
           expect(response[:errors][:password]).to eq([])
           expect(response[:errors][:password_confirmation]).to eq([])
-        end.to change(Player, :count).by(0)
+        end.not_to change(described_class, :count)
       end
     end
   end
@@ -240,48 +240,48 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
     let(:player) { build_stubbed(:player) }
 
     it 'returns false' do
-      expect(player.admin?).to be_falsey
+      expect(player).not_to be_admin
     end
 
     it 'returns true' do
       player.admin = true
-      expect(player.admin?).to be_truthy
+      expect(player).to be_admin
     end
   end
 
   describe '#cancel_invite!' do
-    let(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
+    let(:invite) { create(:invite, player1:, player2:) }
     let(:id) { invite.id }
 
     it 'accepts an invite' do
       expect do
-        player_1.cancel_invite!(id)
-      end.to change(Game, :count).by(0)
-      expect(Invite.find_by(id: id)).to be_nil
+        player1.cancel_invite!(id)
+      end.not_to change(Game, :count)
+      expect(Invite.find_by(id:)).to be_nil
     end
   end
 
   describe '#decline_invite!' do
-    let(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
+    let(:invite) { create(:invite, player1:, player2:) }
     let(:id) { invite.id }
 
     it 'accepts an invite' do
       expect do
-        player_2.decline_invite!(id)
-      end.to change(Game, :count).by(0)
-      expect(Invite.find_by(id: id)).to be_nil
+        player2.decline_invite!(id)
+      end.not_to change(Game, :count)
+      expect(Invite.find_by(id:)).to be_nil
     end
   end
 
   describe '#accept_invite!' do
-    let(:invite) { create(:invite, player_1: player_4, player_2: player_5) }
+    let(:invite) { create(:invite, player1: player4, player2: player5) }
     let(:id) { invite.id }
 
     it 'accepts an invite' do
       expect do
-        player_5.accept_invite!(id)
+        player5.accept_invite!(id)
       end.to change(Game, :count).by(1)
-      expect(Invite.find_by(id: id)).to be_nil
+      expect(Invite.find_by(id:)).to be_nil
     end
   end
 
@@ -290,29 +290,29 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
 
     it 'fails to create an invite' do
       expect do
-        player_1.create_invite!(params)
-      end.to change(Invite, :count).by(0)
+        player1.create_invite!(params)
+      end.not_to change(Invite, :count)
     end
 
     it 'creates an invite' do
-      player_5.save!
-      params[:id] = player_5.id
+      player5.save!
+      params[:id] = player5.id
       expect do
-        player_4.create_invite!(params)
+        player4.create_invite!(params)
       end.to change(Invite, :count).by(1)
     end
 
     it 'creates a game' do
-      params[:id] = bot_2.id
+      params[:id] = bot2.id
       expect do
-        player_4.create_invite!(params)
+        player4.create_invite!(params)
       end.to change(Game, :count).by(1)
     end
   end
 
   describe '#create_bot_game!' do
     let(:args) do
-      { player_2: bot_2,
+      { player2: bot2,
         rated: true,
         shots_per_turn: 5,
         time_limit: 86_400 }
@@ -320,9 +320,9 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
 
     it 'creates a bot game' do
       expect do
-        game = player_4.create_bot_game!(args)
-        expect(game.player_1).to eq(player_4)
-        expect(game.player_2).to eq(bot_2)
+        game = player4.create_bot_game!(args)
+        expect(game.player1).to eq(player4)
+        expect(game.player2).to eq(bot2)
         expect(game.rated).to be_truthy
         expect(game.shots_per_turn).to eq(5)
         expect(game.time_limit).to eq(86_400)
@@ -332,7 +332,7 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#create_opponent_invite!' do
     let(:args) do
-      { player_2: player_5,
+      { player2: player5,
         rated: true,
         shots_per_turn: 5,
         time_limit: 86_400 }
@@ -340,9 +340,9 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
 
     it 'creates an opponent invite' do
       expect do
-        invite = player_4.create_opponent_invite!(args)
-        expect(invite.player_1).to eq(player_4)
-        expect(invite.player_2).to eq(player_5)
+        invite = player4.create_opponent_invite!(args)
+        expect(invite.player1).to eq(player4)
+        expect(invite.player2).to eq(player5)
         expect(invite.rated).to be_truthy
         expect(invite.shots_per_turn).to eq(5)
         expect(invite.time_limit).to eq(86_400)
@@ -351,11 +351,11 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#invite_args' do
-    let(:params) { { id: player_5.id, r: '1', s: '5', t: '86400' } }
+    let(:params) { { id: player5.id, r: '1', s: '5', t: '86400' } }
 
     it 'returns a hash of invite args' do
-      args = player_4.invite_args(params)
-      expect(args[:player_2]).to eq(player_5)
+      args = player4.invite_args(params)
+      expect(args[:player2]).to eq(player5)
       expect(args[:rated]).to be_truthy
       expect(args[:shots_per_turn]).to eq(5)
       expect(args[:time_limit]).to eq(86_400)
@@ -365,196 +365,210 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   describe '#create_enemy!' do
     it 'creates a enemy' do
       expect do
-        player_4.create_enemy!(player_5.id)
+        player4.create_enemy!(player5.id)
       end.to change(Enemy, :count).by(1)
-      expect(player_4.enemies.first.player_2).to eq(player_5)
+      expect(player4.enemies.first.player2).to eq(player5)
     end
 
     describe 'fails to create a enemy' do
       it 'when player not found' do
         expect do
-          result = player_4.create_enemy!(0)
+          result = player4.create_enemy!(0)
           expect(result).to eq(-1)
-        end.to change(Enemy, :count).by(0)
+        end.not_to change(Enemy, :count)
       end
 
       describe 'fails to add enemy' do
-        let!(:friend) { create(:friend, player_1: player_4, player_2: player_5) }
+        let(:friend) { create(:friend, player1: player4, player2: player5) }
+
+        before { friend }
 
         it 'when already a friend' do
           expect do
-            result = player_4.create_enemy!(player_5.id)
+            result = player4.create_enemy!(player5.id)
             expect(result).to eq(-1)
-          end.to change(Enemy, :count).by(0)
+          end.not_to change(Enemy, :count)
         end
       end
     end
   end
 
   describe '#enemy_ids' do
-    let!(:enemy_1) { create(:enemy, player_1: player_1, player_2: player_2) }
-    let!(:enemy_2) { create(:enemy, player_1: player_2, player_2: player_3) }
-    let!(:enemy_3) { create(:enemy, player_1: player_2, player_2: player_1) }
+    let(:enemy1) { create(:enemy, player1:, player2:) }
+    let(:enemy2) { create(:enemy, player1: player2, player2: player3) }
+    let(:enemy3) { create(:enemy, player1: player2, player2: player1) }
+
+    before { [enemy1, enemy2, enemy3] }
 
     it 'returns enemy ids' do
       expect(Enemy.count).to eq(3)
-      expect(player_1.enemies_player_ids).to eq([player_2.id])
+      expect(player1.enemies_player_ids).to eq([player2.id])
     end
   end
 
   describe '#destroy_friend!' do
-    let!(:friend) { create(:friend, player_1: player_1, player_2: player_2) }
+    let(:friend) { create(:friend, player1:, player2:) }
+
+    before { friend }
 
     it 'destroys a friend' do
       expect do
-        player_1.destroy_friend!(player_2.id)
+        player1.destroy_friend!(player2.id)
       end.to change(Friend, :count).by(-1)
-      expect(player_1.friends).to eq([])
+      expect(player1.friends).to eq([])
     end
 
     it 'fails to destroy a friend' do
       expect do
-        result = player_1.destroy_friend!(0)
+        result = player1.destroy_friend!(0)
         expect(result).to eq(-1)
-      end.to change(Friend, :count).by(0)
+      end.not_to change(Friend, :count)
     end
   end
 
   describe '#create_friend!' do
     it 'creates a friend' do
-      player_5.save!
+      player5.save!
       expect do
-        player_4.reload.create_friend!(player_5.id)
+        player4.reload.create_friend!(player5.id)
       end.to change(Friend, :count).by(1)
-      expect(player_4.friends.first.player_2).to eq(player_5)
+      expect(player4.friends.first.player2).to eq(player5)
     end
 
     describe 'fails to create a friend' do
       it 'when other player not found' do
         expect do
-          result = player_4.create_friend!(0)
+          result = player4.create_friend!(0)
           expect(result).to eq(-1)
-        end.to change(Friend, :count).by(0)
+        end.not_to change(Friend, :count)
       end
 
       describe 'fails to add a friend' do
-        let!(:enemy) { create(:enemy, player_1: player_4, player_2: player_5) }
+        let(:enemy) { create(:enemy, player1: player4, player2: player5) }
+
+        before { enemy }
 
         it 'when already an enemy' do
           expect do
-            result = player_4.create_friend!(player_5.id)
+            result = player4.create_friend!(player5.id)
             expect(result).to eq(-1)
-          end.to change(Friend, :count).by(0)
+          end.not_to change(Friend, :count)
         end
       end
     end
   end
 
   describe '#friend_ids' do
-    let!(:friend_1) { create(:friend, player_1: player_1, player_2: player_2) }
-    let!(:friend_2) { create(:friend, player_1: player_2, player_2: player_3) }
-    let!(:friend_3) { create(:friend, player_1: player_2, player_2: player_1) }
+    let(:friend1) { create(:friend, player1:, player2:) }
+    let(:friend2) { create(:friend, player1: player2, player2: player3) }
+    let(:friend3) { create(:friend, player1: player2, player2: player1) }
+
+    before { [friend1, friend2, friend3] }
 
     it 'returns friend ids' do
       expect(Friend.count).to eq(3)
-      expect(player_1.friends_player_ids).to eq([player_2.id])
+      expect(player1.friends_player_ids).to eq([player2.id])
     end
   end
 
-  describe '#attack!' do # rubocop:disable Metrics/BlockLength
+  describe '#attack!' do
     let(:game) do
-      create(:game, shots_per_turn: 5, player_1: player_4, player_2: bot_2, turn: player_4)
+      create(:game, shots_per_turn: 5, player1: player4, player2: bot2, turn: player4)
     end
     let(:ship) { create(:ship, size: 3) }
-    let!(:layout_1) do
-      create(:layout, game: game, player: player_4, ship: ship, x: 0, y: 0)
+    let(:layout1) do
+      create(:layout, game:, player: player4, ship:, x: 0, y: 0)
     end
-    let!(:layout_2) do
-      create(:layout, game: game, player: player_4, ship: ship, x: 1, y: 1)
+    let(:layout2) do
+      create(:layout, game:, player: player4, ship:, x: 1, y: 1)
     end
-    let!(:layout_3) do
-      create(:layout, game: game, player: player_4, ship: ship, x: 2, y: 2)
+    let(:layout3) do
+      create(:layout, game:, player: player4, ship:, x: 2, y: 2)
     end
-    let!(:layout_4) do
-      create(:layout, game: game, player: player_4, ship: ship, x: 3, y: 3)
+    let(:layout4) do
+      create(:layout, game:, player: player4, ship:, x: 3, y: 3)
     end
-    let!(:layout_5) do
-      create(:layout, game: game, player: player_4, ship: ship, x: 4, y: 4)
+    let(:layout5) do
+      create(:layout, game:, player: player4, ship:, x: 4, y: 4)
     end
-    let!(:layout) do
-      create(:layout, game: game, player: bot_2, ship: ship, x: 0, y: 0)
+    let(:layout) do
+      create(:layout, game:, player: bot2, ship:, x: 0, y: 0)
     end
     let(:json) do
-      [{ 'x': 5, 'y': 5 },
-       { 'x': 4, 'y': 6 },
-       { 'x': 6, 'y': 6 },
-       { 'x': 3, 'y': 7 },
-       { 'x': 2, 'y': 8 }].to_json
+      [{ x: 5, y: 5 },
+       { x: 4, y: 6 },
+       { x: 6, y: 6 },
+       { x: 3, y: 7 },
+       { x: 2, y: 8 }].to_json
     end
     let(:params) { { s: json } }
 
+    before { [layout, layout1, layout2, layout3, layout4, layout5] }
+
     it 'saves an attack' do
       expect do
-        player_4.attack!(game, params)
+        player4.attack!(game, params)
       end.to change(Move, :count).by(10)
       expect(game.winner).to be_nil
-      expect(game.turn).to eq(player_4)
+      expect(game.turn).to eq(player4)
     end
   end
 
   describe '#record_shots!' do
     let(:game) do
-      create(:game, shots_per_turn: 5, player_1: player_4, player_2: player_5, turn: player_4)
+      create(:game, shots_per_turn: 5, player1: player4, player2: player5, turn: player4)
     end
     let(:json) do
-      [{ 'x': 5, 'y': 5 },
-       { 'x': 4, 'y': 6 },
-       { 'x': 6, 'y': 6 },
-       { 'x': 3, 'y': 7 },
-       { 'x': 2, 'y': 8 }].to_json
+      [{ x: 5, y: 5 },
+       { x: 4, y: 6 },
+       { x: 6, y: 6 },
+       { x: 3, y: 7 },
+       { x: 2, y: 8 }].to_json
     end
 
     it 'records shots' do
       expect do
-        player_4.record_shots!(game, json)
+        player4.record_shots!(game, json)
       end.to change(Move, :count).by(5)
-      expect(game.turn).to eq(player_5)
+      expect(game.turn).to eq(player5)
     end
   end
 
-  describe '#record_shot!' do # rubocop:disable Metrics/BlockLength
+  describe '#record_shot!' do
     let(:game) do
-      create(:game, player_1: player_4, player_2: player_5, turn: player_4)
+      create(:game, player1: player4, player2: player5, turn: player4)
     end
     let!(:layout) do
-      create(:layout, game: game, player: player_5, ship: create(:ship),
+      create(:layout, game:, player: player5, ship: create(:ship),
                       x: 3, y: 5)
     end
 
     describe 'when shot already exists' do
-      let!(:move) do
-        create(:move, game: game, player: player_4, x: 3, y: 5,
-                      layout: layout)
+      let(:move) do
+        create(:move, game:, player: player4, x: 3, y: 5,
+                      layout:)
       end
+
+      before { move }
 
       it 'does not record a shot' do
         expect do
-          player_4.record_shot!(game, 3, 5)
-        end.to_not change(Move, :count)
+          player4.record_shot!(game, 3, 5)
+        end.not_to change(Move, :count)
       end
     end
 
     describe 'when shot does not already exists' do
       it 'records a hit' do
         expect do
-          player_4.record_shot!(game, 3, 5)
+          player4.record_shot!(game, 3, 5)
         end.to change(Move, :count).by(1)
         expect(Move.last.layout).to eq(layout)
       end
 
       it 'records a miss' do
         expect do
-          player_4.record_shot!(game, 5, 6)
+          player4.record_shot!(game, 5, 6)
         end.to change(Move, :count).by(1)
         expect(Move.last.layout).to be_nil
       end
@@ -564,289 +578,289 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   describe '#new_activity' do
     it 'increments player activity' do
       expect do
-        player_4.new_activity!
-      end.to change { player_4.activity }.by(1)
+        player4.new_activity!
+      end.to change(player4, :activity).by(1)
     end
   end
 
   describe '#player_game' do
     describe 'game exists' do
       let(:game) do
-        create(:game, player_1: player_4, player_2: player_5, turn: player_5)
+        create(:game, player1: player4, player2: player5, turn: player5)
       end
       let(:layout) do
-        create(:layout, game: game, player: player_4, ship: create(:ship),
+        create(:layout, game:, player: player4, ship: create(:ship),
                         x: 3, y: 5)
       end
       let!(:move) do
-        create(:move, game: game, player: player_5, x: 3, y: 5,
-                      layout: layout)
+        create(:move, game:, player: player5, x: 3, y: 5,
+                      layout:)
       end
 
       it 'returns a game hash' do
-        expected = { game: game, layouts: [layout], moves: [move] }
-        expect(player_4.player_game(game.id)).to eq(expected)
+        expected = { game:, layouts: [layout], moves: [move] }
+        expect(player4.player_game(game.id)).to eq(expected)
       end
     end
 
     it 'returns nil' do
-      expect(player_4.player_game(0)).to be_nil
+      expect(player4.player_game(0)).to be_nil
     end
   end
 
   describe '#opponent_game' do
     describe 'game exists' do
       let(:game) do
-        create(:game, player_1: player_4, player_2: player_5, turn: player_5)
+        create(:game, player1: player4, player2: player5, turn: player5)
       end
       let(:layout) do
-        create(:layout, game: game, player: player_5, ship: create(:ship),
+        create(:layout, game:, player: player5, ship: create(:ship),
                         x: 3, y: 5)
       end
       let!(:move) do
-        create(:move, game: game, player: player_4, x: 3, y: 5,
-                      layout: layout)
+        create(:move, game:, player: player4, x: 3, y: 5,
+                      layout:)
       end
 
       it 'returns a game hash' do
-        expected = { game: game, layouts: [], moves: [move] }
-        expect(player_4.opponent_game(game.id)).to eq(expected)
+        expected = { game:, layouts: [], moves: [move] }
+        expect(player4.opponent_game(game.id)).to eq(expected)
       end
     end
 
     it 'returns nil' do
-      expect(player_4.opponent_game(0)).to be_nil
+      expect(player4.opponent_game(0)).to be_nil
     end
   end
 
   describe '#my_turn' do
     let!(:game) do
-      create(:game, player_1: player_4, player_2: player_5, turn: player_4)
+      create(:game, player1: player4, player2: player5, turn: player4)
     end
 
     it 'returns true' do
-      expect(player_4.my_turn(game.id)).to eq(1)
+      expect(player4.my_turn(game.id)).to eq(1)
     end
 
     it 'returns false' do
-      expect(player_5.my_turn(game.id)).to eq(-1)
+      expect(player5.my_turn(game.id)).to eq(-1)
     end
   end
 
-  describe '#cancel_game!' do # rubocop:disable Metrics/BlockLength
+  describe '#cancel_game!' do
     it 'returns nil when game is not found' do
-      expect(player_1.cancel_game!(nil)).to be_nil
+      expect(player1.cancel_game!(nil)).to be_nil
     end
 
     describe 'with enough time' do
       let!(:game) do
-        create(:game, player_1: player_4, player_2: player_5, turn: player_5)
+        create(:game, player1: player4, player2: player5, turn: player5)
       end
 
-      it 'player_1 gives up, player_2 wins' do
-        result = player_4.cancel_game!(game.id)
+      it 'player1 gives up, player2 wins' do
+        result = player4.cancel_game!(game.id)
         expect(result).to eq(game)
-        expect(result.winner).to eq(player_5)
-        expect(result.player_1.rating).to eq(1199)
-        expect(result.player_2.rating).to eq(1201)
+        expect(result.winner).to eq(player5)
+        expect(result.player1.rating).to eq(1199)
+        expect(result.player2.rating).to eq(1201)
       end
 
-      it 'player_2 gives up, player_1 wins' do
-        result = player_5.cancel_game!(game.id)
+      it 'player2 gives up, player1 wins' do
+        result = player5.cancel_game!(game.id)
         expect(result).to eq(game)
-        expect(result.winner).to eq(player_4)
-        expect(result.player_1.rating).to eq(1201)
-        expect(result.player_2.rating).to eq(1199)
+        expect(result.winner).to eq(player4)
+        expect(result.player1.rating).to eq(1201)
+        expect(result.player2.rating).to eq(1199)
       end
     end
 
-    describe 'time has expired' do # rubocop:disable Metrics/BlockLength
-      describe 'player_2 has not layed out' do
+    describe 'time has expired' do
+      describe 'player2 has not layed out' do
         let!(:game) do
-          create(:game, player_1: player_4, player_2: player_5, turn: player_5,
-                        player_1_layed_out: true, player_2_layed_out: false)
+          create(:game, player1: player4, player2: player5, turn: player5,
+                        player1_layed_out: true, player2_layed_out: false)
         end
 
-        it 'player_1 cancels, player_1 wins' do
+        it 'player1 cancels, player1 wins' do
           travel_to(2.days.from_now) do
-            result = player_4.cancel_game!(game.id)
+            result = player4.cancel_game!(game.id)
             expect(result).to eq(game)
-            expect(result.winner).to eq(player_4)
-            expect(result.player_1.rating).to eq(1201)
-            expect(result.player_2.rating).to eq(1199)
+            expect(result.winner).to eq(player4)
+            expect(result.player1.rating).to eq(1201)
+            expect(result.player2.rating).to eq(1199)
           end
         end
 
-        it 'player_2 cancels, player_1 wins' do
+        it 'player2 cancels, player1 wins' do
           travel_to(2.days.from_now) do
-            result = player_5.cancel_game!(game.id)
+            result = player5.cancel_game!(game.id)
             expect(result).to eq(game)
-            expect(result.winner).to eq(player_4)
-            expect(result.player_1.rating).to eq(1201)
-            expect(result.player_2.rating).to eq(1199)
+            expect(result.winner).to eq(player4)
+            expect(result.player1.rating).to eq(1201)
+            expect(result.player2.rating).to eq(1199)
           end
         end
       end
 
-      describe 'player_1 has not layed out' do
+      describe 'player1 has not layed out' do
         let!(:game) do
-          create(:game, player_1: player_4, player_2: player_5, turn: player_5,
-                        player_1_layed_out: false, player_2_layed_out: true)
+          create(:game, player1: player4, player2: player5, turn: player5,
+                        player1_layed_out: false, player2_layed_out: true)
         end
 
-        it 'player_2 cancels, player_2 wins' do
+        it 'player2 cancels, player2 wins' do
           travel_to(2.days.from_now) do
-            result = player_5.cancel_game!(game.id)
+            result = player5.cancel_game!(game.id)
             expect(result).to eq(game)
-            expect(result.winner).to eq(player_5)
-            expect(result.player_1.rating).to eq(1199)
-            expect(result.player_2.rating).to eq(1201)
+            expect(result.winner).to eq(player5)
+            expect(result.player1.rating).to eq(1199)
+            expect(result.player2.rating).to eq(1201)
           end
         end
 
-        it 'player_1 cancels, player_2 wins' do
+        it 'player1 cancels, player2 wins' do
           travel_to(2.days.from_now) do
-            result = player_4.cancel_game!(game.id)
+            result = player4.cancel_game!(game.id)
             expect(result).to eq(game)
-            expect(result.winner).to eq(player_5)
-            expect(result.player_1.rating).to eq(1199)
-            expect(result.player_2.rating).to eq(1201)
-          end
-        end
-      end
-
-      describe 'player_1 gives up on player_1 turn' do
-        let!(:game) do
-          create(:game, player_1: player_4, player_2: player_5, turn: player_4,
-                        player_1_layed_out: true, player_2_layed_out: true)
-        end
-
-        it 'player_2 wins' do
-          travel_to(2.days.from_now) do
-            result = player_4.cancel_game!(game.id)
-            expect(result).to eq(game)
-            expect(result.winner).to eq(player_5)
-            expect(result.player_1.rating).to eq(1199)
-            expect(result.player_2.rating).to eq(1201)
+            expect(result.winner).to eq(player5)
+            expect(result.player1.rating).to eq(1199)
+            expect(result.player2.rating).to eq(1201)
           end
         end
       end
 
-      describe 'player_1 gives up on player_2 turn' do
+      describe 'player1 gives up on player1 turn' do
         let!(:game) do
-          create(:game, player_1: player_4, player_2: player_5, turn: player_5,
-                        player_1_layed_out: true, player_2_layed_out: true)
+          create(:game, player1: player4, player2: player5, turn: player4,
+                        player1_layed_out: true, player2_layed_out: true)
         end
 
-        it 'player_1 wins' do
+        it 'player2 wins' do
           travel_to(2.days.from_now) do
-            result = player_4.cancel_game!(game.id)
+            result = player4.cancel_game!(game.id)
             expect(result).to eq(game)
-            expect(result.winner).to eq(player_4)
-            expect(result.player_1.rating).to eq(1201)
-            expect(result.player_2.rating).to eq(1199)
+            expect(result.winner).to eq(player5)
+            expect(result.player1.rating).to eq(1199)
+            expect(result.player2.rating).to eq(1201)
           end
         end
       end
 
-      describe 'player_2 gives up on player_2 turn' do
+      describe 'player1 gives up on player2 turn' do
         let!(:game) do
-          create(:game, player_1: player_4, player_2: player_5, turn: player_5,
-                        player_1_layed_out: true, player_2_layed_out: true)
+          create(:game, player1: player4, player2: player5, turn: player5,
+                        player1_layed_out: true, player2_layed_out: true)
         end
 
-        it 'player_1 wins' do
+        it 'player1 wins' do
           travel_to(2.days.from_now) do
-            result = player_5.cancel_game!(game.id)
+            result = player4.cancel_game!(game.id)
             expect(result).to eq(game)
-            expect(result.winner).to eq(player_4)
-            expect(result.player_1.rating).to eq(1201)
-            expect(result.player_2.rating).to eq(1199)
+            expect(result.winner).to eq(player4)
+            expect(result.player1.rating).to eq(1201)
+            expect(result.player2.rating).to eq(1199)
           end
         end
       end
 
-      describe 'player_2 gives up on player_1 turn' do
+      describe 'player2 gives up on player2 turn' do
         let!(:game) do
-          create(:game, player_1: player_4, player_2: player_5, turn: player_4,
-                        player_1_layed_out: true, player_2_layed_out: true)
+          create(:game, player1: player4, player2: player5, turn: player5,
+                        player1_layed_out: true, player2_layed_out: true)
         end
 
-        it 'player_2 wins' do
+        it 'player1 wins' do
           travel_to(2.days.from_now) do
-            result = player_5.cancel_game!(game.id)
+            result = player5.cancel_game!(game.id)
             expect(result).to eq(game)
-            expect(result.winner).to eq(player_5)
-            expect(result.player_1.rating).to eq(1199)
-            expect(result.player_2.rating).to eq(1201)
+            expect(result.winner).to eq(player4)
+            expect(result.player1.rating).to eq(1201)
+            expect(result.player2.rating).to eq(1199)
+          end
+        end
+      end
+
+      describe 'player2 gives up on player1 turn' do
+        let!(:game) do
+          create(:game, player1: player4, player2: player5, turn: player4,
+                        player1_layed_out: true, player2_layed_out: true)
+        end
+
+        it 'player2 wins' do
+          travel_to(2.days.from_now) do
+            result = player5.cancel_game!(game.id)
+            expect(result).to eq(game)
+            expect(result.winner).to eq(player5)
+            expect(result.player1.rating).to eq(1199)
+            expect(result.player2.rating).to eq(1201)
           end
         end
       end
     end
   end
 
-  describe '#destroy_game!' do # rubocop:disable Metrics/BlockLength
+  describe '#destroy_game!' do
     it 'returns nil when game is not found' do
-      expect(player_4.destroy_game!(nil)).to be_nil
+      expect(player4.destroy_game!(nil)).to be_nil
     end
 
     describe 'with no winner' do
       let!(:game) do
-        create(:game, player_1: player_4, player_2: player_5, turn: player_5)
+        create(:game, player1: player4, player2: player5, turn: player5)
       end
 
-      it 'fails to set player_1 deleted' do
+      it 'fails to set player1 deleted' do
         expect do
-          result = player_4.destroy_game!(game.id)
-          expect(result.del_player_1).to be_falsey
-        end.to change(Game, :count).by(0)
+          result = player4.destroy_game!(game.id)
+          expect(result.del_player1).to be_falsey
+        end.not_to change(Game, :count)
       end
     end
 
-    describe 'with a winner' do # rubocop:disable Metrics/BlockLength
+    describe 'with a winner' do
       let!(:game) do
-        create(:game, player_1: player_4, player_2: player_5, turn: player_5,
-                      winner: player_4)
+        create(:game, player1: player4, player2: player5, turn: player5,
+                      winner: player4)
       end
 
-      it 'sets player_1 deleted' do
+      it 'sets player1 deleted' do
         expect do
-          result = player_4.destroy_game!(game.id)
-          expect(result.del_player_1).to be_truthy
-        end.to change(Game, :count).by(0)
+          result = player4.destroy_game!(game.id)
+          expect(result.del_player1).to be_truthy
+        end.not_to change(Game, :count)
       end
 
-      it 'sets player_2 deleted' do
+      it 'sets player2 deleted' do
         expect do
-          result = player_5.destroy_game!(game.id)
-          expect(result.del_player_2).to be_truthy
-        end.to change(Game, :count).by(0)
+          result = player5.destroy_game!(game.id)
+          expect(result.del_player2).to be_truthy
+        end.not_to change(Game, :count)
       end
 
-      it 'deletes game player_2 already deleted' do
-        game.update(del_player_2: true)
+      it 'deletes game player2 already deleted' do
+        game.update(del_player2: true)
         expect do
-          player_4.destroy_game!(game.id)
+          player4.destroy_game!(game.id)
         end.to change(Game, :count).by(-1)
       end
 
-      it 'deletes game player_1 already deleted' do
-        game.update(del_player_1: true)
+      it 'deletes game player1 already deleted' do
+        game.update(del_player1: true)
         expect do
-          player_5.destroy_game!(game.id)
+          player5.destroy_game!(game.id)
         end.to change(Game, :count).by(-1)
       end
     end
 
     describe 'bot game' do
       let!(:game) do
-        create(:game, player_1: player_4, player_2: bot_2, turn: bot_2,
-                      winner: player_4)
+        create(:game, player1: player4, player2: bot2, turn: bot2,
+                      winner: player4)
       end
 
       it 'deletes the game' do
         expect do
-          player_4.destroy_game!(game.id)
+          player4.destroy_game!(game.id)
         end.to change(Game, :count).by(-1)
       end
     end
@@ -854,183 +868,197 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#skip_game!' do
     let!(:game) do
-      create(:game, player_1: player_4, player_2: player_5, turn: player_5)
+      create(:game, player1: player4, player2: player5, turn: player5)
     end
 
     it 'skips inactive opponent' do
       travel_to(2.days.from_now) do
-        result = player_4.skip_game!(game.id)
+        result = player4.skip_game!(game.id)
         expect(result).to eq(game)
-        expect(result.turn).to eq(player_4)
+        expect(result.turn).to eq(player4)
       end
     end
   end
 
-  describe '#can_skip?' do # rubocop:disable Metrics/BlockLength
+  describe '#can_skip?' do
     let(:game) do
-      build_stubbed(:game, player_1: player_1, player_2: player_2, turn: player_1)
+      build_stubbed(:game, player1:, player2:, turn: player1)
     end
 
     it 'returns false when game is null' do
-      expect(player_1.can_skip?(nil)).to be_falsey
+      expect(player1).not_to be_can_skip(nil)
     end
 
     it 'returns false when time limit is not up' do
-      expect(player_1.can_skip?(game)).to be_falsey
+      expect(player1).not_to be_can_skip(game)
     end
 
     it 'returns false if player turn' do
       travel_to(2.days.from_now) do
-        expect(player_1.can_skip?(game)).to be_falsey
+        expect(player1).not_to be_can_skip(game)
       end
     end
 
     it 'returns false if winner' do
-      game.turn = player_2
-      game.winner = player_1
+      game.turn = player2
+      game.winner = player1
       travel_to(2.days.from_now) do
-        expect(player_1.can_skip?(game)).to be_falsey
+        expect(player1).not_to be_can_skip(game)
       end
     end
 
     it 'returns true if opponent turn' do
-      game.turn = player_2
+      game.turn = player2
       travel_to(2.days.from_now) do
-        expect(player_1.can_skip?(game)).to be_truthy
+        expect(player1).to be_can_skip(game)
       end
     end
   end
 
-  describe '#next_game' do # rubocop:disable Metrics/BlockLength
+  describe '#next_game' do
     describe 'with no player turn games' do
-      let!(:game_1) do
-        create(:game, player_1: player_1, player_2: player_2, turn: player_2,
-                      player_1_layed_out: true, player_2_layed_out: true)
+      let(:game1) do
+        create(:game, player1:, player2:, turn: player2,
+                      player1_layed_out: true, player2_layed_out: true)
       end
-      let!(:game_2) do
-        create(:game, player_1: player_1, player_2: player_2, turn: player_2,
-                      player_1_layed_out: true, player_2_layed_out: true)
+      let(:game2) do
+        create(:game, player1:, player2:, turn: player2,
+                      player1_layed_out: true, player2_layed_out: true)
       end
+
+      before { [game1, game2] }
 
       it 'returns recent opponent turn game with no time left' do
         travel_to(2.days.from_now) do
-          expect(player_1.next_game).to eq(game_2)
+          expect(player1.next_game).to eq(game2)
         end
       end
     end
 
     describe 'with player turn games' do
-      let!(:game_1) do
-        create(:game, player_1: player_1, player_2: player_2, turn: player_1,
-                      player_1_layed_out: true, player_2_layed_out: true)
+      let(:game1) do
+        create(:game, player1:, player2:, turn: player1,
+                      player1_layed_out: true, player2_layed_out: true)
       end
-      let!(:game_2) do
-        create(:game, player_1: player_1, player_2: player_2, turn: player_1,
-                      player_1_layed_out: true, player_2_layed_out: true)
+      let(:game2) do
+        create(:game, player1:, player2:, turn: player1,
+                      player1_layed_out: true, player2_layed_out: true)
       end
-      let!(:game_3) do
-        create(:game, player_1: player_1, player_2: player_2, turn: player_2,
-                      player_1_layed_out: true, player_2_layed_out: true)
+      let(:game3) do
+        create(:game, player1:, player2:, turn: player2,
+                      player1_layed_out: true, player2_layed_out: true)
       end
 
+      before { [game1, game2, game3] }
+
       it 'returns recent player turn game' do
-        expect(player_1.next_game).to eq(game_2)
+        expect(player1.next_game).to eq(game2)
       end
     end
 
     describe 'with no games' do
       it 'returns nil' do
-        expect(player_1.next_game).to be_nil
+        expect(player1.next_game).to be_nil
       end
     end
   end
 
   describe '#layed_out_and_no_winner' do
-    let!(:game_1) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
-                    player_1_layed_out: true)
+    let(:game1) do
+      create(:game, player1:, player2:, turn: player1,
+                    player1_layed_out: true)
     end
-    let!(:game_2) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
-                    player_1_layed_out: false)
+    let(:game2) do
+      create(:game, player1:, player2:, turn: player1,
+                    player1_layed_out: false)
     end
-    let!(:game_3) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
-                    player_1_layed_out: true, player_2_layed_out: true,
-                    winner: player_1)
+    let(:game3) do
+      create(:game, player1:, player2:, turn: player1,
+                    player1_layed_out: true, player2_layed_out: true,
+                    winner: player1)
     end
-    let!(:game_4) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_1,
-                    player_1_layed_out: true, player_2_layed_out: true)
+    let(:game4) do
+      create(:game, player1:, player2:, turn: player1,
+                    player1_layed_out: true, player2_layed_out: true)
     end
 
+    before { [game1, game2, game3, game4] }
+
     it 'returns layed out games with no winner' do
-      expect(player_1.layed_out_and_no_winner).to eq([game_4])
+      expect(player1.layed_out_and_no_winner).to eq([game4])
     end
   end
 
   describe '#active_games' do
-    let!(:game_1) do
-      create(:game, player_1: player_4, player_2: player_5, turn: player_4)
+    let!(:game1) do
+      create(:game, player1: player4, player2: player5, turn: player4)
     end
-    let!(:game_2) do
-      create(:game, player_1: player_5, player_2: player_4, turn: player_4,
-                    del_player_1: true)
+    let!(:game2) do
+      create(:game, player1: player5, player2: player4, turn: player4,
+                    del_player1: true)
     end
-    let!(:game_3) do
-      create(:game, player_1: player_3, player_2: player_4, turn: player_4,
-                    del_player_2: true)
+    let(:game3) do
+      create(:game, player1: player3, player2: player4, turn: player4,
+                    del_player2: true)
     end
 
+    before { game3 }
+
     it 'returns active games' do
-      expect(player_4.active_games).to eq([game_1, game_2])
+      expect(player4.active_games).to eq([game1, game2])
     end
   end
 
   describe '#invites' do
-    let!(:invite_1) { create(:invite, player_1: player_1, player_2: player_2) }
-    let!(:invite_2) { create(:invite, player_1: player_2, player_2: player_1) }
-    let!(:invite_3) { create(:invite, player_1: player_2, player_2: player_3) }
+    let!(:invite1) { create(:invite, player1:, player2:) }
+    let!(:invite2) { create(:invite, player1: player2, player2: player1) }
+    let(:invite3) { create(:invite, player1: player2, player2: player3) }
+
+    before { invite3 }
 
     it 'returns invites' do
-      expect(player_1.invites).to eq([invite_1, invite_2])
+      expect(player1.invites).to eq([invite1, invite2])
     end
   end
 
   describe '.list_for_game' do
     let(:game) do
-      create(:game, player_1: player_4, player_2: bot_2, turn: player_4)
+      create(:game, player1: player4, player2: bot2, turn: player4)
     end
 
     it 'returns game players' do
-      expected = [player_4, bot_2]
-      expect(Player.list_for_game(game.id)).to eq(expected)
+      expected = [player4, bot2]
+      expect(described_class.list_for_game(game.id)).to eq(expected)
     end
   end
 
   describe '.list' do
-    let(:player_11) { create(:player, :confirmed) }
-    let(:player_12) { create(:player, :confirmed) }
-    let(:player_13) { create(:player, :confirmed) }
-    let!(:enemy) { create(:enemy, player_1: player_1, player_2: player_2) }
+    let(:player11) { create(:player, :confirmed) }
+    let(:player12) { create(:player, :confirmed) }
+    let(:player13) { create(:player, :confirmed) }
+    let(:enemy) { create(:enemy, player1:, player2:) }
+
+    before { enemy }
 
     it 'returns players' do
-      expected = [player_5, player_11, player_13]
-      expect(Player.list(player_1)).to eq(expected)
+      expected = [player5, player11, player13]
+      expect(described_class.list(player1)).to eq(expected)
     end
 
     describe 'non-confirmed' do
-      let!(:player_13) { create(:player) }
+      let(:player13) { create(:player) }
+
+      before { player13 }
 
       it 'returns players' do
-        expected = [player_5, player_11]
-        expect(Player.list(player_1)).to eq(expected)
+        expected = [player5, player11]
+        expect(described_class.list(player1)).to eq(expected)
       end
     end
   end
 
   describe '.generate_password' do
-    let(:password) { Player.generate_password(16) }
+    let(:password) { described_class.generate_password(16) }
 
     it 'returns a generated password' do
       expect(password.length).to eq(16)
@@ -1038,31 +1066,31 @@ RSpec.describe Player, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#last' do
-    let(:player_1) { build(:player, updated_at: Time.current) }
-    let(:player_2) { build(:player, updated_at: 2.hours.ago) }
-    let(:player_3) { build(:player, updated_at: 2.days.ago) }
-    let(:player_4) { build(:player, updated_at: 4.days.ago) }
-    let(:player_5) { build(:player, updated_at: nil) }
+    let(:player1) { build(:player, updated_at: Time.current) }
+    let(:player2) { build(:player, updated_at: 2.hours.ago) }
+    let(:player3) { build(:player, updated_at: 2.days.ago) }
+    let(:player4) { build(:player, updated_at: 4.days.ago) }
+    let(:player5) { build(:player, updated_at: nil) }
     let(:bot) { build(:player, :bot) }
 
     it 'signed in recently returns a 0' do
-      expect(player_1.last).to eq(0)
+      expect(player1.last).to eq(0)
     end
 
     it 'signed in 2 hours ago returns a 1' do
-      expect(player_2.last).to eq(1)
+      expect(player2.last).to eq(1)
     end
 
     it 'signed in 2 days ago returns a 2' do
-      expect(player_3.last).to eq(2)
+      expect(player3.last).to eq(2)
     end
 
     it 'signed in 4 days ago returns a 3' do
-      expect(player_4.last).to eq(3)
+      expect(player4.last).to eq(3)
     end
 
     it 'never logged in returns a 3' do
-      expect(player_5.last).to eq(3)
+      expect(player5.last).to eq(3)
     end
 
     it 'bot returns a 0' do

@@ -2,48 +2,44 @@
 
 class GameSerializer < ActiveModel::Serializer
   attributes :id,
-             :player_1_id,
-             :player_2_id,
-             :player_1_name,
-             :player_2_name,
+             :player1_id,
+             :player2_id,
+             :player1_name,
+             :player2_name,
              :turn_id,
              :winner_id,
              :updated_at,
-             :player_1_layed_out,
-             :player_2_layed_out,
+             :player1_layed_out,
+             :player2_layed_out,
              :rated,
              :shots_per_turn,
              :t_limit
 
-  def t_limit
-    object.t_limit
+  delegate :t_limit, to: :object
+
+  def player1_name
+    object.player1.name
   end
 
-  def player_1_name
-    object.player_1.name
-  end
-
-  def player_2_name
-    object.player_2.name
+  def player2_name
+    object.player2.name
   end
 
   def winner_id
     object.winner ? object.winner_id : '0'
   end
 
-  def player_1_layed_out
-    object.player_1_layed_out ? '1' : '0'
+  def player1_layed_out
+    object.player1_layed_out ? '1' : '0'
   end
 
-  def player_2_layed_out
-    object.player_2_layed_out ? '1' : '0'
+  def player2_layed_out
+    object.player2_layed_out ? '1' : '0'
   end
 
   def rated
     object.rated ? '1' : '0'
   end
 
-  def shots_per_turn
-    object.shots_per_turn
-  end
+  delegate :shots_per_turn, to: :object
 end

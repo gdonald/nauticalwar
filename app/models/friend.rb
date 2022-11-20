@@ -1,10 +1,8 @@
 # frozen_string_literal: true
 
 class Friend < ApplicationRecord
-  belongs_to :player_1, class_name: 'Player', foreign_key: 'player_1_id'
-  belongs_to :player_2, class_name: 'Player', foreign_key: 'player_2_id'
+  belongs_to :player1, class_name: 'Player'
+  belongs_to :player2, class_name: 'Player'
 
-  # validates :player_1, presence: true
-  # validates :player_2, presence: true
-  validates :player_2, uniqueness: { scope: :player_1_id }
+  validates :player2, uniqueness: { scope: :player1_id }
 end

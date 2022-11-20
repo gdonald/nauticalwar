@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::LayoutsController, type: :controller do # rubocop:disable /BlockLength, Metrics/
+RSpec.describe Api::LayoutsController do # rubocop:disable /BlockLength, Metrics/
   let(:player) { create(:player, :confirmed) }
 
   before do
@@ -11,9 +11,9 @@ RSpec.describe Api::LayoutsController, type: :controller do # rubocop:disable /B
 
   describe 'GET #create' do
     let(:json) { JSON.parse(response.body) }
-    let(:player_2) { create(:player, :confirmed) }
+    let(:player2) { create(:player, :confirmed) }
     let(:game) do
-      create(:game, player_1: player, player_2: player_2, turn: player)
+      create(:game, player1: player, player2:, turn: player)
     end
 
     it 'game not found' do
@@ -29,11 +29,11 @@ RSpec.describe Api::LayoutsController, type: :controller do # rubocop:disable /B
         { name: 'Submarine',   x: 7, y: 6, vertical: 1 },
         { name: 'Patrol Boat', x: 6, y: 1, vertical: 0 }
       ] }.to_json
-      params = { game_id: game.id, layout: layout }
+      params = { game_id: game.id, layout: }
       expect do
         post :create, params: params, session: { player_id: player.id }
       end.to change(Layout, :count).by(5)
-      expect(json['player_1_layed_out']).to eq('1')
+      expect(json['player1_layed_out']).to eq('1')
     end
   end
 end

@@ -3,10 +3,10 @@
 class PlayerMailer < ApplicationMailer
   def invite_email
     @invite = params[:invite]
-    @opponent = @invite.player_2
+    @opponent = @invite.player2
     return if Unsub.found?(@opponent)
 
-    @player = @invite.player_1
+    @player = @invite.player1
     mail(to: @opponent.email, subject: 'Nautical War Invite')
   end
 

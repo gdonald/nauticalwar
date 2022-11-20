@@ -3,11 +3,11 @@
 class Invite < ApplicationRecord
   attr_accessor :game_id
 
-  belongs_to :player_1, class_name: 'Player', foreign_key: 'player_1_id'
-  belongs_to :player_2, class_name: 'Player', foreign_key: 'player_2_id'
+  belongs_to :player1, class_name: 'Player'
+  belongs_to :player2, class_name: 'Player'
 
-  validates :player_2, uniqueness: { scope: :player_1_id,
-                                     message: 'Invite already exists' }
+  validates :player2, uniqueness: { scope: :player1_id,
+                                    message: 'Invite already exists' }
 
   validates :rated, inclusion: [true, false]
   validates :shots_per_turn, inclusion: 1..5
@@ -30,13 +30,13 @@ class Invite < ApplicationRecord
   end
 
   def cannot_invite_self
-    errors.add(:player_2, 'Cannot invite self') if player_1 == player_2
+    errors.add(:player2, 'Cannot invite self') if player1 == player2
   end
 
   def create_game
-    player_2.new_activity!
+    player2.new_activity!
     attrs = attributes.except('id', 'created_at', 'updated_at')
-                      .merge('turn' => player_1)
+                      .merge('turn' => player1)
     Game.create!(attrs)
   end
 end

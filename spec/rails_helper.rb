@@ -6,9 +6,7 @@ ENV['RAILS_ENV'] ||= 'test'
 # require File.expand_path('../config/environment', __dir__)
 require_relative '../config/environment'
 # Prevent database truncation if the environment is production
-if Rails.env.production?
-  abort('The Rails environment is running in production mode!')
-end
+abort('The Rails environment is running in production mode!') if Rails.env.production?
 
 require 'test_prof/recipes/rspec/let_it_be'
 
@@ -72,6 +70,13 @@ RSpec.configure do |config|
   # config.filter_gems_from_backtrace("gem name")
 end
 
+Shoulda::Matchers.configure do |config|
+  config.integrate do |with|
+    with.test_framework :rspec
+    with.library :rails
+  end
+end
+
 require 'webdrivers'
 
 Capybara.register_driver :chrome do |app|
@@ -85,7 +90,7 @@ Capybara.register_driver :headless_chrome do |app|
 
   Capybara::Selenium::Driver.new app,
                                  browser: :chrome,
-                                 capabilities: capabilities
+                                 capabilities:
 end
 
 Capybara.javascript_driver = if ENV['CHROME'] == 'true'

@@ -9,7 +9,7 @@ class Api::EnemiesController < Api::ApiController
   end
 
   # TODO: add to android
-  def destory
+  def destroy
     render json: { status: @current_player.destroy_enemy!(params[:id]) }
   end
 end

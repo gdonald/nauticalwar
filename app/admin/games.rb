@@ -6,10 +6,10 @@ ActiveAdmin.register Game do # rubocop:disable Metrics/BlockLength
   index do
     selectable_column
     id_column
-    column :player_1
-    column 'Layout', :player_1_layed_out
-    column :player_2
-    column 'Layout', :player_2_layed_out
+    column :player1
+    column 'Layout', :player1_layed_out
+    column :player2
+    column 'Layout', :player2_layed_out
     column :rated
     column 'Shots', :shots_per_turn
     column :turn

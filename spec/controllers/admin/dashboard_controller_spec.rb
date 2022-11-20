@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Admin::DashboardController, type: :controller do
+RSpec.describe Admin::DashboardController do
   describe 'GET #index' do
     it 'returns a redirect' do
       get :index

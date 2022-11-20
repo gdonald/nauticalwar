@@ -2,10 +2,10 @@
 
 require 'rails_helper'
 
-RSpec.feature 'Players', type: :feature do
+RSpec.describe 'Players' do
   let(:admin) { create(:player, :admin) }
 
-  scenario 'Can visit invites index', js: true do
+  it 'Can visit invites index', js: true do
     admin_login(admin)
     visit admin_players_path
     expect(page).to have_css('h2', text: 'Players')
@@ -15,7 +15,7 @@ RSpec.feature 'Players', type: :feature do
     end
   end
 
-  scenario 'Admin can edit player', js: true do
+  it 'Admin can edit player', js: true do
     player = create(:player)
 
     admin_login(admin)

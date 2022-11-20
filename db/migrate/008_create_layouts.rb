@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CreateLayouts < ActiveRecord::Migration[6.0]
-  def change # rubocop:disable Metrics/MethodLength
+  def change
     create_table :layouts do |t|
       t.integer :game_id, null: false
       t.integer :player_id, null: false

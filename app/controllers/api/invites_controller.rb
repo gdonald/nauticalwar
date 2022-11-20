@@ -29,7 +29,7 @@ class Api::InvitesController < Api::ApiController
       klass = ActiveModelSerializers::SerializableResource
       render json: { invite_id: params[:id],
                      game: klass.new(game, {}).as_json,
-                     player: klass.new(game.player_1, {}).as_json }
+                     player: klass.new(game.player1, {}).as_json }
     else
       render json: { error: 'Invite not accepted' }
     end
@@ -38,7 +38,7 @@ class Api::InvitesController < Api::ApiController
   def decline
     id = @current_player.decline_invite!(params[:id])
     if id
-      render json: { id: id }, status: :ok
+      render json: { id: }, status: :ok
     else
       render json: { error: 'Invite not found' }, status: :not_found
     end
@@ -47,7 +47,7 @@ class Api::InvitesController < Api::ApiController
   def cancel
     id = @current_player.cancel_invite!(params[:id])
     if id
-      render json: { id: id }, status: :ok
+      render json: { id: }, status: :ok
     else
       render json: { error: 'Invite not found' }, status: :not_found
     end

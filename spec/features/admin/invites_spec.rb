@@ -2,24 +2,26 @@
 
 require 'rails_helper'
 
-RSpec.feature 'Invites', type: :feature do
+RSpec.describe 'Invites' do
   let(:admin) { create(:player, :admin) }
-  let(:player_1) { create(:player, :confirmed) }
-  let(:player_2) { create(:player, :confirmed) }
-  let!(:invite) { create(:invite, player_1: player_1, player_2: player_2) }
+  let(:player1) { create(:player, :confirmed) }
+  let(:player2) { create(:player, :confirmed) }
+  let(:invite) { create(:invite, player1:, player2:) }
 
-  scenario 'Can visit invites index', js: true do
+  before { invite }
+
+  it 'Can visit invites index', js: true do
     admin_login(admin)
     visit admin_invites_path
     expect(page).to have_css('h2', text: 'Invites')
     within('table#index_table_invites tbody tr') do
-      expect(page).to have_css('td', text: player_1.name)
-      expect(page).to have_css('td', text: player_2.name)
+      expect(page).to have_css('td', text: player1.name)
+      expect(page).to have_css('td', text: player2.name)
       expect(page).to have_css('td', text: '86400')
     end
   end
 
-  scenario 'Can edit invite', js: true do
+  it 'Can edit invite', js: true do
     admin_login(admin)
     visit admin_invites_path
     within('table#index_table_invites tbody tr') do

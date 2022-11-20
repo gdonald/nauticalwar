@@ -8,14 +8,14 @@
 %table.list#games
   - @games.each do |game|
     %tr{ data: 'game', id: game.id }
-      %td.rank= image_tag "play/#{game.player_1.rank}.png", class: 'rank'
+      %td.rank= image_tag "play/#{game.player1.rank}.png", class: 'rank'
       %td.info.center.tight
-        %span.game-player-name #{game.player_1.name} vs #{game.player_2.name}
+        %span.game-player-name #{game.player1.name} vs #{game.player2.name}
         %br/
         %span.ratings
-          #{game.player_1.rating}
+          #{game.player1.rating}
           %span.versus versus
-          #{game.player_2.rating}
+          #{game.player2.rating}
         %br/
         %span.status
           - if game.winner
@@ -23,9 +23,9 @@
               %b Winner:
               = game.winner.name
           - else
-            - if game.player_1 == @current_player && !game.player_1_layed_out || game.player_2 == @current_player && !game.player_2_layed_out
+            - if game.player1 == @current_player && !game.player1_layed_out || game.player2 == @current_player && !game.player2_layed_out
               %span.layout-fleet Layout Your Fleet!
-            - elsif game.player_1 != @current_player && !game.player_1_layed_out || game.player_2 != @current_player && !game.player_2_layed_out
+            - elsif game.player1 != @current_player && !game.player1_layed_out || game.player2 != @current_player && !game.player2_layed_out
               %span.time-limit
                 %b Opponent Layout:
                 #{time_left(game.t_limit)}
@@ -44,19 +44,19 @@
           = image_tag "play/rated.png"
         = image_tag "play/#{shots_per_turn_name(game)}.png"
 
-      %td.rank= image_tag "play/#{game.player_2.rank}.png", class: 'rank'
+      %td.rank= image_tag "play/#{game.player2.rank}.png", class: 'rank'
 
     .modal{ role: 'dialog', tabindex: '-1', id: "modal_#{game.id}" }
       .modal-dialog.modal-dialog-centered{ role: 'document' }
         .modal-content
           .modal-header
-            %h5.modal-title Game: #{game.player_1.name} vs #{game.player_2.name}
+            %h5.modal-title Game: #{game.player1.name} vs #{game.player2.name}
             %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
               %span{ 'aria-hidden' => 'true' } ×
           .modal-body
-            - if game.winner.nil? && game.player_1 == @current_player && !game.player_1_layed_out || game.player_2 == @current_player && !game.player_2_layed_out
+            - if game.winner.nil? && game.player1 == @current_player && !game.player1_layed_out || game.player2 == @current_player && !game.player2_layed_out
               %p You need to layout your fleet
-            - elsif game.winner.nil? && game.player_1 != @current_player && !game.player_1_layed_out || game.player_2 != @current_player && !game.player_2_layed_out
+            - elsif game.winner.nil? && game.player1 != @current_player && !game.player1_layed_out || game.player2 != @current_player && !game.player2_layed_out
               %p Your opponent appears unresponsive.
               %p Cancel game?
             - elsif game.winner.present?
@@ -75,10 +75,10 @@
                 %b Time Left:
                 #{time_left(game.t_limit)}
           .modal-footer
-            - if game.winner.nil? && game.player_1 == @current_player && !game.player_1_layed_out || game.player_2 == @current_player && !game.player_2_layed_out
+            - if game.winner.nil? && game.player1 == @current_player && !game.player1_layed_out || game.player2 == @current_player && !game.player2_layed_out
               %button.btn.btn-danger{ type: 'button', id: "cancel_#{game.id}" } Cancel Game
               %button.btn.btn-primary{ type: 'button', id: "layout_#{game.id}" } Layout Fleet
-            - elsif game.winner.nil? && game.player_1 != @current_player && !game.player_1_layed_out || game.player_2 != @current_player && !game.player_2_layed_out
+            - elsif game.winner.nil? && game.player1 != @current_player && !game.player1_layed_out || game.player2 != @current_player && !game.player2_layed_out
               %button.btn.btn-danger{ type: 'button', id: "cancel_#{game.id}" } Cancel Game
               %button.btn.btn-secondary{ type: 'button', id: "keep-waiting_#{game.id}" } Keep Waiting
             - elsif game.winner.present?

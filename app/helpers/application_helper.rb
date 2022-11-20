@@ -25,7 +25,7 @@ module ApplicationHelper
     end
   end
 
-  def rank_name(rank)
+  def rank_name(rank) # rubocop:disable Metrics/CyclomaticComplexity, Metrics/AbcSize
     case rank
     when 'e2' then 'Seaman Apprentice'
     when 'e3' then 'Seaman'

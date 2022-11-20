@@ -13,9 +13,9 @@ class Move < ApplicationRecord
   validate :layout_hits_max
 
   scope :ordered, -> { order(id: :desc) }
-  scope :for_layout, ->(layout) { where(layout: layout) }
-  scope :for_player, ->(player) { where(player: player) }
-  scope :for_xy, ->(x, y) { where(x: x, y: y) }
+  scope :for_layout, ->(layout) { where(layout:) }
+  scope :for_player, ->(player) { where(player:) }
+  scope :for_xy, ->(x, y) { where(x:, y:) }
 
   def to_s
     "Move(player: #{player} layout: #{layout} x: #{x} y: #{y})"

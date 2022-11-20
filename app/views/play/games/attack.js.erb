@@ -9,7 +9,7 @@ updateShotsLeft();
 $('#winner').replaceWith("<%= escape_javascript( render( partial: 'winner' ) ) %>");
 <% end %>
 
-<% unless @game.player_2.bot? %>
+<% unless @game.player2.bot? %>
 setTimeout(function() { window.location.href = '/play/games/' + <%= @game.id %> }, 2000);
 <% end %>
 

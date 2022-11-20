@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
-class Play::HomeController < Play::PlayController
-  def index; end
+module Play
+  class HomeController < Play::PlayController
+    def index; end
+  end
 end

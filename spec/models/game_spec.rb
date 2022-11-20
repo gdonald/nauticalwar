@@ -2,17 +2,17 @@
 
 require 'rails_helper'
 
-RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
-  let_it_be(:player_1, reload: true) { create(:player) }
-  let_it_be(:player_2, reload: true) { create(:player) }
-  let_it_be(:game_1, reload: true) do
-    create(:game, shots_per_turn: 5, player_1: player_1, player_2: player_2, turn: player_1)
+RSpec.describe Game do
+  let_it_be(:player1, reload: true) { create(:player) }
+  let_it_be(:player2, reload: true) { create(:player) }
+  let_it_be(:game1, reload: true) do
+    create(:game, shots_per_turn: 5, player1:, player2:, turn: player1)
   end
-  let_it_be(:game_2) do
-    create(:game, player_1: player_1, player_2: player_2, turn: player_2)
+  let_it_be(:game2) do
+    create(:game, player1:, player2:, turn: player2)
   end
 
-  let(:player_3) { create(:player) }
+  let(:player3) { create(:player) }
   let(:ship) { Ship.first }
 
   before_all do
@@ -20,67 +20,67 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   end
 
   describe '#layouts_for_player' do
-    let!(:layout_1) do
-      create(:layout, game: game_1, ship: ship,
-                      player: player_1)
+    let!(:layout1) do
+      create(:layout, game: game1, ship:,
+                      player: player1)
     end
-    let!(:layout_2) do
-      create(:layout, game: game_1, ship: ship,
-                      player: player_2)
+    let!(:layout2) do
+      create(:layout, game: game1, ship:,
+                      player: player2)
     end
 
     it 'returns player layouts' do
-      expect(game_1.layouts_for_player(player_1)).to eq([layout_1])
-      expect(game_1.layouts_for_player(player_2)).to eq([layout_2])
+      expect(game1.layouts_for_player(player1)).to eq([layout1])
+      expect(game1.layouts_for_player(player2)).to eq([layout2])
     end
   end
 
   describe '#layouts_for_opponent' do
-    let!(:layout_1) do
+    let!(:layout1) do
       create(:layout,
-             game: game_1,
-             ship: ship,
-             player: player_1,
+             game: game1,
+             ship:,
+             player: player1,
              sunk: true)
     end
-    let!(:layout_2) do
+    let!(:layout2) do
       create(:layout,
-             game: game_1,
-             ship: ship,
-             player: player_2,
+             game: game1,
+             ship:,
+             player: player2,
              sunk: true)
     end
 
     it 'returns player layouts' do
-      expect(game_1.layouts_for_opponent(player_1)).to eq([layout_1])
-      expect(game_1.layouts_for_opponent(player_2)).to eq([layout_2])
+      expect(game1.layouts_for_opponent(player1)).to eq([layout1])
+      expect(game1.layouts_for_opponent(player2)).to eq([layout2])
     end
   end
 
   describe '#can_attack?' do
     it 'returns false when there is a winner' do
-      game_1.winner = player_1
-      expect(game_1.can_attack?(player_1)).to be_falsey
+      game1.winner = player1
+      expect(game1).not_to be_can_attack(player1)
     end
 
-    it 'returns false when not player_1 turn' do
-      game_1.turn = player_2
-      expect(game_1.can_attack?(player_1)).to be_falsey
+    it 'returns false when not player1 turn' do
+      game1.turn = player2
+      expect(game1).not_to be_can_attack(player1)
     end
 
     it 'returns true when no winner and is player turn' do
-      expect(game_1.can_attack?(player_1)).to be_truthy
+      expect(game1).to be_can_attack(player1)
     end
   end
 
   describe '#parse_shots' do
     let(:json) do
-      [{ 'x': 5, 'y': 5 },
-       { 'x': 4, 'y': 6 },
-       { 'x': 6, 'y': 6 },
-       { 'x': 3, 'y': 7 },
-       { 'x': 2, 'y': 8 },
-       { 'x': 7, 'y': 9 }].to_json
+      [{ x: 5, y: 5 },
+       { x: 4, y: 6 },
+       { x: 6, y: 6 },
+       { x: 3, y: 7 },
+       { x: 2, y: 8 },
+       { x: 7, y: 9 }].to_json
     end
 
     it 'parses json shots' do
@@ -89,7 +89,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
                   { 'x' => 6, 'y' => 6 },
                   { 'x' => 3, 'y' => 7 },
                   { 'x' => 2, 'y' => 8 }]
-      expect(game_1.parse_shots(json)).to eq(expected)
+      expect(game1.parse_shots(json)).to eq(expected)
     end
   end
 
@@ -112,21 +112,21 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
         { 'name' => 'Submarine',   'x' => 7, 'y' => 6, 'vertical' => 1 },
         { 'name' => 'Patrol Boat', 'x' => 6, 'y' => 1, 'vertical' => 0 }
       ]
-      expect(game_1.parse_ships(json)).to eq(expected)
+      expect(game1.parse_ships(json)).to eq(expected)
     end
   end
 
-  describe '#bot_attack!' do # rubocop:disable Metrics/BlockLength
+  describe '#bot_attack!' do
     let_it_be(:bot) { create(:player, :bot, strength: 3) }
     let_it_be(:game) do
-      create(:game, shots_per_turn: 5, player_1: player_1, player_2: bot, turn: bot)
+      create(:game, shots_per_turn: 5, player1:, player2: bot, turn: bot)
     end
 
     before_all do
       Ship.ordered.each do |ship|
-        Layout.set_location(game, player_1, ship, [0, 1].sample.zero?)
+        Layout.set_location(game, player1, ship, [0, 1].sample.zero?)
       end
-      game.update(player_1_layed_out: true)
+      game.update(player1_layed_out: true)
       game.bot_layout
     end
 
@@ -137,13 +137,13 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
         end.to change(Move, :count).by(5)
                                    .and change { bot.reload.activity }.by(1)
         expect(game.winner).to be_nil
-        expect(game.turn).to eq(player_1)
+        expect(game.turn).to eq(player1)
       end
     end
 
     describe 'with a 4-shot game' do
       let(:game) do
-        create(:game, shots_per_turn: 4, player_1: player_1, player_2: bot, turn: bot)
+        create(:game, shots_per_turn: 4, player1:, player2: bot, turn: bot)
       end
 
       it 'creates 4 bot moves' do
@@ -151,13 +151,13 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
           game.bot_attack!
         end.to change(Move, :count).by(4)
                                    .and change { bot.reload.activity }.by(1)
-        expect(game.turn).to eq(player_1)
+        expect(game.turn).to eq(player1)
       end
     end
 
     describe 'with a 3-shot game' do
       let(:game) do
-        create(:game, shots_per_turn: 3, player_1: player_1, player_2: bot, turn: bot)
+        create(:game, shots_per_turn: 3, player1:, player2: bot, turn: bot)
       end
 
       it 'creates 3 bot moves' do
@@ -165,13 +165,13 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
           game.bot_attack!
         end.to change(Move, :count).by(3)
                                    .and change { bot.reload.activity }.by(1)
-        expect(game.turn).to eq(player_1)
+        expect(game.turn).to eq(player1)
       end
     end
 
     describe 'with a 2-shot game' do
       let(:game) do
-        create(:game, shots_per_turn: 2, player_1: player_1, player_2: bot, turn: bot)
+        create(:game, shots_per_turn: 2, player1:, player2: bot, turn: bot)
       end
 
       it 'creates 2 bot moves' do
@@ -179,13 +179,13 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
           game.bot_attack!
         end.to change(Move, :count).by(2)
                                    .and change { bot.reload.activity }.by(1)
-        expect(game.turn).to eq(player_1)
+        expect(game.turn).to eq(player1)
       end
     end
 
     describe 'with a 1-shot game' do
       let(:game) do
-        create(:game, shots_per_turn: 1, player_1: player_1, player_2: bot, turn: bot)
+        create(:game, shots_per_turn: 1, player1:, player2: bot, turn: bot)
       end
 
       it 'creates 1 bot move' do
@@ -193,25 +193,27 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
           game.bot_attack!
         end.to change(Move, :count).by(1)
                                    .and change { bot.reload.activity }.by(1)
-        expect(game.turn).to eq(player_1)
+        expect(game.turn).to eq(player1)
       end
     end
   end
 
-  describe '#bot_attack_1!' do # rubocop:disable Metrics/BlockLength
+  describe '#bot_attack_1!' do
     let(:bot) { create(:player, :bot, strength: 3) }
     let!(:game) do
-      create(:game, player_1: player_1, player_2: bot, turn: player_1)
+      create(:game, player1:, player2: bot, turn: player1)
     end
 
     describe 'with a sinking ship' do
       let(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
-      let!(:move) do
-        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      let(:move) do
+        create(:move, game:, player: bot, x: 3, y: 5, layout:)
       end
+
+      before { move }
 
       it 'creates 1 bot move' do
         expect do
@@ -221,10 +223,12 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     describe 'with a non-sinking ship' do
-      let!(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+      let(:layout) do
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
+
+      before { layout }
 
       it 'creates 1 bot move' do
         expect do
@@ -234,20 +238,22 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#bot_attack_2!' do # rubocop:disable Metrics/BlockLength
+  describe '#bot_attack_2!' do
     let(:bot) { create(:player, :bot, strength: 1) }
     let!(:game) do
-      create(:game, shots_per_turn: 2, player_1: player_1, player_2: bot, turn: player_1)
+      create(:game, shots_per_turn: 2, player1:, player2: bot, turn: player1)
     end
 
     describe 'with a sinking ship' do
       let(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
-      let!(:move) do
-        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      let(:move) do
+        create(:move, game:, player: bot, x: 3, y: 5, layout:)
       end
+
+      before { move }
 
       it 'creates 2 bot moves' do
         expect do
@@ -257,10 +263,12 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     describe 'with a non-sinking ship' do
-      let!(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+      let(:layout) do
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
+
+      before { layout }
 
       it 'creates 2 bot moves' do
         expect do
@@ -270,20 +278,22 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#bot_attack_3!' do # rubocop:disable Metrics/BlockLength
+  describe '#bot_attack_3!' do
     let(:bot) { create(:player, :bot, strength: 3) }
     let!(:game) do
-      create(:game, shots_per_turn: 3, player_1: player_1, player_2: bot, turn: player_1)
+      create(:game, shots_per_turn: 3, player1:, player2: bot, turn: player1)
     end
 
     describe 'with a sinking ship' do
       let(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
-      let!(:move) do
-        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      let(:move) do
+        create(:move, game:, player: bot, x: 3, y: 5, layout:)
       end
+
+      before { move }
 
       it 'creates 3 bot moves' do
         expect do
@@ -293,10 +303,12 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     describe 'with a non-sinking ship' do
-      let!(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+      let(:layout) do
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
+
+      before { layout }
 
       it 'creates 3 bot moves' do
         expect do
@@ -306,20 +318,22 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#bot_attack_4!' do # rubocop:disable Metrics/BlockLength
+  describe '#bot_attack_4!' do
     let(:bot) { create(:player, :bot, strength: 3) }
     let!(:game) do
-      create(:game, shots_per_turn: 4, player_1: player_1, player_2: bot, turn: player_1)
+      create(:game, shots_per_turn: 4, player1:, player2: bot, turn: player1)
     end
 
     describe 'with a sinking ship' do
       let(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
-      let!(:move) do
-        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      let(:move) do
+        create(:move, game:, player: bot, x: 3, y: 5, layout:)
       end
+
+      before { move }
 
       it 'creates 4 bot moves' do
         expect do
@@ -329,10 +343,12 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     describe 'with a non-sinking ship' do
-      let!(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+      let(:layout) do
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
+
+      before { layout }
 
       it 'creates 4 bot moves' do
         expect do
@@ -342,20 +358,22 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  describe '#bot_attack_5!' do # rubocop:disable Metrics/BlockLength
+  describe '#bot_attack_5!' do
     let(:bot) { create(:player, :bot, strength: 3) }
     let!(:game) do
-      create(:game, player_1: player_1, player_2: bot, turn: player_1)
+      create(:game, player1:, player2: bot, turn: player1)
     end
 
     describe 'with a sinking ship' do
       let(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
-      let!(:move) do
-        create(:move, game: game, player: bot, x: 3, y: 5, layout: layout)
+      let(:move) do
+        create(:move, game:, player: bot, x: 3, y: 5, layout:)
       end
+
+      before { move }
 
       it 'creates 5 bot moves' do
         expect do
@@ -365,10 +383,12 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     describe 'with a non-sinking ship' do
-      let!(:layout) do
-        create(:layout, game: game, player: player_1, ship: Ship.last,
+      let(:layout) do
+        create(:layout, game:, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
+
+      before { layout }
 
       it 'creates 5 bot moves' do
         expect do
@@ -380,21 +400,23 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#move_exists?' do
     it 'returns false' do
-      expect(game_1.move_exists?(player_1, 0, 0)).to be_falsey
+      expect(game1).not_to be_move_exists(player1, 0, 0)
     end
 
     describe 'when there is a move' do
       let(:layout) do
-        create(:layout, game: game_1, player: player_1, ship: Ship.last,
+        create(:layout, game: game1, player: player1, ship: Ship.last,
                         x: 3, y: 5, vertical: true)
       end
-      let!(:move) do
-        create(:move, game: game_1, player: player_2, x: 3, y: 5,
-                      layout: layout)
+      let(:move) do
+        create(:move, game: game1, player: player2, x: 3, y: 5,
+                      layout:)
       end
 
+      before { move }
+
       it 'returns true' do
-        expect(game_1.move_exists?(player_2, 3, 5)).to be_truthy
+        expect(game1).to be_move_exists(player2, 3, 5)
       end
     end
   end
@@ -403,7 +425,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     it 'creates ship layout' do
       hash = { 'name' => 'Carrier', 'x' => 1, 'y' => 1, 'vertical' => 1 }
       expect do
-        game_1.create_ship_layout(player_1, hash)
+        game1.create_ship_layout(player1, hash)
       end.to change(Layout, :count).by(1)
     end
   end
@@ -418,15 +440,15 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
         { name: 'Patrol Boat', x: 6, y: 1, vertical: 0 }
       ] }.to_json
       expect do
-        game_1.create_ship_layouts(player_1, layout)
+        game1.create_ship_layouts(player1, layout)
       end.to change(Layout, :count).by(5)
-      expect(game_1.player_1_layed_out).to be_truthy
+      expect(game1.player1_layed_out).to be_truthy
     end
   end
 
   describe '#vertical_location' do
     it 'returns a row and col' do
-      result = game_1.vertical_location(player_1, ship)
+      result = game1.vertical_location(player1, ship)
       expect(result).to be_a(Array)
       expect(result[0]).to be_between(0, 9)
       expect(result[1]).to be_between(0, 9)
@@ -435,7 +457,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#horizontal_location' do
     it 'returns a row and col' do
-      result = game_1.horizontal_location(player_1, ship)
+      result = game1.horizontal_location(player1, ship)
       expect(result).to be_a(Array)
       expect(result[0]).to be_between(0, 9)
       expect(result[1]).to be_between(0, 9)
@@ -444,142 +466,145 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#attack_known_vert' do
     it 'creates and returns a move on a vertical layout' do
-      layout = create(:layout, game: game_1, player: player_2, ship: Ship.last,
+      layout = create(:layout, game: game1, player: player2, ship: Ship.last,
                                x: 3, y: 5, vertical: true)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      create(:move, game: game1, player: player1, x: 3, y: 6, layout:)
       expect do
-        game_1.attack_known_vert(player_1, player_2, layout.moves)
+        game1.attack_known_vert(player1, player2, layout.moves)
       end.to change(Move, :count).by(1)
     end
 
     it 'creates and returns a move on a horizontal layout' do
-      layout = create(:layout, game: game_1, player: player_2, ship: Ship.last,
+      layout = create(:layout, game: game1, player: player2, ship: Ship.last,
                                x: 3, y: 5)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      create(:move, game: game_1, player: player_1, x: 4, y: 5, layout: layout)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      create(:move, game: game1, player: player1, x: 4, y: 5, layout:)
       expect do
-        game_1.attack_known_vert(player_1, player_2, layout.moves)
+        game1.attack_known_vert(player1, player2, layout.moves)
       end.to change(Move, :count).by(1)
     end
   end
 
   describe '#attack_vertical' do
     it 'returns possible vertical moves' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      result = game_1.attack_vertical(player_1, layout.moves)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      result = game1.attack_vertical(player1, layout.moves)
       expect(result).to eq([[3, 3], [4, 6]])
     end
   end
 
   describe '#attack_horizontal' do
     it 'returns possible horizontal moves' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: false)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      result = game_1.attack_horizontal(player_1, layout.moves)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      result = game1.attack_horizontal(player1, layout.moves)
       expect(result).to eq([[2, 4], [5, 5]])
     end
   end
 
   describe '#attack_unknown_vert' do
     it 'creates a move and returns true' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      hit = create(:move, game: game_1, player: player_1, x: 3, y: 5,
-                          layout: layout)
-      create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
-      create(:move, game: game_1, player: player_1, x: 4, y: 5)
-      create(:move, game: game_1, player: player_1, x: 2, y: 5)
-      expect(game_1.attack_unknown_vert(player_1, player_2, hit)).to be_truthy
-      move = game_1.moves.last
+      hit = create(:move, game: game1, player: player1, x: 3, y: 5,
+                          layout:)
+      create(:move, game: game1, player: player1, x: 3, y: 6, layout:)
+      create(:move, game: game1, player: player1, x: 4, y: 5)
+      create(:move, game: game1, player: player1, x: 2, y: 5)
+      expect(game1.attack_unknown_vert(player1, player2, hit)).to be_truthy
+      move = game1.moves.last
       expect(move.x).to eq(3)
       expect(move.y).to eq(4)
     end
 
     it 'returns false' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      hit = create(:move, game: game_1, player: player_1, x: 3, y: 5,
-                          layout: layout)
-      create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
-      create(:move, game: game_1, player: player_1, x: 4, y: 5)
-      create(:move, game: game_1, player: player_1, x: 2, y: 5)
-      create(:move, game: game_1, player: player_1, x: 3, y: 4)
-      expect(game_1.attack_unknown_vert(player_1, player_2, hit)).to be_falsey
+      hit = create(:move, game: game1, player: player1, x: 3, y: 5,
+                          layout:)
+      create(:move, game: game1, player: player1, x: 3, y: 6, layout:)
+      create(:move, game: game1, player: player1, x: 4, y: 5)
+      create(:move, game: game1, player: player1, x: 2, y: 5)
+      create(:move, game: game1, player: player1, x: 3, y: 4)
+      expect(game1.attack_unknown_vert(player1, player2, hit)).to be_falsey
     end
   end
 
   describe '#normal_range' do
     it 'returns a range from 0 to 9' do
-      expect(game_1.normal_range(-1, 10)).to eq((0..9))
+      expect(game1.normal_range(-1, 10)).to eq((0..9))
     end
 
     it 'returns a range from 2 to 7' do
-      expect(game_1.normal_range(2, 7)).to eq((2..7))
+      expect(game1.normal_range(2, 7)).to eq((2..7))
     end
   end
 
   describe '#attack_sinking_ship' do
     it 'returns nil' do
-      result = game_1.attack_sinking_ship(player_1, player_2)
-      expect(result).to_not be
+      result = game1.attack_sinking_ship(player1, player2)
+      expect(result).not_to be_present
     end
 
     it 'calls attack_known_vert' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+      allow(game1).to receive(:attack_known_vert)
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      create(:move, game: game_1, player: player_1, x: 3, y: 6, layout: layout)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      create(:move, game: game1, player: player1, x: 3, y: 6, layout:)
       moves = layout.moves
-      expect(game_1).to receive(:attack_known_vert).with(player_1, player_2,
-                                                         moves)
-      game_1.attack_sinking_ship(player_1, player_2)
+      game1.attack_sinking_ship(player1, player2)
+      expect(game1).to have_received(:attack_known_vert)
+        .with(player1, player2, moves)
     end
 
     it 'calls attack_unknown_vert' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+      allow(game1).to receive(:attack_unknown_vert)
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
       moves = layout.moves
-      expect(game_1).to receive(:attack_unknown_vert).with(player_1, player_2,
-                                                           moves.first)
-      game_1.attack_sinking_ship(player_1, player_2)
+      game1.attack_sinking_ship(player1, player2)
+      expect(game1).to have_received(:attack_unknown_vert)
+        .with(player1, player2, moves.first)
     end
   end
 
   describe '#attack_random_ship' do
     it 'attacks a random ship' do
       expect do
-        game_1.attack_random_ship(player_1, player_2)
+        game1.attack_random_ship(player1, player2)
       end.to change(Move, :count).by(1)
     end
 
     it 'attacks a random ship using get_random_move_spacing' do
-      layout = double('layout')
+      allow(game1).to receive(:get_random_move_spacing)
+      layout = instance_double(Layout)
       allow(layout).to receive(:nil?).once.and_return(true)
-      allow(game_1).to receive(:again?).with(player_1) { true }
-      expect(game_1).to receive(:get_random_move_spacing).with(player_1)
+      allow(game1).to receive(:again?).with(player1).and_return(true)
       expect do
-        expect(game_1.attack_random_ship(player_1, player_2)).to be_truthy
+        expect(game1.attack_random_ship(player1, player2)).to be_truthy
       end.to change(Move, :count).by(1)
+      expect(game1).to have_received(:get_random_move_spacing).with(player1)
     end
   end
 
   describe '#get_sinking_ship' do
     it 'returns nil' do
-      create(:layout, game: game_1, player: player_2, ship: ship, x: 3, y: 5,
+      create(:layout, game: game1, player: player2, ship:, x: 3, y: 5,
                       vertical: true)
-      expect(game_1.get_sinking_ship(player_2)).to be_nil
+      expect(game1.get_sinking_ship(player2)).to be_nil
     end
 
     it 'returns an unsunk ship layout with a hit' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      expect(game_1.get_sinking_ship(player_2)).to eq(layout)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      expect(game1.get_sinking_ship(player2)).to eq(layout)
     end
   end
 
@@ -587,30 +612,30 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     let(:player) { build(:player, id: 1) }
 
     it 'returns true' do
-      allow(game_1).to receive(:rand_n) { 1 }
-      expect(game_1.again?(player)).to be_truthy
+      allow(game1).to receive(:rand_n).and_return(1)
+      expect(game1).to be_again(player)
     end
 
-    it 'returns true' do
-      allow(game_1).to receive(:rand_n) { 95 }
-      expect(game_1.again?(player)).to be_truthy
-    end
-
-    it 'returns falsey' do
-      allow(game_1).to receive(:rand_n) { 96 }
-      expect(game_1.again?(player)).to be_falsey
+    it 'with 95 returns true' do
+      allow(game1).to receive(:rand_n).and_return(95)
+      expect(game1).to be_again(player)
     end
 
     it 'returns falsey' do
+      allow(game1).to receive(:rand_n).and_return(96)
+      expect(game1).not_to be_again(player)
+    end
+
+    it 'with 97 returns falsey' do
       player.id = 2
-      allow(game_1).to receive(:rand_n) { 97 }
-      expect(game_1.again?(player)).to be_falsey
+      allow(game1).to receive(:rand_n).and_return(97)
+      expect(game1).not_to be_again(player)
     end
   end
 
   describe '#rand_n' do
     it 'returns a random number' do
-      result = game_1.rand_n(0, 9)
+      result = game1.rand_n(0, 9)
       expect(result[0]).to be_a(Integer)
       expect(result[0]).to be_between(0, 9)
     end
@@ -618,7 +643,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#get_totally_random_move' do
     it 'returns a random move' do
-      result = game_1.get_totally_random_move(player_1)
+      result = game1.get_totally_random_move(player1)
       expect(result[0]).to be_a(Integer)
       expect(result[1]).to be_a(Integer)
       expect(result[0]).to be_between(0, 9)
@@ -626,17 +651,18 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     it 'returns a random move after calling get_totally_random_move again' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      allow(game_1).to receive(:rand_col_row).and_return([3, 5], [0, 0])
-      game_1.get_totally_random_move(player_1)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      allow(game1).to receive(:rand_col_row)
+      game1.get_totally_random_move(player1)
+      expect(game1).to have_received(:rand_col_row)
     end
   end
 
   describe '#get_random_move_spacing' do
     it 'returns a random move' do
-      result = game_1.get_random_move_spacing(player_1)
+      result = game1.get_random_move_spacing(player1)
       expect(result[0]).to be_a(Integer)
       expect(result[1]).to be_a(Integer)
       expect(result[0]).to be_between(0, 9)
@@ -644,15 +670,16 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     end
 
     it 'returns a totally random move instead' do
-      allow(game_1).to receive(:get_possible_spacing_moves).with(player_1) { [] } # rubocop:disable Layout/LineLength
-      expect(game_1).to receive(:get_totally_random_move).with(player_1)
-      game_1.get_random_move_spacing(player_1)
+      allow(game1).to receive(:get_totally_random_move)
+      allow(game1).to receive(:get_possible_spacing_moves).with(player1).and_return([])
+      game1.get_random_move_spacing(player1)
+      expect(game1).to have_received(:get_totally_random_move).with(player1)
     end
   end
 
   describe '#get_possible_spacing_moves' do # rubocop:disable /BlockLength, Metrics/
     it 'returns possible moves based on previous moves spacing' do
-      result = game_1.get_possible_spacing_moves(player_1)
+      result = game1.get_possible_spacing_moves(player1)
       expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3], # rubocop:disable Layout/LineLength
                   [[1, 0], 5], [[1, 1], 8], [[1, 2], 8], [[1, 3], 8], [[1, 4], 8], [[1, 5], 8], [[1, 6], 8], [[1, 7], 8], [[1, 8], 8], [[1, 9], 5], # rubocop:disable Layout/LineLength
                   [[2, 0], 5], [[2, 1], 8], [[2, 2], 8], [[2, 3], 8], [[2, 4], 8], [[2, 5], 8], [[2, 6], 8], [[2, 7], 8], [[2, 8], 8], [[2, 9], 5], # rubocop:disable Layout/LineLength
@@ -666,11 +693,11 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
       expect(result).to eq(expected)
     end
 
-    it 'returns possible moves based on previous moves spacing' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+    it 'with a move returns possible moves based on previous moves spacing' do
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      result = game_1.get_possible_spacing_moves(player_1)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      result = game1.get_possible_spacing_moves(player1)
       expected = [[[0, 0], 3], [[0, 1], 5], [[0, 2], 5], [[0, 3], 5], [[0, 4], 5], [[0, 5], 5], [[0, 6], 5], [[0, 7], 5], [[0, 8], 5], [[0, 9], 3], # rubocop:disable Layout/LineLength
                   [[1, 0], 5], [[1, 1], 8], [[1, 2], 8], [[1, 3], 8], [[1, 4], 8], [[1, 5], 8], [[1, 6], 8], [[1, 7], 8], [[1, 8], 8], [[1, 9], 5], # rubocop:disable Layout/LineLength
                   [[2, 0], 5], [[2, 1], 8], [[2, 2], 8], [[2, 3], 8], [[2, 4], 7], [[2, 5], 7], [[2, 6], 7], [[2, 7], 8], [[2, 8], 8], [[2, 9], 5], # rubocop:disable Layout/LineLength
@@ -687,19 +714,19 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#in_grid?' do
     it 'returns true' do
-      expect(game_1.in_grid?(0)).to be_truthy
-      expect(game_1.in_grid?(9)).to be_truthy
+      expect(game1).to be_in_grid(0)
+      expect(game1).to be_in_grid(9)
     end
 
     it 'returns false' do
-      expect(game_1.in_grid?(-1)).to be_falsey
-      expect(game_1.in_grid?(10)).to be_falsey
+      expect(game1).not_to be_in_grid(-1)
+      expect(game1).not_to be_in_grid(10)
     end
   end
 
-  describe '#hit_miss_grid' do # rubocop:disable Metrics/BlockLength
+  describe '#hit_miss_grid' do
     it 'returns a grid of hits and misses' do
-      result = game_1.hit_miss_grid(player_1)
+      result = game1.hit_miss_grid(player1)
       expected = [['', '', '', '', '', '', '', '', '', ''],
                   ['', '', '', '', '', '', '', '', '', ''],
                   ['', '', '', '', '', '', '', '', '', ''],
@@ -713,11 +740,11 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
       expect(result).to eq(expected)
     end
 
-    it 'returns a grid of hits and misses' do
-      layout = create(:layout, game: game_1, player: player_2, ship: ship,
+    it 'with a hit returns a grid of hits and misses' do
+      layout = create(:layout, game: game1, player: player2, ship:,
                                x: 3, y: 5, vertical: true)
-      create(:move, game: game_1, player: player_1, x: 3, y: 5, layout: layout)
-      result = game_1.hit_miss_grid(player_1)
+      create(:move, game: game1, player: player1, x: 3, y: 5, layout:)
+      result = game1.hit_miss_grid(player1)
       expected = [['', '', '', '', '', '', '', '', '', ''],
                   ['', '', '', '', '', '', '', '', '', ''],
                   ['', '', '', '', '', '', '', '', '', ''],
@@ -734,7 +761,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
 
   describe '#get_random_move_lines' do
     it 'gets an x, y coordinate' do
-      x, y = game_1.get_random_move_lines(player_1)
+      x, y = game1.get_random_move_lines(player1)
       expect(x).to be_a(Integer)
       expect(y).to be_a(Integer)
       expect(x).to be_between(0, 9)
@@ -747,7 +774,7 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
       cols = [2, 2, 1]
       rows = [3, 3, 2]
       expected = [2, 2]
-      expect(game_1.random_min_col_row(cols, rows)).to eq(expected)
+      expect(game1.random_min_col_row(cols, rows)).to eq(expected)
     end
   end
 
@@ -755,140 +782,140 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
     it 'returns empty grid' do
       expected = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                   [0, 0, 0, 0, 0, 0, 0, 0, 0, 0]]
-      expect(game_1.col_row_moves(player_1)).to eq(expected)
+      expect(game1.col_row_moves(player1)).to eq(expected)
     end
 
     it 'returns cols and rows' do
-      create(:move, game: game_1, player: player_1, x: 3, y: 3)
+      create(:move, game: game1, player: player1, x: 3, y: 3)
       expected = [[0, 0, 0, 1, 0, 0, 0, 0, 0, 0],
                   [0, 0, 0, 1, 0, 0, 0, 0, 0, 0]]
-      expect(game_1.col_row_moves(player_1)).to eq(expected)
+      expect(game1.col_row_moves(player1)).to eq(expected)
     end
   end
 
-  describe '#calculate_scores' do # rubocop:disable Metrics/BlockLength
-    let!(:game_1) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
-                    winner: player_1)
+  describe '#calculate_scores' do
+    let!(:game1) do
+      create(:game, player1:, player2:, turn: player2,
+                    winner: player1)
     end
-    let!(:game_2) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
-                    winner: player_2)
+    let!(:game2) do
+      create(:game, player1:, player2:, turn: player2,
+                    winner: player2)
     end
 
     it 'scores a game where player 1 wins' do
-      game_1.calculate_scores
-      expect(player_1.wins).to eq(1)
-      expect(player_1.losses).to eq(0)
-      expect(player_1.rating).to eq(1216)
-      expect(player_2.wins).to eq(0)
-      expect(player_2.losses).to eq(1)
-      expect(player_2.rating).to eq(1184)
+      game1.calculate_scores
+      expect(player1.wins).to eq(1)
+      expect(player1.losses).to eq(0)
+      expect(player1.rating).to eq(1216)
+      expect(player2.wins).to eq(0)
+      expect(player2.losses).to eq(1)
+      expect(player2.rating).to eq(1184)
     end
 
     it 'scores a game where player 2 wins' do
-      game_2.calculate_scores
-      expect(player_1.wins).to eq(0)
-      expect(player_1.losses).to eq(1)
-      expect(player_1.rating).to eq(1184)
-      expect(player_2.wins).to eq(1)
-      expect(player_2.losses).to eq(0)
-      expect(player_2.rating).to eq(1216)
+      game2.calculate_scores
+      expect(player1.wins).to eq(0)
+      expect(player1.losses).to eq(1)
+      expect(player1.rating).to eq(1184)
+      expect(player2.wins).to eq(1)
+      expect(player2.losses).to eq(0)
+      expect(player2.rating).to eq(1216)
     end
   end
 
-  describe '#calculate_scores_cancel' do # rubocop:disable Metrics/BlockLength
-    let!(:game_1) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
-                    winner: player_1)
+  describe '#calculate_scores_cancel' do
+    let!(:game1) do
+      create(:game, player1:, player2:, turn: player2,
+                    winner: player1)
     end
-    let!(:game_2) do
-      create(:game, player_1: player_1, player_2: player_2, turn: player_2,
-                    winner: player_2)
+    let!(:game2) do
+      create(:game, player1:, player2:, turn: player2,
+                    winner: player2)
     end
 
     it 'scores a canceled game where player 1 wins' do
-      game_1.calculate_scores(true)
-      expect(player_1.wins).to eq(1)
-      expect(player_1.losses).to eq(0)
-      expect(player_1.rating).to eq(1201)
-      expect(player_2.wins).to eq(0)
-      expect(player_2.losses).to eq(1)
-      expect(player_2.rating).to eq(1199)
+      game1.calculate_scores(cancel: true)
+      expect(player1.wins).to eq(1)
+      expect(player1.losses).to eq(0)
+      expect(player1.rating).to eq(1201)
+      expect(player2.wins).to eq(0)
+      expect(player2.losses).to eq(1)
+      expect(player2.rating).to eq(1199)
     end
 
     it 'scores a canceled game where player 2 wins' do
-      game_2.calculate_scores(true)
-      expect(player_1.wins).to eq(0)
-      expect(player_1.losses).to eq(1)
-      expect(player_1.rating).to eq(1199)
-      expect(player_2.wins).to eq(1)
-      expect(player_2.losses).to eq(0)
-      expect(player_2.rating).to eq(1201)
+      game2.calculate_scores(cancel: true)
+      expect(player1.wins).to eq(0)
+      expect(player1.losses).to eq(1)
+      expect(player1.rating).to eq(1199)
+      expect(player2.wins).to eq(1)
+      expect(player2.losses).to eq(0)
+      expect(player2.rating).to eq(1201)
     end
   end
 
   describe '#next_turn!' do
     it 'advances to next player turn' do
-      game_1.next_turn!
-      expect(game_1.turn).to eq(player_2)
+      game1.next_turn!
+      expect(game1.turn).to eq(player2)
     end
   end
 
   describe '#declare_winner' do
     before_all do
-      create(:layout, game: game_1, player: player_1, ship: Ship.first)
-      create(:layout, game: game_1, player: player_2, ship: Ship.first, sunk: true)
+      create(:layout, game: game1, player: player1, ship: Ship.first)
+      create(:layout, game: game1, player: player2, ship: Ship.first, sunk: true)
     end
 
     it 'sets a game winner' do
-      game_1.declare_winner
-      expect(game_1.winner).to eq(player_1)
+      game1.declare_winner
+      expect(game1.winner).to eq(player1)
     end
   end
 
   describe '#all_ships_sunk?' do
     before_all do
-      create(:layout, game: game_1, player: player_1, ship: Ship.first)
-      create(:layout, game: game_1, player: player_2, ship: Ship.first, sunk: true)
+      create(:layout, game: game1, player: player1, ship: Ship.first)
+      create(:layout, game: game1, player: player2, ship: Ship.first, sunk: true)
     end
 
     it 'returns false' do
-      expect(game_1.all_ships_sunk?(player_1)).to be_falsey
+      expect(game1).not_to be_all_ships_sunk(player1)
     end
 
     it 'returns true' do
-      expect(game_1.all_ships_sunk?(player_2)).to be_truthy
+      expect(game1).to be_all_ships_sunk(player2)
     end
   end
 
   describe '#next_player_turn' do
-    it 'returns player_2' do
-      expect(game_1.next_player_turn).to eq(player_2)
+    it 'returns player2' do
+      expect(game1.next_player_turn).to eq(player2)
     end
 
-    it 'returns player_1' do
-      expect(game_2.next_player_turn).to eq(player_1)
+    it 'returns player1' do
+      expect(game2.next_player_turn).to eq(player1)
     end
   end
 
   describe '#opponent' do
-    it 'returns player_2' do
-      expect(game_1.opponent(player_1)).to eq(player_2)
+    it 'returns player2' do
+      expect(game1.opponent(player1)).to eq(player2)
     end
 
-    it 'returns player_1' do
-      expect(game_1.opponent(player_2)).to eq(player_1)
+    it 'returns player1' do
+      expect(game1.opponent(player2)).to eq(player1)
     end
   end
 
   describe '#player' do
-    it 'returns player_2' do
-      expect(game_1.player(player_1)).to eq(player_1)
+    it 'returns player2' do
+      expect(game1.player(player1)).to eq(player1)
     end
 
-    it 'returns player_1' do
-      expect(game_1.player(player_2)).to eq(player_2)
+    it 'returns player1' do
+      expect(game1.player(player2)).to eq(player2)
     end
   end
 
@@ -901,123 +928,127 @@ RSpec.describe Game, type: :model do # rubocop:disable Metrics/BlockLength
   describe '#bot_layout' do
     it 'creates bot layouts' do
       expect do
-        game_1.bot_layout
+        game1.bot_layout
       end.to change(Layout, :count).by(Ship.count)
-      expect(game_1.player_2_layed_out).to be_truthy
+      expect(game1.player2_layed_out).to be_truthy
     end
   end
 
   describe '#guest_layout' do
     it 'creates guest layouts' do
       expect do
-        game_1.guest_layout
+        game1.guest_layout
       end.to change(Layout, :count).by(Ship.count)
-      expect(game_1.player_1_layed_out).to be_truthy
+      expect(game1.player1_layed_out).to be_truthy
     end
   end
 
   describe '.find_game' do
-    let(:id) { game_1.id }
+    let(:id) { game1.id }
 
-    it 'returns a game for player_1' do
-      expect(Game.find_game(player_1, id)).to eq(game_1)
+    it 'returns a game for player1' do
+      expect(described_class.find_game(player1, id)).to eq(game1)
     end
 
-    it 'returns a game for player_2' do
-      expect(Game.find_game(player_2, id)).to eq(game_1)
+    it 'returns a game for player2' do
+      expect(described_class.find_game(player2, id)).to eq(game1)
     end
 
-    it 'returns nil for player_3' do
-      expect(Game.find_game(player_3, id)).to be_nil
+    it 'returns nil for player3' do
+      expect(described_class.find_game(player3, id)).to be_nil
     end
 
     it 'returns nil for unknown game id' do
-      expect(Game.find_game(player_1, 0)).to be_nil
+      expect(described_class.find_game(player1, 0)).to be_nil
     end
   end
 
   describe '#t_limit' do
     it 'returns time limit per turn in seconds' do
-      travel_to game_1.updated_at do
-        expect(game_1.t_limit).to eq(86_400)
+      travel_to game1.updated_at do
+        expect(game1.t_limit).to eq(86_400)
       end
     end
   end
 
   describe '#moves_for_player' do
-    let!(:move_1) { create(:move, game: game_1, player: player_1, x: 0, y: 0) }
-    let!(:move_2) { create(:move, game: game_1, player: player_2, x: 0, y: 0) }
+    let!(:move1) { create(:move, game: game1, player: player1, x: 0, y: 0) }
+    let(:move2) { create(:move, game: game1, player: player2, x: 0, y: 0) }
+
+    before { move2 }
 
     it 'returns moves for a player' do
-      expect(game_1.moves_for_player(player_1)).to eq([move_1])
+      expect(game1.moves_for_player(player1)).to eq([move1])
     end
 
     it 'returns an empty array' do
-      expect(game_1.moves_for_player(player_3)).to eq([])
+      expect(game1.moves_for_player(player3)).to eq([])
     end
   end
 
   describe '#hit?' do
-    let!(:layout) do
-      create(:layout, game: game_1, player: player_1, ship: ship, x: 2, y: 2,
+    let(:layout) do
+      create(:layout, game: game1, player: player1, ship:, x: 2, y: 2,
                       vertical: true)
     end
 
+    before { layout }
+
     it 'returns true' do
-      expect(game_1.hit?(player_1, 2, 2)).to be_truthy
+      expect(game1).to be_hit(player1, 2, 2)
     end
 
     it 'returns false' do
-      expect(game_1.hit?(player_2, 5, 5)).to be_falsey
+      expect(game1).not_to be_hit(player2, 5, 5)
     end
   end
 
-  describe '#empty_neighbors' do # rubocop:disable Metrics/BlockLength
+  describe '#empty_neighbors' do
     let!(:layout) do
-      create(:layout, game: game_1, player: player_1, ship: ship, x: 5, y: 5,
+      create(:layout, game: game1, player: player1, ship:, x: 5, y: 5,
                       vertical: true)
     end
     let!(:hit) do
-      create(:move, game: game_1, player: player_2, x: 5, y: 5, layout: layout)
+      create(:move, game: game1, player: player2, x: 5, y: 5, layout:)
     end
 
     it 'returns 4 empty neighbors for a hit' do
       expected = [[4, 6, 5, 5], [5, 5, 4, 6]]
-      expect(game_1.empty_neighbors(player_2, hit)).to eq(expected)
+      expect(game1.empty_neighbors(player2, hit)).to eq(expected)
     end
 
     it 'returns 3 empty neighbors for a hit' do
-      create(:move, game: game_1, player: player_2, x: 5, y: 6)
+      create(:move, game: game1, player: player2, x: 5, y: 6)
 
       expected = [[4, 6, 5], [5, 5, 4]]
-      expect(game_1.empty_neighbors(player_2, hit)).to eq(expected)
+      expect(game1.empty_neighbors(player2, hit)).to eq(expected)
     end
 
     it 'returns 2 empty neighbors for a hit' do
-      create(:move, game: game_1, player: player_2, x: 5, y: 6)
-      create(:move, game: game_1, player: player_2, x: 5, y: 4)
+      create(:move, game: game1, player: player2, x: 5, y: 6)
+      create(:move, game: game1, player: player2, x: 5, y: 4)
 
       expected = [[4, 6], [5, 5]]
-      expect(game_1.empty_neighbors(player_2, hit)).to eq(expected)
+      expect(game1.empty_neighbors(player2, hit)).to eq(expected)
     end
 
     it 'returns 1 empty neighbor for a hit' do
-      create(:move, game: game_1, player: player_2, x: 5, y: 6)
-      create(:move, game: game_1, player: player_2, x: 5, y: 4)
-      create(:move, game: game_1, player: player_2, x: 6, y: 5)
+      create(:move, game: game1, player: player2, x: 5, y: 6)
+      create(:move, game: game1, player: player2, x: 5, y: 4)
+      create(:move, game: game1, player: player2, x: 6, y: 5)
 
       expected = [[4], [5]]
-      expect(game_1.empty_neighbors(player_2, hit)).to eq(expected)
+      expect(game1.empty_neighbors(player2, hit)).to eq(expected)
     end
 
     it 'returns 0 empty neighborw for a hit' do
-      create(:move, game: game_1, player: player_2, x: 5, y: 6)
-      create(:move, game: game_1, player: player_2, x: 5, y: 4)
-      create(:move, game: game_1, player: player_2, x: 6, y: 5)
-      create(:move, game: game_1, player: player_2, x: 4, y: 5)
+      create(:move, game: game1, player: player2, x: 5, y: 6)
+      create(:move, game: game1, player: player2, x: 5, y: 4)
+      create(:move, game: game1, player: player2, x: 6, y: 5)
+      create(:move, game: game1, player: player2, x: 4, y: 5)
 
       expected = [[], []]
-      expect(game_1.empty_neighbors(player_2, hit)).to eq(expected)
+      expect(game1.empty_neighbors(player2, hit)).to eq(expected)
     end
   end
 end

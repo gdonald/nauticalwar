@@ -2,11 +2,11 @@
 
 require 'rails_helper'
 
-RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable /BlockLength, Metrics/
+RSpec.describe PlayerMailer do # rubocop:disable /BlockLength, Metrics/
   let(:player) { build_stubbed(:player, confirmation_token: 'xxx') }
 
   describe '#confirmation_email' do
-    let(:mail) { PlayerMailer.with(player: player).confirmation_email }
+    let(:mail) { described_class.with(player:).confirmation_email }
 
     it 'renders the headers' do
       expect(mail.subject).to eq('Nautical War Signup')
@@ -25,12 +25,12 @@ RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable /BlockLength, Me
   end
 
   describe '#reset_email' do
-    let(:mail) { PlayerMailer.with(player: player).reset_email }
+    let(:mail) { described_class.with(player:).reset_email }
 
     before do
       # player.reset_password_token
       player.password_token = Player.generate_unique_secure_token
-      player.password_token_expire = Time.zone.now + 1.hour
+      player.password_token_expire = 1.hour.from_now
     end
 
     it 'renders the headers' do
@@ -50,11 +50,7 @@ RSpec.describe PlayerMailer, type: :mailer do # rubocop:disable /BlockLength, Me
   end
 
   describe '#reset_complete_email' do
-    let(:mail) { PlayerMailer.with(player: player).reset_complete_email }
-
-    before do
-      # player.reset_password_token
-    end
+    let(:mail) { described_class.with(player:).reset_complete_email }
 
     it 'renders the headers' do
       expect(mail.subject).to eq('Nautical War Password Reset Complete')

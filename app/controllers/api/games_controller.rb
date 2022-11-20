@@ -24,6 +24,11 @@ class Api::GamesController < Api::ApiController
     render json: { status: status(game) }
   end
 
+  def show
+    result = @current_player.player_game(params[:id])
+    render_game(result)
+  end
+
   def destroy
     game = @current_player.destroy_game!(params[:id])
     render json: { status: status(game) }
@@ -38,17 +43,12 @@ class Api::GamesController < Api::ApiController
     render json: { status: @current_player.my_turn(params[:id]) }
   end
 
-  def show
-    result = @current_player.player_game(params[:id])
-    render_game(result)
-  end
-
   def opponent
     result = @current_player.opponent_game(params[:id])
     render_game(result)
   end
 
-  def attack # rubocop:disable Metrics/MethodLength
+  def attack
     game = Game.find_game(@current_player, params[:id])
     if game
       if game.can_attack?(@current_player)

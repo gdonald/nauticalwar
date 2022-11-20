@@ -2,12 +2,12 @@
 
 class InviteSerializer < ActiveModel::Serializer
   attributes :id,
-             :player_1_id,
-             :player_2_id,
-             :player_1_name,
-             :player_2_name,
-             :player_1_rating,
-             :player_2_rating,
+             :player1_id,
+             :player2_id,
+             :player1_name,
+             :player2_name,
+             :player1_rating,
+             :player2_rating,
              :created_at,
              :rated,
              :shots_per_turn,
@@ -18,23 +18,21 @@ class InviteSerializer < ActiveModel::Serializer
     object.rated ? '1' : '0'
   end
 
-  def shots_per_turn
-    object.shots_per_turn
+  delegate :shots_per_turn, to: :object
+
+  def player1_name
+    object.player1.name
   end
 
-  def player_1_name
-    object.player_1.name
+  def player2_name
+    object.player2.name
   end
 
-  def player_2_name
-    object.player_2.name
+  def player1_rating
+    object.player1.rating
   end
 
-  def player_1_rating
-    object.player_1.rating
-  end
-
-  def player_2_rating
-    object.player_2.rating
+  def player2_rating
+    object.player2.rating
   end
 end

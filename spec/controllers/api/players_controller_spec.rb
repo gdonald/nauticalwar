@@ -2,14 +2,14 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable /BlockLength, Metrics/
+RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics/
   let(:player) { create(:player, :confirmed) }
 
-  describe 'GET #index' do # rubocop:disable Metrics/BlockLength
+  describe 'GET #index' do
     let(:json) { JSON.parse(response.body) }
-    let(:player_2) { create(:player, :confirmed) }
+    let(:player2) { create(:player, :confirmed) }
     let(:game) do
-      create(:game, player_1: player, player_2: player_2, turn: player)
+      create(:game, player1: player, player2:, turn: player)
     end
 
     it 'returns player players' do
@@ -36,8 +36,8 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable /B
       expect(json[0]['rating']).to eq(1200)
       expect(json[0]['last']).to eq(0)
       expect(json[0]['bot']).to eq(0)
-      expect(json[1]['id']).to eq(player_2.id)
-      expect(json[1]['name']).to eq(player_2.name)
+      expect(json[1]['id']).to eq(player2.id)
+      expect(json[1]['name']).to eq(player2.name)
       expect(json[1]['wins']).to eq(0)
       expect(json[1]['losses']).to eq(0)
       expect(json[1]['rating']).to eq(1200)
@@ -48,13 +48,13 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable /B
 
   describe 'GET #show' do
     let(:json) { JSON.parse(response.body) }
-    let(:player_2) { create(:player, :confirmed) }
+    let(:player2) { create(:player, :confirmed) }
 
     it 'returns a player' do
-      get :show, params: { format: :json, id: player_2.id }, session: { player_id: player.id }
+      get :show, params: { format: :json, id: player2.id }, session: { player_id: player.id }
       expect(response).to be_successful
-      expect(json['id']).to eq(player_2.id)
-      expect(json['name']).to eq(player_2.name)
+      expect(json['id']).to eq(player2.id)
+      expect(json['name']).to eq(player2.name)
       expect(json['wins']).to eq(0)
       expect(json['losses']).to eq(0)
       expect(json['rating']).to eq(1200)
@@ -63,7 +63,7 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable /B
     end
   end
 
-  describe 'POST #reset_password' do # rubocop:disable Metrics/BlockLength
+  describe 'POST #reset_password' do
     let(:json) { JSON.parse(response.body) }
 
     describe 'cannot find a player' do
@@ -155,7 +155,7 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable /B
     it 'returns errors' do
       expect do
         post :create, params: {}
-      end.to change(Player, :count).by(0)
+      end.not_to change(Player, :count)
       expect(json['errors']['email']).to eq(["can't be blank", 'is not valid'])
       expect(json['errors']['name']).to eq(["can't be blank"])
       expect(json['errors']['password']).to eq(["can't be blank"])
@@ -198,7 +198,7 @@ RSpec.describe Api::PlayersController, type: :controller do # rubocop:disable /B
       it 'returns errors' do
         expect do
           post :complete_google_signup, params: params
-        end.to change(Player, :count).by(0)
+        end.not_to change(Player, :count)
         expect(json['errors']['email']).to eq(['has already been taken'])
         expect(json['errors']['name']).to eq(['has already been taken'])
       end

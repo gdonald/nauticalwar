@@ -2,6 +2,9 @@
 
 FactoryBot.define do
   factory :layout do
+    game { create(:game) }
+    player { create(:player) }
+    ship { create(:ship) }
     x { 0 }
     y { 0 }
     vertical { true }

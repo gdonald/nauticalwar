@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe ApplicationHelper, type: :helper do
+RSpec.describe ApplicationHelper do
   describe '#yes_no' do
     it 'returns Yes' do
       expect(helper.yes_no(true)).to eq('Yes')
@@ -30,7 +30,7 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(helper.time_limit_in_words(28_800)).to eq('8 hours')
     end
 
-    it 'returns 5 minutes' do
+    it 'returns 1 day' do
       expect(helper.time_limit_in_words(86_400)).to eq('1 day')
     end
   end
@@ -77,7 +77,7 @@ RSpec.describe ApplicationHelper, type: :helper do
     end
   end
 
-  describe '#shots_per_turn_name' do
+  describe '#rank_name' do
     let(:player) { build_stubbed(:player) }
 
     it 'returns Seaman Recruit' do

@@ -18,9 +18,9 @@ class Layout < ApplicationRecord
 
   scope :ordered, -> { order(id: :asc) }
   scope :unsunk, -> { where(sunk: false) }
-  scope :for_player, ->(player) { where(player: player) }
-  scope :sunk_for_player, ->(player) { where(sunk: true, player: player) }
-  scope :unsunk_for_player, ->(player) { where(sunk: false, player: player) }
+  scope :for_player, ->(player) { where(player:) }
+  scope :sunk_for_player, ->(player) { where(sunk: true, player:) }
+  scope :unsunk_for_player, ->(player) { where(sunk: false, player:) }
 
   def self.set_location(game, player, ship, vertical)
     c, r = if vertical
@@ -28,12 +28,12 @@ class Layout < ApplicationRecord
            else
              game.horizontal_location(player, ship)
            end
-    args = { player: player, ship: ship, vertical: vertical, x: c, y: r }
+    args = { player:, ship:, vertical:, x: c, y: r }
     game.layouts.create!(args)
   end
 
   def to_s
-    "Layout(player: #{player} ship: #{ship} x: #{x} y: #{y} vertical: #{vertical})" # rubocop:disable Metrics/LineLength
+    "Layout(player: #{player} ship: #{ship} x: #{x} y: #{y} vertical: #{vertical})"
   end
 
   def horizontal

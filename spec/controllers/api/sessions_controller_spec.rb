@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::SessionsController, type: :controller do
+RSpec.describe Api::SessionsController do
   describe 'POST #create' do
     let(:player) { create(:player, :confirmed) }
     let(:params) do

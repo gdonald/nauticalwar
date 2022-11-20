@@ -13,7 +13,7 @@ x = 0
   pwd = Player.generate_password(16)
   email = "#{name}@nauticalwar.com"
   create(:player, :bot,
-         strength: x, name: name, email: email,
+         strength: x, name:, email:,
          password: pwd, password_confirmation: pwd,
          confirmed_at: Time.current)
 end

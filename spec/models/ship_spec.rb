@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Ship, type: :model do
+RSpec.describe Ship do
   describe '#to_s' do
     let(:ship) { create(:ship) }
 

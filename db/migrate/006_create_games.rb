@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 class CreateGames < ActiveRecord::Migration[6.0]
-  def change # rubocop:disable Metrics/MethodLength
+  def change
     create_table :games do |t|
       t.integer :player_1_id, null: false
       t.integer :player_2_id, null: false
@@ -12,8 +12,8 @@ class CreateGames < ActiveRecord::Migration[6.0]
       t.integer :time_limit, null: false
       t.integer :turn_id, null: false
       t.integer :winner_id
-      t.boolean :del_player_1, null: false, default: false
-      t.boolean :del_player_2, null: false, default: false
+      t.boolean :del_player_1, null: false, default: false # rubocop:disable Naming/VariableNumber
+      t.boolean :del_player_2, null: false, default: false # rubocop:disable Naming/VariableNumber
       t.timestamps
     end
     add_index :games, :player_1_id

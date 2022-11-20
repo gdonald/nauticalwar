@@ -2,27 +2,29 @@
 
 require 'rails_helper'
 
-RSpec.feature 'Games', type: :feature do # rubocop:disable Metrics/BlockLength
+RSpec.describe 'Games' do
   let(:admin) { create(:player, :admin) }
-  let(:player_1) { create(:player, :confirmed) }
-  let(:player_2) { create(:player, :confirmed) }
-  let!(:game) do
-    create(:game, player_1: player_1, player_2: player_2,
-                  turn: player_1)
+  let(:player1) { create(:player, :confirmed) }
+  let(:player2) { create(:player, :confirmed) }
+  let(:game) do
+    create(:game, player1:, player2:,
+                  turn: player1)
   end
 
-  scenario 'Can visit games index', js: true do
+  before { game }
+
+  it 'Can visit games index', js: true do
     admin_login(admin)
     visit admin_games_path
     expect(page).to have_css('h2', text: 'Games')
     within('table#index_table_games tbody tr') do
-      expect(page).to have_css('td', text: player_1.name)
-      expect(page).to have_css('td', text: player_2.name)
+      expect(page).to have_css('td', text: player1.name)
+      expect(page).to have_css('td', text: player2.name)
       expect(page).to have_css('td', text: '86400')
     end
   end
 
-  scenario 'Can edit game', js: true do
+  it 'Can edit game', js: true do
     admin_login(admin)
     visit admin_games_path
     within('table#index_table_games tbody tr') do

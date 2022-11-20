@@ -6,8 +6,8 @@ ActiveAdmin.register Invite do
   index do
     selectable_column
     id_column
-    column :player_1
-    column :player_2
+    column :player1
+    column :player2
     column :rated
     column :shots_per_turn
     column :time_limit

@@ -2,7 +2,7 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::PingController, type: :controller do
+RSpec.describe Api::PingController do
   let(:player) { create(:player, :confirmed) }
 
   describe 'GET #index' do

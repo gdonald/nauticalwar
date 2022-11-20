@@ -10,7 +10,6 @@ append :linked_files, 'config/database.yml', 'config/secrets.yml', 'config/stora
 append :linked_dirs, 'storage', 'log', 'tmp/pids', 'tmp/cache', 'tmp/sockets', 'public/system'
 set :passenger_restart_with_touch, true
 
-
 # # config valid for current version and patch releases of Capistrano
 # lock '3.16.0'
 

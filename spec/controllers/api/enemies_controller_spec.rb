@@ -2,16 +2,16 @@
 
 require 'rails_helper'
 
-RSpec.describe Api::EnemiesController, type: :controller do
-  let(:player_1) { create(:player, :confirmed) }
-  let(:player_2) { create(:player, :confirmed) }
+RSpec.describe Api::EnemiesController do
+  let(:player1) { create(:player, :confirmed) }
+  let(:player2) { create(:player, :confirmed) }
   let(:json) { JSON.parse(response.body) }
 
   describe 'POST #create' do
     it 'creates a enemy, returns enemy id' do
-      post :create, params: { id: player_2.id },
-                    session: { player_id: player_1.id }
-      expect(json['status']).to eq(player_2.id)
+      post :create, params: { id: player2.id },
+                    session: { player_id: player1.id }
+      expect(json['status']).to eq(player2.id)
     end
   end
 end

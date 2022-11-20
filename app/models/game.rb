@@ -1,12 +1,11 @@
 # frozen_string_literal: true
 
 class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
-  belongs_to :player_1, class_name: 'Player', foreign_key: 'player_1_id'
-  belongs_to :player_2, class_name: 'Player', foreign_key: 'player_2_id'
-  belongs_to :turn, class_name: 'Player', foreign_key: 'turn_id'
+  belongs_to :player1, class_name: 'Player'
+  belongs_to :player2, class_name: 'Player'
+  belongs_to :turn, class_name: 'Player'
   belongs_to :winner,
              class_name: 'Player',
-             foreign_key: 'winner_id',
              optional: true
 
   has_many :layouts, dependent: :destroy
@@ -16,11 +15,11 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   validates :rated,      inclusion: [true, false]
   validates :shots_per_turn, inclusion: 1..5
-  validates :del_player_1, inclusion: [true, false]
-  validates :del_player_2, inclusion: [true, false]
+  validates :del_player1, inclusion: [true, false]
+  validates :del_player2, inclusion: [true, false]
 
-  validates :player_1_layed_out, inclusion: [true, false]
-  validates :player_2_layed_out, inclusion: [true, false]
+  validates :player1_layed_out, inclusion: [true, false]
+  validates :player2_layed_out, inclusion: [true, false]
 
   scope :ordered, -> { order(created_at: :asc) }
 
@@ -33,8 +32,8 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def self.find_game(player, id)
-    game = find_by(id: id)
-    game && [game.player_1, game.player_2].include?(player) ? game : nil
+    game = find_by(id:)
+    game && [game.player1, game.player2].include?(player) ? game : nil
   end
 
   def rand_n(low, high)
@@ -74,11 +73,11 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def moves_for_player(player)
-    moves.where(player: player)
+    moves.where(player:)
   end
 
   def layouts_for_player(player)
-    layouts.where(player: player).ordered
+    layouts.where(player:).ordered
   end
 
   def layouts_for_opponent(opponent)
@@ -101,7 +100,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     ship = Ship.find_by(name: hash['name'])
     return unless ship
 
-    layouts.create!(player: player, ship: ship, x: hash['x'], y: hash['y'],
+    layouts.create!(player:, ship:, x: hash['x'], y: hash['y'],
                     vertical: hash['vertical'] == '1')
   end
 
@@ -109,8 +108,8 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def create_ship_layouts(player, json)
     ships = parse_ships(json)
     ships.each { |s| create_ship_layout(player, s) }
-    player = player == player_1 ? 1 : 2
-    update("player_#{player}_layed_out": true)
+    player = player == player1 ? 1 : 2
+    update("player#{player}_layed_out": true)
   end
 
   def parse_ships(json)
@@ -122,82 +121,82 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def bot_attack_5! # rubocop:disable Metrics/AbcSize
-    player_2.strength.times do
-      move = attack_sinking_ship(player_2, player_1)
-      attack_random_ship(player_2, player_1) if move.nil?
+    player2.strength.times do
+      move = attack_sinking_ship(player2, player1)
+      attack_random_ship(player2, player1) if move.nil?
     end
-    (5 - player_2.strength).times do
-      attack_random_ship(player_2, player_1)
+    (5 - player2.strength).times do
+      attack_random_ship(player2, player1)
     end
   end
 
   def bot_attack_4! # rubocop:disable Metrics/AbcSize
-    strength = player_2.strength - 1
+    strength = player2.strength - 1
     strength = 0 if strength.negative?
     strength.times do
-      move = attack_sinking_ship(player_2, player_1)
-      attack_random_ship(player_2, player_1) if move.nil?
+      move = attack_sinking_ship(player2, player1)
+      attack_random_ship(player2, player1) if move.nil?
     end
     (4 - strength).times do
-      attack_random_ship(player_2, player_1)
+      attack_random_ship(player2, player1)
     end
   end
 
   def bot_attack_3! # rubocop:disable Metrics/AbcSize
-    strength = player_2.strength - 1
+    strength = player2.strength - 1
     strength = 0 if strength.negative?
     strength.times do
-      move = attack_sinking_ship(player_2, player_1)
-      attack_random_ship(player_2, player_1) if move.nil?
+      move = attack_sinking_ship(player2, player1)
+      attack_random_ship(player2, player1) if move.nil?
     end
     (3 - strength).times do
-      attack_random_ship(player_2, player_1)
+      attack_random_ship(player2, player1)
     end
   end
 
   def bot_attack_2! # rubocop:disable Metrics/AbcSize
-    strength = player_2.strength - 1
+    strength = player2.strength - 1
     strength = 0 if strength.negative?
     strength.times do
-      move = attack_sinking_ship(player_2, player_1)
-      attack_random_ship(player_2, player_1) if move.nil?
+      move = attack_sinking_ship(player2, player1)
+      attack_random_ship(player2, player1) if move.nil?
     end
     (2 - strength).times do
-      attack_random_ship(player_2, player_1)
+      attack_random_ship(player2, player1)
     end
   end
 
   def bot_attack_1!
-    move = attack_sinking_ship(player_2, player_1)
-    attack_random_ship(player_2, player_1) if move.nil?
+    move = attack_sinking_ship(player2, player1)
+    attack_random_ship(player2, player1) if move.nil?
   end
 
   def bot_attack!
-    player_2.new_activity!
+    player2.new_activity!
     send("bot_attack_#{shots_per_turn}!")
     next_turn! if winner.nil?
   end
 
   def bot_layout
     Ship.ordered.each do |ship|
-      Layout.set_location(self, player_2, ship, [0, 1].sample.zero?)
+      Layout.set_location(self, player2, ship, [0, 1].sample.zero?)
     end
-    update(player_2_layed_out: true)
+    update(player2_layed_out: true)
   end
 
   def guest_layout
     Ship.ordered.each do |ship|
-      Layout.set_location(self, player_1, ship, [0, 1].sample.zero?)
+      Layout.set_location(self, player1, ship, [0, 1].sample.zero?)
     end
-    update(player_1_layed_out: true)
+    update(player1_layed_out: true)
   end
 
   def player(player)
-    player == player_1 ? player_1 : player_2
+    player == player1 ? player1 : player2
   end
 
   def opponent(player)
-    player == player_1 ? player_2 : player_1
+    player == player1 ? player2 : player1
   end
 
   def all_ships_sunk?(player)
@@ -209,13 +208,13 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def declare_winner
-    [player_1, player_2].each do |player|
+    [player1, player2].each do |player|
       make_winner!(player) if all_ships_sunk?(opponent(player))
     end
   end
 
   def next_player_turn
-    turn == player_1 ? player_2 : player_1
+    turn == player1 ? player2 : player1
   end
 
   def can_attack?(player)
@@ -227,7 +226,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     layouts.unsunk.each(&:sunk?)
     declare_winner
     calculate_scores if rated && winner.present?
-    touch
+    touch # rubocop:disable Rails/SkipsModelValidations
   end
 
   def update_winner(player, variance)
@@ -249,14 +248,14 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [(32 * p1.to_f / p12).to_i, (32 * p2.to_f / p12).to_i]
   end
 
-  def calculate_scores(cancel = false) # rubocop:disable Metrics/AbcSize
-    p1_p, p2_p = cancel ? [1, 1] : score_variance(player_1, player_2)
-    if winner == player_1
-      update_winner(player_1, p2_p)
-      update_loser(player_2, p2_p)
-    elsif winner == player_2
-      update_winner(player_2, p1_p)
-      update_loser(player_1, p1_p)
+  def calculate_scores(cancel: false)
+    p1_p, p2_p = cancel ? [1, 1] : score_variance(player1, player2)
+    if winner == player1
+      update_winner(player1, p2_p)
+      update_loser(player2, p2_p)
+    elsif winner == player2
+      update_winner(player2, p1_p)
+      update_loser(player1, p1_p)
     end
   end
 
@@ -284,13 +283,13 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def get_random_move_lines(player)
     cols, rows = col_row_moves(player)
     x, y = random_min_col_row(cols, rows)
-    move = moves.for_player(player).where(x: x, y: y).first
+    move = moves.for_player(player).where(x:, y:).first
     return get_totally_random_move(player) if move
 
     [x, y]
   end
 
-  def hit_miss_grid(player) # rubocop:disable Metrics/MethodLength
+  def hit_miss_grid(player)
     mvs = moves.for_player(player)
     grid = Array.new(10) { Array.new(10, '') }
     10.times do |x|
@@ -308,13 +307,13 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     grid
   end
 
-  def spacing_moves_count(x_pos, y_pos, grid)
+  def spacing_moves_count(x_pos, y_pos, grid) # rubocop:disable Metrics/CyclomaticComplexity
     count = 0
     ((x_pos - 1)..(x_pos + 1)).each do |c|
       next unless in_grid?(c)
 
       ((y_pos - 1)..(y_pos + 1)).each do |r|
-        next if x_pos == c && y_pos == r || !in_grid?(r)
+        next if (x_pos == c && y_pos == r) || !in_grid?(r)
 
         count += 1 if grid[c][r].empty?
       end
@@ -351,7 +350,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def get_totally_random_move(player)
     x, y = rand_col_row(9, 9)
-    move = moves.for_player(player).where(x: x, y: y).first
+    move = moves.for_player(player).where(x:, y:).first
     return [x, y] unless move
 
     get_totally_random_move(player)
@@ -365,7 +364,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     false
   end
 
-  def attack_random_ship(player, opponent) # rubocop:disable /AbcSize, Metrics/MethodLength, Metrics/
+  def attack_random_ship(player, opponent) # rubocop:disable Metrics
     x, y = get_random_move_lines(player)
     layout = hit?(opponent, x, y)
     if layout.nil? && again?(player)
@@ -376,7 +375,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     move = moves.for_player(player).for_xy(x, y).first
     x, y = get_totally_random_move(player) if move
     layout = hit?(opponent, x, y)
-    move = moves.create!(player: player, layout: layout, x: x, y: y)
+    move = moves.create!(player:, layout:, x:, y:)
     move.persisted?
   end
 
@@ -411,7 +410,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample
       layout = hit?(opponent, cols[r], rows[r])
-      args = { player: player, layout: layout, x: cols[r], y: rows[r] }
+      args = { player:, layout:, x: cols[r], y: rows[r] }
       move = moves.create!(args)
       return true if move.persisted?
     end
@@ -447,7 +446,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   def create_known_vert_move(cols, rows, player, opponent)
     r = rand_n(0, cols.size - 1)
     layout = hit?(opponent, cols[r], rows[r])
-    moves.create!(player: player, layout: layout, x: cols[r], y: rows[r])
+    moves.create!(player:, layout:, x: cols[r], y: rows[r])
   end
 
   def attack_known_vert(player, opponent, hits)

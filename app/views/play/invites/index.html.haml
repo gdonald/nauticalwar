@@ -8,26 +8,26 @@
 %table.list#invites
   - @invites.each do |invite|
     %tr{ data: 'invite', id: invite.id }
-      %td.rank= image_tag "play/#{invite.player_1.rank}.png", class: 'rank'
+      %td.rank= image_tag "play/#{invite.player1.rank}.png", class: 'rank'
       %td.info.center.tight
-        %span.game-player-name #{invite.player_1.name} vs #{invite.player_2.name}
+        %span.game-player-name #{invite.player1.name} vs #{invite.player2.name}
         %br/
         %span.ratings
-          #{invite.player_1.rating}
+          #{invite.player1.rating}
           %span.versus versus
-          #{invite.player_2.rating}
+          #{invite.player2.rating}
         %br/
         - if invite.rated?
           = image_tag "play/rated.png"
         = image_tag "play/#{shots_per_turn_name(invite)}.png"
 
-      %td.rank= image_tag "play/#{invite.player_2.rank}.png", class: 'rank'
+      %td.rank= image_tag "play/#{invite.player2.rank}.png", class: 'rank'
 
     .modal{ role: 'dialog', tabindex: '-1', id: "modal_#{invite.id}" }
       .modal-dialog.modal-dialog-centered{ role: 'document' }
         .modal-content
           .modal-header
-            %h5.modal-title Invite: #{invite.player_1.name} vs #{invite.player_2.name}
+            %h5.modal-title Invite: #{invite.player1.name} vs #{invite.player2.name}
             %button.close{ 'aria-label' => 'Close', 'data-dismiss' => 'modal', type: 'button'}
               %span{ 'aria-hidden' => 'true' } ×
           .modal-body
@@ -41,12 +41,12 @@
               %b Rated:
               = yes_no(invite.rated)
 
-            - if invite.player_1 == @current_player
+            - if invite.player1 == @current_player
               %p Cancel your invite?
             - else
-              %p Accept invite from #{invite.player_1.name}?
+              %p Accept invite from #{invite.player1.name}?
           .modal-footer
-            - if invite.player_1 == @current_player
+            - if invite.player1 == @current_player
               %button.btn.btn-danger{ type: 'button', id: "cancel_#{invite.id}" } Cancel Invite
             - else
               %button.btn.btn-primary{ type: 'button', id: "accept_#{invite.id}" } Accept Invite

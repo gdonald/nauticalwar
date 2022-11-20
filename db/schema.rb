@@ -10,53 +10,53 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 16) do
+ActiveRecord::Schema[7.0].define(version: 18) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
   create_table "enemies", force: :cascade do |t|
-    t.integer "player_1_id", null: false
-    t.integer "player_2_id", null: false
+    t.integer "player1_id", null: false
+    t.integer "player2_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["player_1_id", "player_2_id"], name: "index_enemies_on_player_1_id_and_player_2_id", unique: true
+    t.index ["player1_id", "player2_id"], name: "index_enemies_on_player1_id_and_player2_id", unique: true
   end
 
   create_table "friends", force: :cascade do |t|
-    t.integer "player_1_id", null: false
-    t.integer "player_2_id", null: false
+    t.integer "player1_id", null: false
+    t.integer "player2_id", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
-    t.index ["player_1_id", "player_2_id"], name: "index_friends_on_player_1_id_and_player_2_id", unique: true
+    t.index ["player1_id", "player2_id"], name: "index_friends_on_player1_id_and_player2_id", unique: true
   end
 
   create_table "games", force: :cascade do |t|
-    t.integer "player_1_id", null: false
-    t.integer "player_2_id", null: false
-    t.boolean "player_1_layed_out", default: false, null: false
-    t.boolean "player_2_layed_out", default: false, null: false
+    t.integer "player1_id", null: false
+    t.integer "player2_id", null: false
+    t.boolean "player1_layed_out", default: false, null: false
+    t.boolean "player2_layed_out", default: false, null: false
     t.boolean "rated", null: false
     t.integer "time_limit", null: false
     t.integer "turn_id", null: false
     t.integer "winner_id"
-    t.boolean "del_player_1", default: false, null: false
-    t.boolean "del_player_2", default: false, null: false
+    t.boolean "del_player1", default: false, null: false
+    t.boolean "del_player2", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "shots_per_turn"
-    t.index ["player_1_id"], name: "index_games_on_player_1_id"
-    t.index ["player_2_id"], name: "index_games_on_player_2_id"
+    t.index ["player1_id"], name: "index_games_on_player1_id"
+    t.index ["player2_id"], name: "index_games_on_player2_id"
   end
 
   create_table "invites", force: :cascade do |t|
-    t.integer "player_1_id", null: false
-    t.integer "player_2_id", null: false
+    t.integer "player1_id", null: false
+    t.integer "player2_id", null: false
     t.boolean "rated", default: true, null: false
     t.integer "time_limit", default: 60, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.integer "shots_per_turn"
-    t.index ["player_1_id", "player_2_id"], name: "index_invites_on_player_1_id_and_player_2_id", unique: true
+    t.index ["player1_id", "player2_id"], name: "index_invites_on_player1_id_and_player2_id", unique: true
   end
 
   create_table "layouts", force: :cascade do |t|
@@ -124,6 +124,7 @@ ActiveRecord::Schema[7.0].define(version: 16) do
     t.string "email", null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_unsubs_on_email", unique: true
   end
 
 end

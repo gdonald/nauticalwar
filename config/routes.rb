@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
-  namespace :play do
+  namespace :play do # rubocop:disable Metrics/BlockLength
     resources :games, only: %i[index show destroy] do
       member do
         get :layout
@@ -41,8 +41,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    resources :layouts, only: %i[create] do
-    end
+    resources :layouts, only: %i[create]
 
     resources :options, only: %i[] do
       collection do
@@ -51,8 +50,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
       end
     end
 
-    resources :ranks, only: %i[index] do
-    end
+    resources :ranks, only: %i[index]
 
     resources :sessions, only: %i[new create] do
       collection do
@@ -110,8 +108,7 @@ Rails.application.routes.draw do # rubocop:disable Metrics/BlockLength
     end
   end
 
-  resources :unsubs, only: %i[show create] do
-  end
+  resources :unsubs, only: %i[show create]
 
   get '/play',    to: 'play/home#index'
   get '/privacy', to: 'home#privacy'
