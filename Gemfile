@@ -8,7 +8,7 @@ git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 gem 'bcrypt', '~> 3.1.18'
 gem 'bootstrap-sass', '~> 3.4.1'
 gem 'coffee-rails', '~> 5.0.0'
-gem 'pg', '~> 1.4.4'
+gem 'pg', '~> 1.4.5'
 gem 'rails', '~> 7.0.4'
 gem 'sass-rails', '~> 6.0.0'
 gem 'uglifier', '~> 4.2.0'
@@ -27,7 +27,8 @@ group :development, :test do
   gem 'faker'
   gem 'pry'
   gem 'rspec-rails'
-  gem 'rubocop-rails', require: false
+  gem 'rubocop', '~> 1.39.0', require: false
+  gem 'rubocop-rails', '~> 2.17.3', require: false
   gem 'ruby-prof', '>= 0.17.0', require: false
   gem 'stackprof', '>= 0.2.9', require: false
   gem 'wirble'
