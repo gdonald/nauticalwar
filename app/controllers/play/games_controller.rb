@@ -14,7 +14,7 @@ module Play
       @layouts = []
       @game.layouts_for_player(@current_player).each do |l|
         name = l.ship.name.downcase.gsub(/ /, '_')
-        @layouts << "{ col: #{l.x}, row: #{l.y}, size: #{l.ship.size}, vertical: #{l.vertical}, name: '#{name}', img_h: #{name}, img_v: #{name}_vertical }" # rubocop:disable Metrics/LineLength
+        @layouts << "{ col: #{l.x}, row: #{l.y}, size: #{l.ship.size}, vertical: #{l.vertical}, name: '#{name}', img_h: #{name}, img_v: #{name}_vertical }" # rubocop:disable Layout/LineLength
       end
       @layouts = @layouts.join(',')
 
@@ -35,7 +35,7 @@ module Play
         next unless l.sunk?
 
         name = l.ship.name.downcase.gsub(/ /, '_')
-        @layouts << "{ col: #{l.x}, row: #{l.y}, size: #{l.ship.size}, vertical: #{l.vertical}, name: '#{name}', img_h: #{name}, img_v: #{name}_vertical }" # rubocop:disable Metrics/LineLength
+        @layouts << "{ col: #{l.x}, row: #{l.y}, size: #{l.ship.size}, vertical: #{l.vertical}, name: '#{name}', img_h: #{name}, img_v: #{name}_vertical }" # rubocop:disable Layout/LineLength
       end
       @layouts = @layouts.join(',')
 
@@ -68,7 +68,7 @@ module Play
         next unless l.sunk?
 
         name = l.ship.name.downcase.gsub(/ /, '_')
-        @layouts << "{ col: #{l.x}, row: #{l.y}, size: #{l.ship.size}, vertical: #{l.vertical}, name: '#{name}', img_h: #{name}, img_v: #{name}_vertical }" # rubocop:disable Metrics/LineLength
+        @layouts << "{ col: #{l.x}, row: #{l.y}, size: #{l.ship.size}, vertical: #{l.vertical}, name: '#{name}', img_h: #{name}, img_v: #{name}_vertical }" # rubocop:disable Layout/LineLength
       end
       @layouts = @layouts.join(',')
 
