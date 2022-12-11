@@ -86,7 +86,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
 
       it 'with an expired token' do
         travel_to 2.hours.from_now do
-          post :reset_password, params: params
+          post(:reset_password, params:)
           expect(response).to be_successful
           expect(json['id']).to eq(-2)
         end
@@ -94,13 +94,13 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
 
       it 'cannot update with different passwords' do
         params[:password] = 'bar'
-        post :reset_password, params: params
+        post(:reset_password, params:)
         expect(response).to be_successful
         expect(json['id']).to eq(-3)
       end
 
       it 'updates a player password' do
-        post :reset_password, params: params
+        post(:reset_password, params:)
         expect(response).to be_successful
         expect(json['id']).to eq(player.id)
       end
@@ -112,7 +112,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
     let(:params) { { email: player.email } }
 
     it 'finds a player' do
-      post :locate_account, params: params
+      post(:locate_account, params:)
       expect(response).to be_successful
       expect(json['id']).to eq(player.id)
     end
@@ -147,7 +147,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
 
     it 'creates a player' do
       expect do
-        post :create, params: params
+        post(:create, params:)
       end.to change(Player, :count).by(1)
       expect(json['id']).to eq(player.id)
     end
@@ -169,7 +169,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
     let(:json) { JSON.parse(response.body) }
 
     it 'returns a player' do
-      post :account_exists, params: params
+      post(:account_exists, params:)
       expect(json['id']).to eq(player.id)
     end
 
@@ -186,7 +186,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
 
     it 'creates a player' do
       expect do
-        post :complete_google_signup, params: params
+        post(:complete_google_signup, params:)
       end.to change(Player, :count).by(1)
       expect(json['id']).to eq(player.id)
     end
@@ -197,7 +197,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
 
       it 'returns errors' do
         expect do
-          post :complete_google_signup, params: params
+          post(:complete_google_signup, params:)
         end.not_to change(Player, :count)
         expect(json['errors']['email']).to eq(['has already been taken'])
         expect(json['errors']['name']).to eq(['has already been taken'])

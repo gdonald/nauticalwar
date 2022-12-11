@@ -17,7 +17,7 @@ RSpec.describe Admin::SessionsController do # rubocop:disable /BlockLength, Metr
     end
 
     it 'returns a redirect' do
-      post :create, params: params
+      post(:create, params:)
       expect(response).to be_redirect
     end
 

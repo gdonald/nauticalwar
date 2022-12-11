@@ -11,7 +11,7 @@ RSpec.describe Api::SessionsController do
     let(:json) { JSON.parse(response.body) }
 
     it 'returns a player id' do
-      post :create, params: params
+      post(:create, params:)
       expect(json['id']).to eq(Player.last.id)
     end
 

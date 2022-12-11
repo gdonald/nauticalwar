@@ -27,12 +27,12 @@ group :development, :test do
   gem 'faker'
   gem 'pry'
   gem 'rspec-rails'
-  gem 'rubocop', '~> 1.39.0', require: false
-  gem 'rubocop-rails', '~> 2.17.3'
+  gem 'rubocop', require: false
+  gem 'rubocop-rails'
   gem 'rubocop-rake'
   gem 'rubocop-rspec'
-  gem 'ruby-prof', '>= 0.17.0', require: false
-  gem 'stackprof', '>= 0.2.9', require: false
+  gem 'ruby-prof', require: false
+  gem 'stackprof', require: false
   gem 'wirble'
 end
 

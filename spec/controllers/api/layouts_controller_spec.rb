@@ -31,7 +31,7 @@ RSpec.describe Api::LayoutsController do # rubocop:disable /BlockLength, Metrics
       ] }.to_json
       params = { game_id: game.id, layout: }
       expect do
-        post :create, params: params, session: { player_id: player.id }
+        post(:create, params:, session: { player_id: player.id })
       end.to change(Layout, :count).by(5)
       expect(json['player1_layed_out']).to eq('1')
     end
