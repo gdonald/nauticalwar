@@ -49,7 +49,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
   end
 
   def normal_range(min, max)
-    ((min.negative? ? 0 : min)..(max > 9 ? 9 : max))
+    ((min.negative? ? 0 : min)..([max, 9].min))
   end
 
   def vertical_location(player, ship)
