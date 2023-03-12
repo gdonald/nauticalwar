@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::GamesController do # rubocop:disable /BlockLength, Metrics/
   let(:player1) { create(:player, :confirmed) }
   let(:player2) { create(:player, :confirmed) }
-  let(:json) { JSON.parse(response.body) }
+  let(:json) { response.parsed_body }
   let(:game1) do
     create(:game, player1:, player2:, turn: player1,
                   del_player1: true)

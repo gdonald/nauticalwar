@@ -6,7 +6,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
   let(:player) { create(:player, :confirmed) }
 
   describe 'GET #index' do
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
     let(:player2) { create(:player, :confirmed) }
     let(:game) do
       create(:game, player1: player, player2:, turn: player)
@@ -47,7 +47,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
   end
 
   describe 'GET #show' do
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
     let(:player2) { create(:player, :confirmed) }
 
     it 'returns a player' do
@@ -64,7 +64,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
   end
 
   describe 'POST #reset_password' do
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
 
     describe 'cannot find a player' do
       it 'with an invalid token' do
@@ -108,7 +108,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
   end
 
   describe 'POST #locate_account' do
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
     let(:params) { { email: player.email } }
 
     it 'finds a player' do
@@ -125,7 +125,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
   end
 
   describe 'GET #activity' do
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
 
     it 'returns http success' do
       get :activity, params: { format: :json },
@@ -142,7 +142,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
         password: 'changeme',
         password_confirmation: 'changeme' }
     end
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
     let(:player) { Player.last }
 
     it 'creates a player' do
@@ -166,7 +166,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
   describe 'POST #account_exists' do
     let(:player) { create(:player) }
     let(:params) { { email: player.email } }
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
 
     it 'returns a player' do
       post(:account_exists, params:)
@@ -181,7 +181,7 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
 
   describe 'POST #complete_google_signup' do
     let(:params) { { email: 'foo@bar.com', name: 'foo' } }
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
     let(:player) { Player.last }
 
     it 'creates a player' do

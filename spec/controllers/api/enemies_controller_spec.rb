@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::EnemiesController do
   let(:player1) { create(:player, :confirmed) }
   let(:player2) { create(:player, :confirmed) }
-  let(:json) { JSON.parse(response.body) }
+  let(:json) { response.parsed_body }
 
   describe 'POST #create' do
     it 'creates a enemy, returns enemy id' do

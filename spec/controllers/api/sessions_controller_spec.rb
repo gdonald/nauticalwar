@@ -8,7 +8,7 @@ RSpec.describe Api::SessionsController do
     let(:params) do
       { email: player.email, password: 'changeme', format: :json }
     end
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
 
     it 'returns a player id' do
       post(:create, params:)

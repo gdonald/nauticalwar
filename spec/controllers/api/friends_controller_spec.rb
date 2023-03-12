@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe Api::FriendsController do
   let(:player1) { create(:player, :confirmed) }
   let(:player2) { create(:player, :confirmed) }
-  let(:json) { JSON.parse(response.body) }
+  let(:json) { response.parsed_body }
 
   describe 'GET #index' do
     let(:friend) { create(:friend, player1:, player2:) }

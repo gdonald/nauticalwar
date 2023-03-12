@@ -10,7 +10,7 @@ RSpec.describe Api::LayoutsController do # rubocop:disable /BlockLength, Metrics
   end
 
   describe 'GET #create' do
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
     let(:player2) { create(:player, :confirmed) }
     let(:game) do
       create(:game, player1: player, player2:, turn: player)

@@ -6,7 +6,7 @@ RSpec.describe Api::PingController do
   let(:player) { create(:player, :confirmed) }
 
   describe 'GET #index' do
-    let(:json) { JSON.parse(response.body) }
+    let(:json) { response.parsed_body }
 
     it 'returns http success' do
       get :index, params: { format: :json }, session: { player_id: player.id }

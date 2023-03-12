@@ -2,6 +2,7 @@ require:
   - rubocop-rake
   - rubocop-rails
   - rubocop-rspec
+  - rubocop-capybara
 
 AllCops:
   NewCops: enable
