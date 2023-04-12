@@ -8,7 +8,7 @@ class CreateLayouts < ActiveRecord::Migration[6.0]
       t.integer :ship_id, null: false
       t.integer :x, null: false
       t.integer :y, null: false
-      t.boolean :vertical, null: false
+      t.boolean :vertical, null: false, default: false
       t.boolean :sunk, null: false, default: false
       t.timestamps
     end

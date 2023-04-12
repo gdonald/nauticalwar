@@ -7,8 +7,8 @@ class CreateGames < ActiveRecord::Migration[6.0]
       t.integer :player_2_id, null: false
       t.boolean :player_1_layed_out, null: false, default: false
       t.boolean :player_2_layed_out, null: false, default: false
-      t.boolean :rated, null: false
-      t.boolean :five_shot, null: false
+      t.boolean :rated, null: false, default: false
+      t.boolean :five_shot, null: false, default: false
       t.integer :time_limit, null: false
       t.integer :turn_id, null: false
       t.integer :winner_id

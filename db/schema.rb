@@ -35,7 +35,7 @@ ActiveRecord::Schema[7.0].define(version: 18) do
     t.integer "player2_id", null: false
     t.boolean "player1_layed_out", default: false, null: false
     t.boolean "player2_layed_out", default: false, null: false
-    t.boolean "rated", null: false
+    t.boolean "rated", default: false, null: false
     t.integer "time_limit", null: false
     t.integer "turn_id", null: false
     t.integer "winner_id"
@@ -65,7 +65,7 @@ ActiveRecord::Schema[7.0].define(version: 18) do
     t.integer "ship_id", null: false
     t.integer "x", null: false
     t.integer "y", null: false
-    t.boolean "vertical", null: false
+    t.boolean "vertical", default: false, null: false
     t.boolean "sunk", default: false, null: false
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
