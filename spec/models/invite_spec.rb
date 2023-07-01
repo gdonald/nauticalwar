@@ -14,9 +14,9 @@ RSpec.describe Invite do
   end
 
   describe '#create_game' do
-    let(:player1) { create(:player) }
-    let(:player2) { create(:player) }
-    let(:invite) { build(:invite, player1:, player2:) }
+    let(:player_one) { create(:player) }
+    let(:player_two) { create(:player) }
+    let(:invite) { build(:invite, player1: player_one, player2: player_two) }
 
     it 'returns a game' do
       game = invite.create_game

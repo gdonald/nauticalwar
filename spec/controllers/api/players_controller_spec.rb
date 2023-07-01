@@ -7,9 +7,9 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
 
   describe 'GET #index' do
     let(:json) { response.parsed_body }
-    let(:player2) { create(:player, :confirmed) }
+    let(:player_two) { create(:player, :confirmed) }
     let(:game) do
-      create(:game, player1: player, player2:, turn: player)
+      create(:game, player1: player, player2: player_two, turn: player)
     end
 
     it 'returns player players' do
@@ -36,8 +36,8 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
       expect(json[0]['rating']).to eq(1200)
       expect(json[0]['last']).to eq(0)
       expect(json[0]['bot']).to eq(0)
-      expect(json[1]['id']).to eq(player2.id)
-      expect(json[1]['name']).to eq(player2.name)
+      expect(json[1]['id']).to eq(player_two.id)
+      expect(json[1]['name']).to eq(player_two.name)
       expect(json[1]['wins']).to eq(0)
       expect(json[1]['losses']).to eq(0)
       expect(json[1]['rating']).to eq(1200)
@@ -48,13 +48,13 @@ RSpec.describe Api::PlayersController do # rubocop:disable /BlockLength, Metrics
 
   describe 'GET #show' do
     let(:json) { response.parsed_body }
-    let(:player2) { create(:player, :confirmed) }
+    let(:player_two) { create(:player, :confirmed) }
 
     it 'returns a player' do
-      get :show, params: { format: :json, id: player2.id }, session: { player_id: player.id }
+      get :show, params: { format: :json, id: player_two.id }, session: { player_id: player.id }
       expect(response).to be_successful
-      expect(json['id']).to eq(player2.id)
-      expect(json['name']).to eq(player2.name)
+      expect(json['id']).to eq(player_two.id)
+      expect(json['name']).to eq(player_two.name)
       expect(json['wins']).to eq(0)
       expect(json['losses']).to eq(0)
       expect(json['rating']).to eq(1200)

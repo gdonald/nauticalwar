@@ -11,9 +11,9 @@ RSpec.describe Api::LayoutsController do # rubocop:disable /BlockLength, Metrics
 
   describe 'GET #create' do
     let(:json) { response.parsed_body }
-    let(:player2) { create(:player, :confirmed) }
+    let(:player_two) { create(:player, :confirmed) }
     let(:game) do
-      create(:game, player1: player, player2:, turn: player)
+      create(:game, player1: player, player2: player_two, turn: player)
     end
 
     it 'game not found' do

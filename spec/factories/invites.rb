@@ -2,8 +2,8 @@
 
 FactoryBot.define do
   factory :invite do
-    association :player1
-    association :player2
+    player1 factory: :player
+    player2 factory: :player
     time_limit { 1.day.to_i }
     rated { true }
     shots_per_turn { 1 }

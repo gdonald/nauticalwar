@@ -3,9 +3,9 @@
 require 'rails_helper'
 
 RSpec.describe InviteSerializer, type: :serializer do
-  let(:player1) { build_stubbed(:player, id: 1) }
-  let(:player2) { build_stubbed(:player, id: 1) }
-  let(:invite) { build_stubbed(:invite, id: 1, player1:, player2:) }
+  let(:player_one) { build_stubbed(:player, id: 1) }
+  let(:player_two) { build_stubbed(:player, id: 1) }
+  let(:invite) { build_stubbed(:invite, id: 1, player1: player_one, player2: player_two) }
   let(:serializer) { described_class.new(invite) }
   let(:serialization) { ActiveModelSerializers::Adapter.create(serializer) }
   let(:json) { JSON.parse(serialization.to_json) }

@@ -2,7 +2,7 @@
 
 FactoryBot.define do
   factory :enemy do
-    player1 { create(:player) }
-    player2 { create(:player) }
+    player1 factory: :player
+    player2 factory: :player
   end
 end

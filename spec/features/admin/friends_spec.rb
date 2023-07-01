@@ -4,10 +4,10 @@ require 'rails_helper'
 
 RSpec.describe 'Friends' do
   let(:admin) { create(:player, :admin) }
-  let(:player1) { create(:player, :confirmed) }
-  let(:player2) { create(:player, :confirmed) }
+  let(:player_one) { create(:player, :confirmed) }
+  let(:player_two) { create(:player, :confirmed) }
   let(:friend) do
-    create(:friend, player1:, player2:)
+    create(:friend, player1: player_one, player2: player_two)
   end
 
   before { friend }
@@ -17,8 +17,8 @@ RSpec.describe 'Friends' do
     visit admin_friends_path
     expect(page).to have_css('h2', text: 'Friends')
     within('table#index_table_friends tbody tr') do
-      expect(page).to have_css('td', text: player1.name)
-      expect(page).to have_css('td', text: player2.name)
+      expect(page).to have_css('td', text: player_one.name)
+      expect(page).to have_css('td', text: player_two.name)
       expect(page).to have_css('a', text: 'Delete')
     end
   end

@@ -4,11 +4,11 @@ require 'rails_helper'
 
 RSpec.describe 'Games' do
   let(:admin) { create(:player, :admin) }
-  let(:player1) { create(:player, :confirmed) }
-  let(:player2) { create(:player, :confirmed) }
+  let(:player_one) { create(:player, :confirmed) }
+  let(:player_two) { create(:player, :confirmed) }
   let(:game) do
-    create(:game, player1:, player2:,
-                  turn: player1)
+    create(:game, player1: player_one, player2: player_two,
+                  turn: player_one)
   end
 
   before { game }
@@ -18,8 +18,8 @@ RSpec.describe 'Games' do
     visit admin_games_path
     expect(page).to have_css('h2', text: 'Games')
     within('table#index_table_games tbody tr') do
-      expect(page).to have_css('td', text: player1.name)
-      expect(page).to have_css('td', text: player2.name)
+      expect(page).to have_css('td', text: player_one.name)
+      expect(page).to have_css('td', text: player_two.name)
       expect(page).to have_css('td', text: '86400')
     end
   end
