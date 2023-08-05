@@ -1,14 +1,12 @@
 # frozen_string_literal: true
 
-server 'nauticalwar.com', user: 'ubuntu', roles: %w[app db web]
+server 'nauticalwar.com', user: 'gd', roles: %w[app db web]
 set :deploy_to, '/rails/nauticalwar.com'
 set :rails_env, 'production'
 
 set :pty, true
 set :ssh_options, {
-  forward_agent: true,
-  auth_methods: ['publickey'],
-  keys: ['~/aws-private-key-2020-02-29.pem']
+  forward_agent: true
 }
 
 # # server-based syntax
