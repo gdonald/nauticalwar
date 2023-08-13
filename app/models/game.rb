@@ -93,7 +93,7 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     layouts.for_player(player).each do |layout|
       return layout if layout.hit?(col, row)
     end
-    nil
+    nil # rubocop:disable Style/ReturnNilInPredicateMethodDefinition
   end
 
   def create_ship_layout(player, hash)

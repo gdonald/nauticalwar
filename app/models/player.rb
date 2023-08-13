@@ -520,7 +520,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
     player = Player.find_by(confirmation_token: token)
     return unless player
 
-    return player if player.update(confirmed_at: Time.zone.now)
+    player if player.update(confirmed_at: Time.zone.now)
   end
 
   attr_reader :password

@@ -8,7 +8,7 @@ RSpec.describe Invite do
     let(:invite) { build(:invite, player1: player, player2: player) }
 
     it 'adds an error' do
-      expect(invite).to be_invalid
+      expect(invite).not_to be_valid
       expect(invite.errors['player2']).to be_present
     end
   end

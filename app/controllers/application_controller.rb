@@ -11,7 +11,7 @@ class ApplicationController < ActionController::Base
     return nil if session[:admin_id].nil?
 
     @current_admin = Player.find_by(admin: true, id: session[:admin_id])
-    return false unless @current_admin
+    false unless @current_admin
   end
 
   def authenticate_player!

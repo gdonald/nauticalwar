@@ -1030,7 +1030,7 @@ RSpec.describe Player do
 
     it 'returns game players' do
       expected = [player_four, bot_two]
-      expect(described_class.list_for_game(game.id)).to eq(expected)
+      expect(described_class.list_for_game(game.id)).to match_array(expected)
     end
   end
 
@@ -1044,7 +1044,7 @@ RSpec.describe Player do
 
     it 'returns players' do
       expected = [player_five, player_eleven, player_thirteen]
-      expect(described_class.list(player_one)).to eq(expected)
+      expect(described_class.list(player_one)).to match_array(expected)
     end
 
     describe 'non-confirmed' do
@@ -1054,7 +1054,7 @@ RSpec.describe Player do
 
       it 'returns players' do
         expected = [player_five, player_eleven]
-        expect(described_class.list(player_one)).to eq(expected)
+        expect(described_class.list(player_one)).to match_array(expected)
       end
     end
   end

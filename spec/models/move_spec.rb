@@ -35,7 +35,7 @@ RSpec.describe Move do
 
       it 'creates an error' do
         move = build(:move, game:, layout:, player: player_one)
-        expect(move).to be_invalid
+        expect(move).not_to be_valid
         expect(move.errors['layout']).to be_present
       end
     end
