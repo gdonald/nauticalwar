@@ -77,8 +77,6 @@ Shoulda::Matchers.configure do |config|
   end
 end
 
-require 'webdrivers'
-
 Capybara.register_driver :chrome do |app|
   Capybara::Selenium::Driver.new(app, browser: :chrome)
 end

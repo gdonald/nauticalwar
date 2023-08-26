@@ -18,7 +18,7 @@ gem 'jquery-rails', '~> 4.6.0'
 gem 'jquery-ui-rails', '~> 6.0.1'
 gem 'net-smtp', '~> 0.3.3', require: false
 gem 'pg', '~> 1.5.3'
-gem 'rails', '~> 7.0.4'
+gem 'rails', '~> 7.0.7.2'
 gem 'sass-rails', '~> 6.0.0'
 gem 'uglifier', '~> 4.2.0'
 
@@ -51,8 +51,8 @@ group :test do
   gem 'database_cleaner'
   gem 'rails-controller-testing'
   gem 'rspec_junit_formatter'
+  gem 'selenium-webdriver', '~> 4.11.0'
   gem 'shoulda-matchers'
   gem 'simplecov', require: false
   gem 'test-prof'
-  gem 'webdrivers'
 end
