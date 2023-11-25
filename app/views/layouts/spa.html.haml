@@ -1,6 +1,7 @@
 !!!
 %html{:lang => "en"}
   %head
+    = render partial: 'shared/ga'
     %meta{:charset => "utf-8"}/
     %meta{:content => "width=device-width, initial-scale=1, shrink-to-fit=no", :name => "viewport"}/
     %meta{:content => "", :name => "description"}/
@@ -136,3 +137,6 @@
             &middot;
           %li.list-inline-item
             = link_to 'Terms', terms_path, target: '_blank'
+            &middot;
+          %li.list-inline-item
+            = link_to 'Darkclear.com', 'https://darkclear.com/', target: '_blank'
