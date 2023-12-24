@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-lock '~> 3.17.0'
+lock '~> 3.18.0'
 
 set :application, 'nauticalwar'
 set :repo_url, 'git@github.com:gdonald/nauticalwar.git'
