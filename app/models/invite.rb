@@ -17,6 +17,10 @@ class Invite < ApplicationRecord
 
   scope :ordered, -> { order(created_at: :asc) }
 
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[created_at id id_value player1_id player2_id rated shots_per_turn time_limit updated_at]
+  end
+
   def self.shot_opts
     (1..5).to_a.reverse
   end

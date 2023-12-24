@@ -50,6 +50,11 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
   scope :not_bot, -> { where(bot: false) }
   scope :not_self, ->(id) { where.not(id:) }
 
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[activity admin bot confirmation_token confirmed_at created_at email grid guest hints id id_value last_sign_in_at
+       losses name p_hash p_salt password_token password_token_expire rating strength unsub_hash updated_at water wins]
+  end
+
   def to_s
     name
   end
@@ -350,7 +355,7 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def self.guest_search(player, name)
     ids = [player.id]
-    ids += Player.select(:id).where(bot: true).collect(&:id)
+    ids += Player.where(bot: true).pluck(:id)
     ids.uniq!
 
     Player.where(id: ids).where('name ILIKE ?', "%#{name}%")
@@ -368,14 +373,14 @@ class Player < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   def self.guest_list(player)
     ids = [player.id]
-    ids += Player.select(:id).where(bot: true).collect(&:id)
+    ids += Player.where(bot: true).pluck(:id)
     ids.uniq!
     Player.where(id: ids).order(rating: :desc)
   end
 
   def self.list(player) # rubocop:disable Metrics/AbcSize
     ids = [player.id]
-    ids += Player.select(:id).where(bot: true).collect(&:id)
+    ids += Player.where(bot: true).pluck(:id)
     query = Player.select(:id).where.not(id: player.enemies_player_ids).where.not(guest: true)
     ids += query.where(arel_table[:rating].gteq(player.rating))
                 .order(rating: :asc).limit(15).collect(&:id)

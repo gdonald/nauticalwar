@@ -12,7 +12,7 @@ RSpec.describe 'Friends' do
 
   before { friend }
 
-  it 'Can visit friends index', js: true do
+  it 'Can visit friends index', :js do
     admin_login(admin)
     visit admin_friends_path
     expect(page).to have_css('h2', text: 'Friends')
@@ -23,7 +23,7 @@ RSpec.describe 'Friends' do
     end
   end
 
-  it 'Can delete friends', js: true do
+  it 'Can delete friends', :js do
     admin_login(admin)
     visit admin_friends_path
     within('table#index_table_friends tbody tr') do

@@ -5,12 +5,12 @@ class ShotsPerTurn < ActiveRecord::Migration[6.0]
     add_column :invites, :shots_per_turn, :integer
     add_column :games, :shots_per_turn, :integer
 
-    Invite.all.each do |i|
+    Invite.find_each do |i|
       i.shots_per_turn = i.shots_per_turn ? 5 : 1
       i.save!
     end
 
-    Game.all.each do |g|
+    Game.find_each do |g|
       g.shots_per_turn = g.shots_per_turn ? 5 : 1
       g.save!
     end

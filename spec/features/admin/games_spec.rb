@@ -13,7 +13,7 @@ RSpec.describe 'Games' do
 
   before { game }
 
-  it 'Can visit games index', js: true do
+  it 'Can visit games index', :js do
     admin_login(admin)
     visit admin_games_path
     expect(page).to have_css('h2', text: 'Games')
@@ -24,7 +24,7 @@ RSpec.describe 'Games' do
     end
   end
 
-  it 'Can edit game', js: true do
+  it 'Can edit game', :js do
     admin_login(admin)
     visit admin_games_path
     within('table#index_table_games tbody tr') do

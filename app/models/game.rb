@@ -23,6 +23,11 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
 
   scope :ordered, -> { order(created_at: :asc) }
 
+  def self.ransackable_attributes(_auth_object = nil)
+    %w[created_at del_player1 del_player2 id id_value player1_id player1_layed_out player2_id player2_layed_out rated
+       shots_per_turn time_limit turn_id updated_at winner_id]
+  end
+
   def self.create_ships
     Ship.create!(name: 'Carrier',     size: 5)
     Ship.create!(name: 'Battleship',  size: 4)

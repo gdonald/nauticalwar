@@ -12,7 +12,7 @@ RSpec.describe 'Enemies' do
 
   before { enemy }
 
-  it 'Can visit enemies index', js: true do
+  it 'Can visit enemies index', :js do
     admin_login(admin)
     visit admin_enemies_path
     expect(page).to have_css('h2', text: 'Enemies')
@@ -23,7 +23,7 @@ RSpec.describe 'Enemies' do
     end
   end
 
-  it 'Can delete enemies', js: true do
+  it 'Can delete enemies', :js do
     admin_login(admin)
     visit admin_enemies_path
     within('table#index_table_enemies tbody tr') do

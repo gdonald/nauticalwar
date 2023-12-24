@@ -21,6 +21,6 @@ module Nauticalwar
 
     # config.web_console.whitelisted_ips = '10.0.0.0/8'
 
-    config.active_record.legacy_connection_handling = false
+    # config.active_record.legacy_connection_handling = false
   end
 end

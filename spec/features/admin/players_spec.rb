@@ -5,7 +5,7 @@ require 'rails_helper'
 RSpec.describe 'Players' do
   let(:admin) { create(:player, :admin) }
 
-  it 'Can visit invites index', js: true do
+  it 'Can visit invites index', :js do
     admin_login(admin)
     visit admin_players_path
     expect(page).to have_css('h2', text: 'Players')
@@ -15,7 +15,7 @@ RSpec.describe 'Players' do
     end
   end
 
-  it 'Admin can edit player', js: true do
+  it 'Admin can edit player', :js do
     player = create(:player)
 
     admin_login(admin)

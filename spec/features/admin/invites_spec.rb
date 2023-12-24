@@ -10,7 +10,7 @@ RSpec.describe 'Invites' do
 
   before { invite }
 
-  it 'Can visit invites index', js: true do
+  it 'Can visit invites index', :js do
     admin_login(admin)
     visit admin_invites_path
     expect(page).to have_css('h2', text: 'Invites')
@@ -21,7 +21,7 @@ RSpec.describe 'Invites' do
     end
   end
 
-  it 'Can edit invite', js: true do
+  it 'Can edit invite', :js do
     admin_login(admin)
     visit admin_invites_path
     within('table#index_table_invites tbody tr') do
