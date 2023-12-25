@@ -1,21 +1,15 @@
-# This workflow uses actions that are not certified by GitHub.  They are
-# provided by a third-party and are governed by separate terms of service,
-# privacy policy, and support documentation.
-#
-# This workflow will install a prebuilt Ruby version, install dependencies, and
-# run tests and linters.
 name: "Ruby on Rails CI"
 on:
   push:
-    branches: [ "main" ]
+    branches: ["main"]
   pull_request:
-    branches: [ "main" ]
+    branches: ["main"]
 jobs:
   test:
     runs-on: ubuntu-latest
     services:
       postgres:
-        image: postgres:11-alpine
+        image: postgres:13-alpine
         ports:
           - "5432:5432"
         env:
@@ -28,7 +22,6 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
-      # Add or replace dependency steps here
 
       - name: Install chrome
         uses: browser-actions/setup-chrome@latest
@@ -42,11 +35,12 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: "3.3"
           bundler-cache: true
-      # Add or replace database setup steps here
+
       - name: Set up database schema
         run: bin/rails db:schema:load
-      # Add or replace test runners here
+
       - name: Run tests
         run: xvfb-run --auto-servernum bundle exec rspec
 
@@ -55,25 +49,29 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
+          ruby-version: "3.3"
           bundler-cache: true
 
       - name: Setup Bundle Audit
         run: gem install bundle-audit
+
       - name: Security audit dependencies
         run: bundle exec bundle audit check --update
         continue-on-error: true
 
       - name: Setup Brakeman
         run: gem install brakeman
+
       - name: Security audit application code
         run: bundle exec brakeman -q -w2
         continue-on-error: true
 
       - name: Setup Rubocop
         run: gem install rubocop
+
       - name: Lint Ruby files
         run: bundle exec rubocop --parallel
- 
