@@ -46,6 +46,7 @@ group :development do
 end
 
 group :test do
+  gem 'bundler-audit'
   gem 'capybara', '>= 3.20.2'
   gem 'capybara-selenium'
   gem 'database_cleaner'
