@@ -41,7 +41,7 @@ group :development do
   gem 'capistrano-passenger'
   gem 'capistrano-rails'
   gem 'listen'
-  gem 'puma', '~> 6.3.1'
+  gem 'puma', '~> 6.4.2'
   gem 'web-console'
 end
 
