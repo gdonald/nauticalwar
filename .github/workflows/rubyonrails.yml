@@ -1,9 +1,9 @@
-name: "Ruby on Rails CI"
+name: 'Ruby on Rails CI'
 on:
   push:
-    branches: ["main"]
+    branches: ['main']
   pull_request:
-    branches: ["main"]
+    branches: ['main']
 jobs:
   test:
     runs-on: ubuntu-latest
@@ -11,14 +11,14 @@ jobs:
       postgres:
         image: postgres:13-alpine
         ports:
-          - "5432:5432"
+          - '5432:5432'
         env:
           POSTGRES_DB: rails_test
           POSTGRES_USER: rails
           POSTGRES_PASSWORD: password
     env:
       RAILS_ENV: test
-      DATABASE_URL: "postgres://rails:password@localhost:5432/rails_test"
+      DATABASE_URL: 'postgres://rails:password@localhost:5432/rails_test'
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
@@ -35,7 +35,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3"
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: Set up database schema
@@ -53,7 +53,7 @@ jobs:
       - name: Install Ruby and gems
         uses: ruby/setup-ruby@v1
         with:
-          ruby-version: "3.3"
+          ruby-version: '3.3'
           bundler-cache: true
 
       - name: Setup Bundle Audit
@@ -61,14 +61,12 @@ jobs:
 
       - name: Security audit dependencies
         run: bundle exec bundle audit check --update
-        continue-on-error: true
 
       - name: Setup Brakeman
         run: gem install brakeman
 
       - name: Security audit application code
         run: bundle exec brakeman -q -w2
-        continue-on-error: true
 
       - name: Setup Rubocop
         run: gem install rubocop
