@@ -364,6 +364,9 @@ RSpec.describe Player do
 
   describe '#create_enemy!' do
     it 'creates a enemy' do
+      player_four.friends.destroy_all
+      expect(player_four.friends).to be_empty
+
       expect do
         player_four.create_enemy!(player_five.id)
       end.to change(Enemy, :count).by(1)
