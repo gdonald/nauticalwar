@@ -28,7 +28,7 @@ RSpec.describe 'Friends' do
     visit admin_friends_path
     within('table#index_table_friends tbody tr') do
       accept_confirm do
-        click_link('Delete')
+        click_on('Delete')
       end
     end
 

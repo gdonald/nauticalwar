@@ -25,10 +25,10 @@ RSpec.describe 'Invites' do
     admin_login(admin)
     visit admin_invites_path
     within('table#index_table_invites tbody tr') do
-      click_link('Edit')
+      click_on('Edit')
     end
 
-    click_button 'Update Invite'
+    click_on 'Update Invite'
     expect(page).to have_css('div.flash',
                              text: 'Invite was successfully updated')
   end

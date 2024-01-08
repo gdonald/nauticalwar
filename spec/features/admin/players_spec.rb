@@ -22,7 +22,7 @@ RSpec.describe 'Players' do
     visit admin_players_path
 
     within("table#index_table_players tbody tr#player_#{player.id}") do
-      click_link('Edit')
+      click_on('Edit')
     end
 
     within 'li#player_password_input' do
@@ -30,7 +30,7 @@ RSpec.describe 'Players' do
     end
 
     fill_in 'Password confirmation', with: 'changeme'
-    click_button 'Update Player'
+    click_on 'Update Player'
 
     expect(page).to have_css('div.flash',
                              text: 'Player was successfully updated')

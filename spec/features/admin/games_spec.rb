@@ -28,10 +28,10 @@ RSpec.describe 'Games' do
     admin_login(admin)
     visit admin_games_path
     within('table#index_table_games tbody tr') do
-      click_link('Edit')
+      click_on('Edit')
     end
 
-    click_button 'Update Game'
+    click_on 'Update Game'
     expect(page).to have_css('div.flash', text: 'Game was successfully updated')
   end
 end

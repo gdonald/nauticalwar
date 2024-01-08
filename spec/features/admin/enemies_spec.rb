@@ -28,7 +28,7 @@ RSpec.describe 'Enemies' do
     visit admin_enemies_path
     within('table#index_table_enemies tbody tr') do
       accept_confirm do
-        click_link('Delete')
+        click_on('Delete')
       end
     end
 
