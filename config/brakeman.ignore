@@ -1,0 +1,40 @@
+{
+  "ignored_warnings": [
+    {
+      "warning_type": "Cross-Site Scripting",
+      "warning_code": 2,
+      "fingerprint": "1c41d7bfec16048067a01491f9f1c7b128f4bbe9bcd187a57bcf4de2d0bb8152",
+      "check_name": "CrossSiteScripting",
+      "message": "Unescaped model attribute",
+      "file": "app/views/play/games/opponent.html.haml",
+      "line": 61,
+      "link": "https://brakemanscanner.org/docs/warning_types/cross_site_scripting",
+      "code": "Game.find_game(Player.find_by(:id => session[:player_id].to_i), params[:id]).shots_per_turn",
+      "render_path": [
+        {
+          "type": "controller",
+          "class": "Play::GamesController",
+          "method": "opponent",
+          "line": 51,
+          "file": "app/controllers/play/games_controller.rb",
+          "rendered": {
+            "name": "play/games/opponent",
+            "file": "app/views/play/games/opponent.html.haml"
+          }
+        }
+      ],
+      "location": {
+        "type": "template",
+        "template": "play/games/opponent"
+      },
+      "user_input": null,
+      "confidence": "Medium",
+      "cwe_id": [
+        79
+      ],
+      "note": ""
+    }
+  ],
+  "updated": "2024-01-08 11:42:23 -0600",
+  "brakeman_version": "6.1.1"
+}

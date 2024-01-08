@@ -3,7 +3,7 @@
 module Play
   class GuestsController < Play::PlayController
     def create
-      player = session[:player_id].present? ? Player.find_by(id: session[:player_id]) : nil
+      player = session[:player_id].present? ? Player.find_by(id: session[:player_id].to_i) : nil
       player = Player.create_guest if player.blank?
       return unless player
 
@@ -12,7 +12,7 @@ module Play
     end
 
     def new_player
-      @player = session[:player_id].present? ? Player.find_by(id: session[:player_id]) : nil
+      @player = session[:player_id].present? ? Player.find_by(id: session[:player_id].to_i) : nil
 
       redirect_to new_play_player_path if @player.nil?
 
@@ -21,7 +21,7 @@ module Play
     end
 
     def create_player # rubocop:disable Metrics/AbcSize
-      @player = session[:player_id].present? ? Player.find_by(id: session[:player_id]) : nil
+      @player = session[:player_id].present? ? Player.find_by(id: session[:player_id].to_i) : nil
       result = @player.convert_guest_to_player(player_params)
       if result[:id]
         session[:player_id] = nil
