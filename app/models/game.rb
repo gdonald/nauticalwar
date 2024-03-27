@@ -410,7 +410,8 @@ class Game < ApplicationRecord # rubocop:disable Metrics/ClassLength
     [cols, rows]
   end
 
-  def attack_unknown_vert(player, opponent, hit) # rubocop:disable /AbcSize, Metrics/
+  # rubocop:disable /AbcSize, Metrics/
+  def attack_unknown_vert(player, opponent, hit)
     cols, rows = empty_neighbors(player, hit)
     unless cols.empty?
       r = (0..(cols.size - 1)).to_a.sample

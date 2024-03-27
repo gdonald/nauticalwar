@@ -17,7 +17,7 @@ gem 'haml-rails', '~> 2.1.0'
 gem 'jquery-rails', '~> 4.6.0'
 # gem 'jquery-ui-rails', '~> 6.0.1'
 gem 'jquery-ui-rails', github: 'jquery-ui-rails/jquery-ui-rails', tag: 'v7.0.0'
-gem 'net-smtp', '~> 0.4.0', require: false
+gem 'net-smtp', '~> 0.5.0', require: false
 gem 'pg', '~> 1.5.3'
 gem 'rails', '~> 7.1.3'
 gem 'sass-rails', '~> 6.0.0'
