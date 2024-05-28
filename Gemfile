@@ -54,7 +54,7 @@ group :test do
   gem 'database_cleaner'
   gem 'rails-controller-testing'
   gem 'rspec_junit_formatter'
-  gem 'selenium-webdriver', '~> 4.16.0'
+  gem 'selenium-webdriver', '~> 4.21.1'
   gem 'shoulda-matchers'
   gem 'simplecov', require: false
   gem 'test-prof'
