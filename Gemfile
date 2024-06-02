@@ -5,7 +5,7 @@ ruby '3.3.1'
 source 'https://rubygems.org'
 git_source(:github) { |repo| "https://github.com/#{repo}.git" }
 
-gem 'activeadmin', '~> 3.2.0'
+gem 'activeadmin', '~> 3.2.2'
 gem 'active_model_serializers', '~> 0.10.13'
 gem 'bcrypt', '~> 3.1.18'
 gem 'bcrypt_pbkdf', '~> 1.1.0'
