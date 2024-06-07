@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+  <PreferenceCategory android:title="Game Options"
+    android:key="game">
+      <ListPreference
+          android:title="Water Color"
+          android:entryValues="@array/water_array"
+          android:summary="Water background color"
+          android:key="waterColor"
+          android:entries="@array/water_array"
+          android:defaultValue="Blue" />
+      <ListPreference
+          android:entries="@array/grid_array"
+          android:entryValues="@array/grid_array"
+          android:defaultValue="Green"
+          android:title="Player Grid"
+          android:summary="Your grid background color"
+          android:key="playerGrid" />
+      <ListPreference
+          android:entries="@array/grid_array"
+          android:entryValues="@array/grid_array"
+          android:defaultValue="Green"
+          android:title="Opponent Grid"
+          android:summary="Opponent grid background color"
+          android:key="opponentGrid" />
+  </PreferenceCategory>
+  <PreferenceCategory android:title="Effects"
+    android:key="effects">
+    <CheckBoxPreference android:key="doSound"
+      android:title="Sound Effects"
+      android:summary="Enable sound effects" android:defaultValue="false"/>
+      <CheckBoxPreference
+          android:key="doVibrate"
+          android:title="Vibrations"
+          android:summary="Enable vibration effects"
+          android:defaultValue="false" />
+  </PreferenceCategory><PreferenceCategory android:title="Notifications" android:key="notifications">
+    <CheckBoxPreference android:key="doNotify" android:title="My Turn" android:summary="Notify me when it's my turn" android:defaultValue="true"/>
+    <CheckBoxPreference
+        android:key="doNotifySound"
+        android:title="Sound Notification"
+        android:summary="Enable sound notification"
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="doNotifyVibrate"
+        android:title="Vibrate Notification"
+        android:summary="Enable vibrate notification"
+        android:defaultValue="true" />
+    <CheckBoxPreference
+        android:key="doNotifyBlink"
+        android:title="LED Blink Notification"
+        android:summary="Enable blink notification"
+        android:defaultValue="true" /></PreferenceCategory>
+</PreferenceScreen>

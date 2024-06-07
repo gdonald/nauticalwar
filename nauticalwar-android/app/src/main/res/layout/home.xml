@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outer"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/inner"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/title_wrapper"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:layout_marginLeft="20dip"
+            android:layout_marginRight="20dip">
+
+            <ImageView
+                android:id="@+id/title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/title"
+                android:src="@drawable/leader_title" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/logout"
+                android:layout_width="200dip"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dip"
+                android:background="@drawable/button"
+                android:text="@string/logout"
+                android:textColor="#ffffff"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/options"
+                android:layout_width="200dip"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dip"
+                android:background="@drawable/button"
+                android:text="@string/options"
+                android:textColor="#ffffff"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/games"
+                android:layout_width="200dip"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dip"
+                android:background="@drawable/button"
+                android:text="@string/games"
+                android:textColor="#ffffff"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/invites"
+                android:layout_width="200dip"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="6dip"
+                android:background="@drawable/button"
+                android:text="@string/invites"
+                android:textColor="#ffffff"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/invite"
+                android:layout_width="200dip"
+                android:layout_height="wrap_content"
+                android:background="@drawable/button"
+                android:text="@string/play"
+                android:textColor="#ffffff"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

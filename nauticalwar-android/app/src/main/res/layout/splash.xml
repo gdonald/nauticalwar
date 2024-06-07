@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/outer"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:id="@+id/content"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:contentDescription="@string/title"
+            android:paddingLeft="20dip"
+            android:paddingRight="20dip"
+            android:src="@drawable/leader_title" />
+
+        <LinearLayout
+            android:id="@+id/buttons"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dip"
+            android:layout_marginRight="20dip"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <Button
+                android:id="@+id/login"
+                android:layout_width="200dip"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dip"
+                android:background="@drawable/button"
+                android:text="@string/login"
+                android:textColor="#ffffff"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <Button
+                android:id="@+id/signup"
+                android:layout_width="200dip"
+                android:layout_height="wrap_content"
+                android:layout_margin="3dip"
+                android:background="@drawable/button"
+                android:text="@string/signup"
+                android:textColor="#ffffff"
+                android:textSize="21sp"
+                android:textStyle="bold" />
+
+            <!--<TextView-->
+                <!--android:id="@+id/or_text"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:gravity="center"-->
+                <!--android:paddingTop="5dp"-->
+                <!--android:paddingBottom="5dp"-->
+                <!--android:text="@string/or"-->
+                <!--android:textAlignment="center"-->
+                <!--android:textColor="#ffffff"-->
+                <!--android:textSize="18sp"-->
+                <!--android:textStyle="bold|italic" />-->
+
+            <!--<com.google.android.gms.common.SignInButton-->
+                <!--android:id="@+id/sign_in_button"-->
+                <!--android:layout_width="200dip"-->
+                <!--android:layout_height="wrap_content"-->
+                <!--android:layout_margin="3dip" />-->
+        </LinearLayout>
+    </LinearLayout>
+</LinearLayout>

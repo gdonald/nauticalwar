@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "584731294888",
+    "firebase_url": "https://nauticalwar-1544781433845.firebaseio.com",
+    "project_id": "nauticalwar-1544781433845",
+    "storage_bucket": "nauticalwar-1544781433845.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:584731294888:android:f536cef08b687f61",
+        "android_client_info": {
+          "package_name": "com.nauticalwar.nw"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "584731294888-vjpgnfnfl22clctafnb09pau0qres14e.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.nauticalwar.nw",
+            "certificate_hash": "7c30a893f3fb870f2d0742431c04fe6a95b34353"
+          }
+        },
+        {
+          "client_id": "584731294888-5s99vpqhgsa78er0vf31pa7350loedr7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBN3FWzPyXgaDOFvhTPYNJb5PyZpsxQb4s"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "584731294888-5s99vpqhgsa78er0vf31pa7350loedr7.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
